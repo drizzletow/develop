@@ -15,7 +15,7 @@
 
 ## 2. 数制
 
-**R进制：**逢R进一
+**R进制：** 逢R进一
 
 <img src="vx_images/image-20210923092957494.png" alt="image-20210923092957494" style="zoom:50%;" />
 
@@ -147,7 +147,68 @@ Java 对包、类、方法、参数和变量等要素命名时使用的字符序
 
 
 
-# 三 基本数据类型
+# 三 基本输入输出
+
+```java
+//java键盘输入
+import java.util.Scanner; 
+
+Scanner sc = new Scanner(System.in);
+String name = sc.next();                      // 输入字符串
+int age = sc.nextInt();                       // 输入整数
+double score = sc.nextDouble();               // 输入浮点数
+
+
+//输出到控制台
+System.out.println(1111);                //换行打印
+System.out.print(1111);                  //不换行打印
+System.out.write(2222);                  //字节输出
+System.out.printf("%+8.3f\n", 3.14);     //按格式输出
+```
+
+
+
+## 1. 输入类型判断
+
+```java
+//使用 hasNextInt() 判断输入类型
+long Long;
+String string;
+double Double;
+Scanner sc =new Scanner(System.in);
+System.out.println("输入一个数");
+if(sc.hasNextInt()){
+    Long = sc.nextLong();
+    System.out.println("您输入的是一个整数:"+Long);
+}else if(sc.hasNextDouble()){
+    Double = sc.nextDouble();
+    System.out.println("您输入的是一个小数:"+Double);
+}else if (sc.hasNext()){
+    string = s.nextLine();
+    System.out.println("您输入的是一个字符串:"+string);
+}
+```
+
+
+
+## 2. 转义字符
+
+| 转义字符 |                作用                | ASCII码 |
+| :------: | :--------------------------------: | :-----: |
+|    \n    |   换行，将当前位置移到下一行开头   |   010   |
+|    \r    |   回车 ，将当前位置移到本行开头    |   013   |
+|    \t    | 水平制表(HT) （跳到下一个TAB位置） |   009   |
+|   `\\`   |         代表一个反斜线字符         |   092   |
+|   `\'`   |     代表一个单引号（撇号）字符     |   039   |
+|  `\''`   |         代表一个双引号字符         |   034   |
+
+
+
+
+
+
+
+# 四 基本数据类型
 
 ![image-20211001100736886](vx_images/image-20211001100736886.png)
 
@@ -208,7 +269,7 @@ Java 对包、类、方法、参数和变量等要素命名时使用的字符序
    
 
 
-# 四 常用运算符
+# 五 常用运算符
 
 ## 1. 算术运算符
 
@@ -332,7 +393,146 @@ String str2 = "X" + 123；    //结果"X123"
 
 
 
-# 五 方法（函数）
+# 六 流程控制
+
+1996 年，计算机科学家 Bohm 和 Jacopini 证明了：任何简单或复杂的算法都可以由**顺序结构、分支结构和循环结构**这三种基本 结构组合而成。它们的共同点是都包含一个入口和一个出口，它们的每个代码都有机会被执行，不会出现死循环。
+
+- 顺序结构： 顺序结构是一种基本的控制结构，它按照语句出现的顺序执行操作 
+- 分支结构 ：分支结构又被称为选择结构，根据条件成立与否来执行操作
+- 循环结构： 循环结构是一种重复结构，如果条件成立，它会重复执行某一循环体，直到出现不满足的条件为止
+
+
+
+## 1. if 条件语句
+
+The `if-then` statement is the most basic of all the control flow statements. 
+
+It tells your program to execute a certain section of code *only if* a particular test evaluates to `true`.
+
+```java
+int testscore = 76;
+char grade;
+
+if (testscore >= 90) {
+	grade = 'A';
+} else if (testscore >= 80) {
+	grade = 'B';
+} else if (testscore >= 70) {
+	grade = 'C';
+} else if (testscore >= 60) {
+	grade = 'D';
+} else {
+	grade = 'F';
+}
+```
+
+
+
+## 2. switch 语句
+
+the `switch` statement can have a number of possible execution paths. 
+
+A `switch` works with the `byte`, `short`, `char`, and `int` primitive data types. 
+
+It also works with *enumerated types* , the [`String`](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html) class, and a few special classes that wrap certain primitive types:
+
+[`Byte`](https://docs.oracle.com/javase/8/docs/api/java/lang/Byte.html), [`Short`](https://docs.oracle.com/javase/8/docs/api/java/lang/Short.html), [`Character`](https://docs.oracle.com/javase/8/docs/api/java/lang/Character.html) and [`Integer`](https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html)
+
+```java
+int month = 8;
+String season;
+switch (month) {
+    case 12: case 1: case 2:  
+        season = "Winter";
+        break;
+    case 3: case 4: case 5:  
+        season = "Spring";
+        break;
+    case 6: case 7: case 8:  
+        season = "Summer";
+        break;
+    case 9: case 10: case 11:  
+        season = "Autumn";
+        break;
+    default: 
+        season = "Invalid month";
+        break;
+}
+System.out.println(month + "月：" + season);
+```
+
+
+
+## 3. while 循环
+
+The `while` statement continually executes a block of statements while a particular condition is `true`. 
+
+Its syntax can be expressed as:
+
+```java
+while (expression) {
+     statement(s)
+}
+```
+
+
+
+## 4. do-while 循环
+
+`do-while` evaluates its expression at the bottom of the loop instead of the top.
+
+Therefore, the statements within the `do` block are always executed at least once
+
+```java
+do {
+     statement(s)
+} while (expression);
+```
+
+
+
+## 5. for 循环
+
+The `for` statement provides a compact way to `iterate over`(遍历) a range of values. Programmers often refer to it as the "for loop" because of the way in which it repeatedly loops until a particular condition is satisfied
+
+```java
+for (initialization; termination; increment) {
+    statement(s)
+}
+```
+
+- The *initialization* expression initializes the loop; it's executed once, as the loop begins.
+- When the *termination* expression evaluates to `false`, the loop terminates.
+- The *increment* expression is invoked after each iteration through the loop; it is perfectly acceptable for this expression to increment *or* decrement a value.
+
+```java
+for(int i = 1; i < 11; i++){
+    System.out.println("Count is: " + i);
+}
+```
+
+
+
+## 6. break和continue
+
+- break的作用是跳出当前循环块（for、while、do while）或程序块（switch）
+- continue用于结束循环体中其后语句的执行，并跳回循环程序块的开头执行下一次循环
+- break和continue可以配合语句标签使用
+
+```java
+label:
+for (int i = 1; i < 10; i++) {
+    for (int j = 0; j < 10; j++) {
+        if (j == 9) break label;
+    }
+}
+```
+
+
+
+
+
+# 七 方法（函数）
 
 方法用于封装一段特定的逻辑功能。方法的主要要素有：权限修饰符 方法名、参数列表和返回值
 
@@ -376,59 +576,124 @@ String str2 = "X" + 123；    //结果"X123"
 
 
 
+# 八 数组(array)
 
-# 六. 基本输入输出
+数组是相同数据类型的多个数据的容器，这些元素按线性顺序排列。
+
+所谓线性顺序是指除第一个元素外，每一个元素都有唯一的前驱元素；除最后一个 元素外，每一个元素都有唯一的后继元素
 
 ```java
-//java键盘输入
-import java.util.Scanner; 
+int[] arr1;       // java数组
+int arr2[];       // C/C++风格
+```
 
-Scanner sc = new Scanner(System.in);
-String name = sc.next();                      // 输入字符串
-int age = sc.nextInt();                       // 输入整数
-double score = sc.nextDouble();               // 输入浮点数
+## 1. 一维数组
+
+```java
+// 数组的创建和初始化：
+int[] arr1 = {1,2,3,4,5};
+int[] arr2 = new int[100];            //初始值全为0, boolean 则为false , 对象为 null
+arr2 = new int[]{12,33,21,43,22,45};  // 初始化一个匿名数组并赋值给 arr2
+
+// 数组的拷贝
+int[] nums = arr2;  // nums 和 arr2 指向同一个数组
+int[] copiedNums = Arrays.copyOf(arr2, arr2.length);  // 真正的数组拷贝
+
+//  数组的排序
+Array.sort(arr2);
+
+// 数组的输出
+for (int i = 0; i < nums.length; i++) {
+    System.out.print(nums[i] + " ");
+}
+System.out.println(Arrays.toString(arr2));
+```
+
+**数组下标**：对于长度为 n 的数组，下标的范围是 0 ~ n-1
 
 
-//输出到控制台
-System.out.println(1111);                //换行打印
-System.out.print(1111);                  //不换行打印
-System.out.write(2222);                  //字节输出
-System.out.printf("%+8.3f\n", 3.14);     //按格式输出
+
+## 2. 二维数组
+
+```java
+double[][] balances;
+balances = new double[3][4];   // 将 balances 初始化为 0
+
+int[][] magicSquare ={
+    	{34, 44, 21, 44}, 
+    	{22, 32, 11, 99}, 
+    	{54, 33, 29, 84}}; 
+
+System.out.println (Arrays.deepToString(magicSquare));   // 快速打印二维数组
 ```
 
 
 
-## 1. 输入类型判断
+## 3. 数组常用算法
+
+**冒泡排序（Bubble Sort）**：
+
+- 比较相邻的元素。如果第一个比第二个大，就交换他们两个
+- 对每一对相邻元素做同样的工作，从开始第一对到结尾的最后一对。在这一点，最后的元素应该会是最大的数
+- 针对所有的元素重复以上的步骤，除了最后一个
+- 持续每次对越来越少的元素重复上面的步骤，直到没有任何一对数字需要比较
+
+升序排列的口诀: N个数字来排队、 两两相比小靠前、外层 循环length-1、 内层循环length-i-1
+
+降序排序的口诀: N个数字来排队、 两两相比大靠前、 外层 循环length-1、 内层循环length-i-1
+
+
+
+**二分查找（Binary Search）：**
+
+二分查找也称折半查找，它是一种效率较高的查找方法。但是，二分查找要求数组数据必须采用顺 序存储结构有序排列
+
+- 首先，假设数组中元素是按升序排列，将数组中间位置的数据与查找数据比较，如果两者相等，则查找成功；否则利用 中间位置记录将数组分成前、后两个子数组，如果中间位置数据大于查找数据，则进一步查找前子数组，否则进一步查 找后子数组
+- 重复以上过程，直到找到满足条件的数据，则表示查找成功， 直到子数组不存在为止，表示查找不成功
+
+
 
 ```java
-//使用 hasNextInt() 判断输入类型
-long Long;
-String string;
-double Double;
-Scanner sc =new Scanner(System.in);
-System.out.println("输入一个数");
-if(sc.hasNextInt()){
-    Long = sc.nextLong();
-    System.out.println("您输入的是一个整数:"+Long);
-}else if(sc.hasNextDouble()){
-    Double = sc.nextDouble();
-    System.out.println("您输入的是一个小数:"+Double);
-}else if (sc.hasNext()){
-    string = s.nextLine();
-    System.out.println("您输入的是一个字符串:"+string);
+/**
+ * 排序并查找 对数组{1,3,9,5,6,7,15,4,8}进行排序，然后使用二分查找元素 6 并输出排序后的下标。
+ */
+public class ArrayDemo {
+	public static void main(String[] args) {
+		int[] nums = { 1, 3, 9, 5, 6, 7, 15, 4, 8 };
+
+		// Bubble Sort
+		for (int i = 0; i < nums.length - 1; i++) {
+			for (int j = 0; j < nums.length - i - 1; j++) {
+				if (nums[j] > nums[j + 1]) {
+					nums[j] = nums[j] ^ nums[j + 1];
+					nums[j + 1] = nums[j] ^ nums[j + 1];
+					nums[j] = nums[j] ^ nums[j + 1];
+				}
+			}
+		}
+		System.out.println("排序后的数组：" + Arrays.toString(nums));
+
+		// 使用 Binary Search 查找元素 6
+		int target = 6;
+		int minIndex = 0;
+		int maxIndex = nums.length;
+		int centreIndex = (minIndex + maxIndex) / 2;
+		while (true) {
+			if (minIndex > maxIndex) {
+				System.out.println("Not found！");
+				break;
+			}
+			if (target < nums[centreIndex]) {
+				maxIndex = centreIndex - 1;
+			} else if (target > nums[centreIndex]) {
+				minIndex = centreIndex + 1;
+			} else {
+				System.out.println(target + "的下标为：" + centreIndex);
+				break;
+			}
+			centreIndex = (minIndex + maxIndex) / 2;
+		}
+	}
 }
 ```
-
-
-
-## 2. 转义字符
-
-| 转义字符 |                作用                | ASCII码 |
-| :------: | :--------------------------------: | :-----: |
-|    \n    |   换行，将当前位置移到下一行开头   |   010   |
-|    \r    |   回车 ，将当前位置移到本行开头    |   013   |
-|    \t    | 水平制表(HT) （跳到下一个TAB位置） |   009   |
-|   `\\`   |         代表一个反斜线字符         |   092   |
-|   `\'`   |     代表一个单引号（撇号）字符     |   039   |
-|  `\''`   |         代表一个双引号字符         |   034   |
 
