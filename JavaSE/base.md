@@ -575,9 +575,7 @@ for (int i = 1; i < 10; i++) {
 }
 ```
 
-
-
-## 1. 权限修饰符
+1. 权限修饰符
 
 |  修饰符   | 同类 | 同包 | 子类（不同包） | 非子类（不同包） |
 | :-------: | :--: | :--: | :------------: | :--------------: |
@@ -586,24 +584,194 @@ for (int i = 1; i < 10; i++) {
 | protected |  √   |  √   |       √        |                  |
 |  public   |  √   |  √   |       √        |        √         |
 
+2. 返回值：方法调用结束后可以返回一个数据，称之为返回值
+   - 方法在声明时必须指定返回值的类型
+   - 通过 return 语句返回，return 语句的作用在于结束方法且将数据返回
+   - 如果方法没有返回值（即方法不需要返回数据），需将返回值类型声明为 void
+
+3. 参数列表
+
+   - 在调用时传递给方法，需要被方法处理的数据
+
+   - 在方法定义时，需要声明该方法所需要的参数变量
+
+   - 在方法调用时，会将实际参数值传递给方法的参数变量
+
+   - 必须保证传递参数的类型和个数符合方法的声明
+
+     
+
+4. 形式参数和实际参数
+
+   - 形式参数：是在定义函数名和函数体的时候使用的参数,目的是用来接收调用该函数时传入的参数
+   - 实际参数：在调用有参函数时，主调函数和被调函数之间有数据传递关系。在主调函数中调用一个函数时，函数名后面括号中的参数称为“实际参数”。
+
+   ```java
+   public class Demo {
+       public static void main(String[] args) {
+           print("Tom");  //实参
+       }
+   
+       public static void print(String name){ // 此处name为形参
+           System.out.println(name);
+       }
+   }
+   ```
+
+   
+
+## 1. 可变参数
+
+Java1.5提供了一个叫varargs的新功能，就是可变长度的参数。"Varargs"是"variable number of arguments"的意思。有时候也被简单的称为"variable arguments"。
 
 
-## 2. 返回值
 
-方法调用结束后可以返回一个数据，称之为返回值
+定义实参个数可变的方法：只要在一个形参的"类型"与"参数名"之间加上三个连续的"."（即"..."，英文里的句中省略号），就可以让它和不确定个实参相匹配。
 
-- 方法在声明时必须指定返回值的类型
-- 通过 return 语句返回，return 语句的作用在于结束方法且将数据返回
-- 如果方法没有返回值（即方法不需要返回数据），需将返回值类型声明为 void
+```java
+public class Demo {
+    static int sumVarargs(int... arr){
+        int sum = 0;
+        for(int i=0; i< arr.length; i++) {
+            sum += arr[i];
+        }
+        return(sum);
+    }
+    public static void main(String args[]){
+        int sum = sumVarargs(12, 23, 23, 24);
+        System.out.println("和为: " + sum);    // 82
+    }
+}
+```
+
+- 每个方法只能有一个这样可变形参，且这个形参必须是形参列表的最后一个。
+
+- 上面所说的不确定也包括0，所以不给可变参数传递实参也是可以的，注意这时传递的是一个空数组（int[]{}）而不是null。
+
+  
+
+## 2. 参数传递
+
+**为什么说Java中只有值传递？**首先要明确`值传递`和`引用传递`的概念，一些常见的错误理解：
+
+- 错误理解一：值传递和引用传递，区分的条件是传递的内容，如果是个值，就是值传递。如果是个引用，就是引用传递。
+- 错误理解二：Java是引用传递。
+- 错误理解三：传递的参数如果是普通类型，那就是值传递，如果是对象，那就是引用传递。
 
 
 
-## 3. 参数列表
+**值传递（pass by value）**：
 
-- 在调用时传递给方法，需要被方法处理的数据
-- 在方法定义时，需要声明该方法所需要的参数变量
-- 在方法调用时，会将实际参数值传递给方法的参数变量
-- 必须保证传递参数的类型和个数符合方法的声明
+是指在调用函数时将实际参数复制一份传递到函数中，这样在函数中如果对参数进行修改，将不会影响到实际参数。
+
+
+
+**引用传递（pass by reference）**：
+
+是指在调用函数时将实际参数的地址直接传递到函数中，那么在函数中对参数所进行的修改，将影响到实际参数。
+
+
+
+=> 判断值传递和引用传递的依据就是函数中的修改是否影响到了**实际参数**；
+
+
+
+下面先看看java中基本数据类型的传递：
+
+```java
+public static void tripleValue(double x){
+    x = x*3;
+} 
+public static void main(String[] args){ 
+	double percent = 10; 
+	tripleValue(percent);           // 调用函数后x为percent的拷贝
+	System.out.println(percent) ;   // 结果x=30, 不出所料，原来的percent未改变
+}
+```
+
+基本数据类型的值传递没有什么争议，关键在于对象的传递：
+
+```java
+ public static void swap(Employee a, Employee b){
+     Employee temp = a;
+     a = b;
+     b = temp;
+ }
+ public static void main(String[] args){
+     Employee a = new Employee("harry", 5000, 33);
+     Employee b = new Employee("tony", 5600, 36);  // 创建两个Employee对象
+
+    swap(a,b);  // 见下图：
+}
+```
+
+![image-20211009001020786](vx_images/image-20211009001020786.png)
+
+上述的例子中，关键点在于参数传递过程中a, b所代表的的是对象的地址，在交换过程中，只是将其地址拷贝一份后再交换，根本影响不到a, b的地址值。如果在有些函数中有修改对象的属性，从而会导致所传递的参数变化了，但要明白其本质：是其指向的对象变化，传递的地址值根本没变过！
+
+
+
+还有一种说法叫做 **按共享传递** (call by sharing) ：
+
+按共享传递，是指在调用函数时，传递给函数的是实参的地址的拷贝（如果实参在栈中，则直接拷贝该值），这正是Java中的参数传递方式。在函数内部对参数进行操作时，需要先拷贝的地址寻找到具体的值，再进行操作。如果该值在栈中，那么因为是直接拷贝的值，所以函数内部对参数进行操作不会对外部变量产生影响。如果原来拷贝的是原值在堆中的地址，那么需要先根据该地址找到堆中对应的位置，再进行操作。因为传递的是地址的拷贝所以函数内对值的操作对外部变量是可见的。
+
+
+
+【总结】Java中的传递，是值传递，而这个值，实际上是对象的引用。**而按共享传递其实只是按值传递的一个特例**，所以我们可以说Java的传递是按共享传递，或者说Java中的传递是值传递。
+
+
+
+## 3. 递归(recursion)
+
+递归，在数学与计算机科学中，是指在方法的定义中使用方法自身。也就是说，递归算法是一种直接或者间接调用自身方
+法的算法。**递归中的“递”就是入栈，“归”就是出栈**。
+
+```java
+/**斐波那契数列（Fibonacci sequence），又称黄金分割数列，
+ * 因数学家莱昂纳多·斐波那契（Leonardo Fibonacci）以兔子繁殖为例子而引入，故又称为“兔子数列”，
+ * 指的是这样一个数列：0、1、1、2、3、5、8、13、21、34、……
+ * 在数学上，斐波那契数列以如下被以递推的方法定义：F(0)=0，F(1)=1, F(n)=F(n - 1)+F(n - 2)（n ≥ 2，n ∈ N*）
+ * */
+public class Fibonacci {
+	public static void main(String[] args) {
+		//System.out.println(fibonacciByRecursion(64));
+		System.out.println(fibonacci(64));
+	}
+	
+	public static int fibonacciByRecursion(int n) {
+		if(n <= 1) return n;
+		return fibonacciByRecursion(n - 1) + fibonacciByRecursion(n - 2);
+	}
+	
+	public static int fibonacci(int n) {
+		if(n <= 1) return n;
+		
+		int previousTwo = 0;
+		int previous = 1;
+		for (int i = 2; i <= n; i++) {
+			int temp = previous + previousTwo;
+			previousTwo = previous;
+			previous = temp;
+		}
+		return previous;
+	}
+}
+```
+
+该例中，递归方式的时间复杂度是最高的 O(2<sup>n</sup>)，普通计算机最多只能求解到60左右就显得无能为力了。
+
+递归的使用也要小心，尽量不使用时间复杂度高的，下列是一些常见的递归算法的时间复杂度：
+
+| 递归关系                      | 时间复杂度                  | 举例                  |
+| ----------------------------- | --------------------------- | --------------------- |
+| T(n) = T(n/2) + O(1)          | T(n) = O(logn)              | 二分查找、欧几里得GCD |
+| T(n) = T(n-1) + O(1)          | T(n) = O(n)                 | 线性查找              |
+| T(n) = 2T(n/2) + O(1)         | T(n) = O(n)                 |                       |
+| T(n) = 2T(n/2) + O(n)         | T(n) = O(nlogn)             | 归并、快排            |
+| T(n) = 2T(n/2) + O(nlogn)     | T(n) = O(nlog<sup>2</sup>n) |                       |
+| T(n) = T(n-1) + O(n)          | T(n) = O(n<sup>2</sup>)     | 选择排序、插入排序    |
+| T(n) = 2T(n-1) + O(1)         | T(n) = O(2<sup>n</sup>)     | 汉诺塔                |
+| T(n) = T(n-1) + T(n-2) + O(1) | T(n) = O(2<sup>n</sup>)     | 递归的斐波那契        |
 
 
 
