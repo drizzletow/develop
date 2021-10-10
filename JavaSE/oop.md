@@ -1,5 +1,7 @@
 
 
+
+
 # 一 面向对象基础
 
 面向对象简称 OO（Object Oriented）：是一种对现实世界理解和抽象的方法，是计算机编程技术发展到一定阶段后的产物。
@@ -403,7 +405,7 @@ public class Student extends Person {
 ## 2. 重写和重载
 
 - `方法重写（override）`：又称为方法覆盖，即在子类中如果创建了一个与父类中相同名称、相同返回值类型、相同参数列表的方法，只是方法体中的实现不同，以实现不同于父类的功能。
-- `方法重载（overload）`：同一个类中包含了两个或两个以上方法名相同的方法，但形参列表不同。方法重载的要求是两同一不同：同一个类中方法名相同，参数列表不同。至于方法的其他部分，如方法返回值类型、修饰符等，与方法重载没有任何关系。
+- `方法重载（overload）`：同一个类中包含了两个或两个以上方法名相同的方法，但形参列表不同。方法重载的要求是两同一不同：同一个类中方法名相同，参数列表不同。至于方法的其他部分，如**方法返回值类型、修饰符等，与方法重载没有任何关系**。
 
 
 
@@ -771,17 +773,217 @@ public class Demo {
 
 
 
-## 2. Java异常
+## 3. Java异常
+
+Java中的异常是一个在程序执行期间发生的事件，它中断正在执行程序的正常指令流。
+
+Java 通过面向对象的方法来处理异常。在一个方法的运行过程中，如果发生了异常，则这个方法会产生代表该异常的一个对象，并把它交给运行时的系统，运行时系统寻找相应的代码来处理这一异常。
+
+我们把生成异常对象，并把它提交给运行时系统的过程称为`拋出（throw）`异常。运行时系统在方法的调用栈中查找，直到找到能够处理该类型异常的对象，这一个过程称为`捕获（catch）`异常。
+
+
+
+<img src="vx_images/image-20211009131219704.png" alt="image-20211009131219704" style="zoom: 67%;" />
+
+- Error和 Exception都是 java.lang.Throwable 类的子类，只有继承了 Throwable 类的实例才能被 throw 或者 catch。
+
+
+
+```java
+try {
+    // 可能会发生异常的语句
+} catch(ExceptionType e) {
+    // 处理异常语句
+} finally {
+    // 在任何情况下都必须执行的代码 ( 除非在try块、catch块中调用了退出虚拟机的方法System.exit(int status) )
+}
+```
+
+**多异常捕获**：
+
+```java
+try{
+    // 可能会发生异常的语句
+} catch (FileNotFoundException e) {
+    // 处理FileNotFoundException异常
+} catch (IOException e) {
+    // 处理IOException异常
+} catch (ParseException e) {
+    // 处理ParseException异常
+}
+
+// 不同类型的异常，若处理方法都一样。则可以采用Java 7 推出了多异常捕获技术，可以把这些异常合并处理：
+try{
+    // 可能会发生异常的语句
+} catch (IOException | ParseException e) {
+    // 统一处理IOException和ParseException
+}
+```
 
 
 
 
 
+![img](http://c.biancheng.net/uploads/allimg/181024/3-1Q024110159364.jpg)
 
 
 
+1. 如果 try 代码块中没有拋出异常，则执行完 try 代码块之后直接执行 finally 代码块，然后执行 try catch finally 语句块之后的语句。
+2. 如果 try 代码块中拋出异常，并被 catch 子句捕捉，那么在拋出异常的地方终止 try 代码块的执行，转而执行相匹配的 catch 代码块，之后执行 finally 代码块。如果 finally 代码块中没有拋出异常，则继续执行 try catch finally 语句块之后的语句；如果 finally 代码块中拋出异常，则把该异常传递给该方法的调用者。
+3. 如果 try 代码块中拋出的异常没有被任何 catch 子句捕捉到，那么将直接执行 finally 代码块中的语句，并把该异常传递给该方法的调用者。
 
 
 
+## 4. finally和return
 
+上面提到过除非在try块、catch块中调用了退出虚拟机的方法`System.exit(int status)`，否则finally语句块都会执行，但是当有return语句块存在时，返回值有时却会让人误解
+
+下面先来看看finally语句块中存在return的情况：
+
+```java
+public class ExceptionDemo {
+    public static void main(String[] args) {
+        System.out.println("Result: " + test());  // 3 
+    }
+
+    private static int test() {
+        int n = 1;
+        try {
+            System.out.println("try");
+            return n += 1;  // n = 2
+        }catch (Exception e){
+            System.out.println("catch");
+        }finally {
+            n = n + 1;   // n = 3
+            System.out.println("finally, n = " + n);
+            return n;
+        }
+    }
+}
+```
+
+![image-20211009143706534](vx_images/image-20211009143706534.png)
+
+
+
+可以看到**finally块中的return会覆盖try块中的return**，若finally中没有return呢？
+
+```java
+public class ExceptionDemo {
+    public static void main(String[] args) {
+        System.out.println("Result: " + test());  // 2
+    }
+
+    private static int test() {
+        int n = 1;
+        try {
+            System.out.println("try");
+            return n += 1;
+        }catch (Exception e){
+            System.out.println("catch");
+        }finally {
+            n = n + 1;
+            System.out.println("finally, n = " + n); // 3
+        }
+        return n;
+    }
+}
+```
+
+![image-20211009143647721](vx_images/image-20211009143647721.png)
+
+
+
+该例中finally语句块的确是执行了，但返回值却是try语句块中的结果，这是因为return语句返回时涉及到了函数间的参数专递，Java的传递是值传递，基本数据类型都是直接拷贝栈中数值，原来函数中的变量再改变不会影响到已传递的值。
+
+到此可以确定，若返回的是引用数据类型，finally语句中的改变必然是会生效的，因为传递的返回值和函数中的对象引用都是指向堆内存中的同一个对象，下面再通过一个例子检验一下：
+
+```java
+public class ExceptionDemo2 {
+    public static void main(String[] args) {
+        Person tom = new Person("tom", 18);
+        tom = changeAge(tom);
+        System.out.println("Result: tom's age = " + tom.getAge());
+    }
+
+    private static Person changeAge(Person p) {
+        try {
+            System.out.println("try");
+            p.setAge(19);
+            return p;
+        }catch (Exception e){
+            System.out.println("catch");
+        }finally {
+            p.setAge(20);
+            System.out.println("finally");
+        }
+        return p;
+    }
+}
+```
+
+![image-20211009143619632](vx_images/image-20211009143619632.png)
+
+
+
+**结论**：
+
+- finally块中的语句，在try或catch中的return语句执行之后、返回之前执行
+- finally块中的return会覆盖try块中的return
+- finally块中不存在return语句时，finally语句中的“干扰”并不会影响try、catch中return已经确定的返回值，若是返回结果是对象引用，其值（地址值）也不会改变，但是其指向对象的属性却是可能会变的。（参照java方法的参数传递）
+
+
+
+## 5. throw和throws
+
+**throws 声明异常**：
+
+当一个方法产生一个它不处理的异常时，那么就需要在该方法的头部声明这个异常，以便将该异常传递到方法的外部进行处理。使用 throws 声明的方法表示此方法不处理异常。throws 具体格式如下：
+
+```java
+returnType method_name(paramList) throws Exception 1,Exception2,…{
+    //…
+}
+```
+
+**方法重写时声明抛出异常的限制**：子类方法声明抛出的异常类型应该是父类方法声明抛出的异常类型的子类或相同，子类方法声明抛出的异常不允许比父类方法声明抛出的异常多。
+
+
+
+**throw 拋出异常**：
+
+throw 语句用来直接拋出一个异常，后接一个可拋出的异常类对象，其语法格式如下：
+
+```java
+throw ExceptionObject;  // ExceptionObject 必须是 Throwable 类或其子类的对象
+```
+
+当 throw 语句执行时，它后面的语句将不执行，此时程序转向调用者程序，寻找与之相匹配的 catch 语句，执行相应的异常处理程序。如果没有找到相匹配的 catch 语句，则再转向上一层的调用程序。这样逐层向上，直到最外层的异常处理程序终止程序并打印出调用栈情况。
+
+
+
+**throws 关键字和 throw 关键字在使用上的几点区别如下**：
+
+- throws 用来声明一个方法可能抛出的所有异常信息，表示出现异常的一种可能性，但并不一定会发生这些异常；throw 则是指拋出的一个具体的异常类型，执行 throw 则一定抛出了某种异常对象。
+- 通常在一个方法（类）的声明处通过 throws 声明方法（类）可能拋出的异常信息，而在方法（类）内部通过 throw 声明一个具体的异常信息。
+- throws 通常不用显示地捕获异常，可由系统自动将所有捕获的异常信息抛给上级方法； throw 则需要用户自己捕获相关的异常，而后再对其进行相关包装，最后将包装后的异常信息抛出。
+
+
+
+## 6. 自定义异常
+
+如果 Java提供的内置异常类型不能满足程序设计的需求，这时我们可以自己设计 Java 类库或框架，其中包括异常类型。实现自定义异常类需要继承 Exception 类或其子类，如果自定义运行时异常类需继承 RuntimeException 类或其子类。
+
+```java
+class IntegerRangeException extends Exception {
+    public IntegerRangeException() {
+        super();
+    }
+    public IntegerRangeException(String s) {
+        super(s);
+    }
+}
+```
+
+自定义异常类一般包含两个构造方法：一个是无参的默认构造方法，另一个构造方法以字符串的形式接收一个定制的异常消息，并将该消息传递给超类的构造方法。
 
