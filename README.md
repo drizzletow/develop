@@ -31,7 +31,7 @@ GitHub：https://github.com/drizzletowne/java
 
 # 数据结构与算法
 
-* [Introduction](DataStructure/introduction.html)
+* [Introduction](DataStructure/introduction.md)
 
 
 
