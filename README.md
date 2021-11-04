@@ -1,6 +1,6 @@
 Notes Of Java Develop：local( Vnote + Typora + Git )，Online ( synchronize to Gitee and GitHub )
 
-Gitee：https://gitee.com/drizzletowne/Develop
+Gitee：https://gitee.com/drizzletowne/develop
 
 GitHub：https://github.com/drizzletowne/Develop
 
@@ -36,7 +36,7 @@ GitHub：https://github.com/drizzletowne/Develop
 
 # 开发环境及中间件
 
-* [Git、Gitee、GitHub](Environment/Git.md) &nbsp;&nbsp;  [Maven](Environment/maven.md) &nbsp;&nbsp; [Linux基础](Environment/Linux.md) &nbsp;&nbsp;  [Docker](Environment/Docker.md) &nbsp;&nbsp; [Kubernetes](Environment/kubernetes.md) &nbsp;&nbsp; [环境部署、项目上线](Environment/deployment.md) &nbsp;&nbsp;
+* [Git版本控制](Environment/Git.md) &nbsp;&nbsp;  [Maven](Environment/maven.md) &nbsp;&nbsp; [Linux基础](Environment/Linux.md) &nbsp;&nbsp;  [Docker](Environment/Docker.md) &nbsp;&nbsp; [Kubernetes](Environment/kubernetes.md) &nbsp;&nbsp; [环境部署、项目上线](Environment/deployment.md) &nbsp;&nbsp;
 
 * [ElasticSearch](Environment/ElasticSearch.md) &nbsp;&nbsp; [RabbitMQ](Environment/RabbitMQ.md) &nbsp;&nbsp; 
 

@@ -40,8 +40,8 @@ git remote rm <name>                     #删除名为<name>的远程仓库连�
 git remote rename <old-name> <new-name>  #将远程连接从 <old-name> 重命名为 <new-name>
 
 #需要将代码同时推送到多个远程仓库的情形：
-git remote add origin https://gitee.com/drizzletow/develop.git
-git remote set-url --add origin https://github.com/drizzletow/develop.git
+git remote add origin https://gitee.com/drizzletowne/develop.git
+git remote set-url --add origin https://github.com/drizzletowne/Develop.git
 ```
 
 ## 2. 代码推送到远程仓库
