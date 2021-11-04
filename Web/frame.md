@@ -629,6 +629,8 @@ hover([over,]out)     // 其中over和out为两个函数
 
 # 二 Bootstrap
 
+## 1. Bootstrap简介
+
 中文官网: http://www.bootcss.com/     官网: http://getbootstrap.com/       
 
 教程手册：https://www.shouce.ren/api/view/a/772 
@@ -642,11 +644,97 @@ Bootstrap 是由 *Twitter* 在 2011 年8月在 GitHub 上发布的开源产品
 
 
 
+## 2. Bootstrap引入
+
 下载及引入：https://www.shouce.ren/api/view/a/773
 
 
 
 
 
+# 三 AJAX技术
 
+AJAX = > Asynchronous JavaScript and XML（异步的 JavaScript 和 XML）
+
+AJAX 的核⼼是 XMLHttpRequest 对象、不同的浏览器创建 XMLHttpRequest 对象的⽅法是有差异的
+
+IE 浏览器使⽤ ActiveXObject，⽽其他的浏览器使⽤名为 XMLHttpRequest 的 JavaScript 内建对象
+
+
+
+## 1. Ajax编程步骤
+
+原生 JS 发送 Ajax 请求的步骤：
+
+```javascript
+$(function () {
+    $("#username").on("blur", function () {
+        // 第⼀步：创建XMLHttpRequest对象
+        let xmlHttp;
+        if (window.XMLHttpRequest) {
+            xmlHttp = new XMLHttpRequest();  //⾮IE
+        } else if (window.ActiveXObject) {
+            xmlHttp = new ActiveXObject("Microsoft.XMLTYPE");  //IE
+        }
+
+        //第⼆步：设置和服务器端交互的相应参数和路径
+        let url = "http://localhost:8080/user/isExist";
+        xmlHttp.open("POST", url, true);
+
+        //第三步：注册回调函数
+        xmlHttp.onreadystatechange = function() {
+            if (xmlHttp.readyState === 4) {
+                if (xmlHttp.status === 200) {
+                    let obj = document.getElementById("username_msg");
+                    obj.innerText = xmlHttp.responseText;
+                } else {
+                    alert("AJAX服务器返回错误！");
+                }
+            }
+        }
+
+        //第四步：设置发送请求的内容和发送报送。然后发送请求
+        let uname= document.getElementsByName("username")[0].value;
+        // 增加 time 随机参数，防⽌读取缓存
+        let params = "username=" + uname +"&time=" + Math.random();
+        // 向请求添加 HTTP 头，POST如果有数据⼀定要加！！！！
+        xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded;charset=UTF-8");
+
+        xmlHttp.send(params);
+    })
+})
+```
+
+原生JS的方式步骤繁琐， ⽅法、属性、常⽤值较多 不好记忆
+
+
+
+## 2. jquery的ajax
+
+ajax() ⽅法 是 jQuery 最底层的 Ajax 实现，具有较⾼灵活性
+
+```JavaScript
+$.ajax({
+    url: 请求地址
+    type: "get | post | put | delete " 默认是get,
+    data: 请求参数 {"id":"123","pwd":"123456"},
+    dataType: 请求数据类型"html | text | json | xml | script | jsonp ",
+    success: function(data, dataTextStatus, jqxhr){ }, //请求成功时 
+    error: function(jqxhr, textStatus, error) //请求失败时
+})
+```
+
+
+
+get() 和 post() ⽅法分别通过远程 HTTP GET和POST 请求载⼊信息 （url:请求的路径 、data:发送的数据）
+
+```JavaScript
+$.get(url, data, function(result) {
+	 //省略将服务器返回的数据显示到⻚⾯的代码
+});
+
+$.post(url, data, function(result) {
+ 	//省略将服务器返回的数据显示到⻚⾯的代码
+});
+```
 

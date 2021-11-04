@@ -123,8 +123,6 @@ java.util.logging.ConsoleHandler.encoding = GBK  （UTF-8）
 
 # 二 Servlet
 
-## 1. Servlet简介
-
  Servlet（Server Applet）全称Java Servlet （ Java服务器端程序 ）、主要功能在于：交互式地浏览和修改数据，⽣成动态Web内容
 
 - 狭义的Servlet是指Java语⾔实现的⼀个接⼝
@@ -138,7 +136,7 @@ java.util.logging.ConsoleHandler.encoding = GBK  （UTF-8）
 
 
 
-## 2. Servlet使用步骤
+## 1. Servlet使用步骤
 
 - 建立一个JavaWeb Application项目并配置Tomcat服务器
 
@@ -210,7 +208,7 @@ response.setContentType("text/html;charset=utf-8");
 
 
 
-## 3. 请求和响应
+## 2. 请求和响应
 
 当客户请求到来时，Servlet容器创建一个ServletRequest对象，封装请求数据，同时创建一个ServletResponse对象，封装响应数据
 
@@ -249,7 +247,7 @@ response.setContentType("text/html;charset=utf-8");
 
 
 
-## 4. ServletConfig
+## 3. ServletConfig
 
 Servlet容器使用ServletConfig对象在Servlet初始化期间向它传递配置信息，一个Servlet只有一个ServletConfig对象 
 
@@ -260,13 +258,17 @@ Servlet容器使用ServletConfig对象在Servlet初始化期间向它传递配�
 | `public ServletContext getServletContext()`   | 返回Servlet上下文对象的引用               |
 | `public String getServletName()`              | 返回Servlet实例的名字                     |
 
-初始化参数可以在web.xml配置文件或注解中进行配置
+```java
+// 获取ServletConfig 对象的方法
+ServletConfig config = this.getServletConfig();
+
+// 获取初始化的参数和值 （初始化参数可以在web.xml配置文件或注解中进行配置）
+String uname = config.getInitParameter("uname");
+```
 
 
 
-
-
-## 5. ServletContext
+## 4. ServletContext
 
 Servlet容器在Web应用程序加载时创建ServletContext对象，在Web应用程序运行时，ServletContext对象可以被Web应用程序中所有的Servlet所访问
 
@@ -299,7 +301,7 @@ ServletContext属性属于共享属性（任何一个Servlet都可以设置、�
 
 - `public Object getAttribute(String name) ` ：读取名为name的属性
 - `public Enumeration getAttributeNames()` ：
-- `public voidre moveAttribute(String name)` ：删除名为name的属性
+- `public void removeAttribute(String name)` ：删除名为name的属性
 - `public void setAttribute(String name, Object object)` ：设置共享属性
 
 | ServletContext接口常用方法                                   | 说明                          |
@@ -310,7 +312,7 @@ ServletContext属性属于共享属性（任何一个Servlet都可以设置、�
 
 
 
-## 6. 转发和重定向
+## 5. 转发和重定向
 
 利用RequestDispatcher对象，可以把请求转发给其他的Servlet或JSP页面。在RequestDispatcher接口中定义了两种方法
 
@@ -361,7 +363,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
 
 
 
-## 7. Cookie和Session
+## 6. Cookie和Session
 
 Cookies是一种由服务器发送给客户的片段信息，存储在客户端浏览器的内存中或硬盘上，在客户随后对该服务器的请求中发回它
 
@@ -402,7 +404,20 @@ getMaxInactiveInterval();     // 获取Session的超时时间maxInactiveInterval
 setMaxInactiveInterval(longinterval);  // 修改Session的超时时间
 ```
 
+| HttpSession接口方法                                 | 说明                                                |
+| --------------------------------------------------- | --------------------------------------------------- |
+| `public Object getAttribute(String name)`           | 获取属性                                            |
+| public void setAttribute(String name, Object value) | 设置属性                                            |
+| public void removeAttribute(String name)            | 删除属性                                            |
+| public String getId()                               | 返回一个字符串，其中包含了分配给Session的唯一标识符 |
+| public ServletContext getServletContext()           | 返回Session所属的ServletContext对象                 |
+| public void invalidate()                            | 使会话失效（例如用于退出登录）                      |
+| public int getMaxInactiveInterval()                 | 两次连续请求之间保持Session打开的最大时间间隔       |
+| public void setMaxInactiveInterval(int interval)    | 设置Session的超时时间间隔（单位为秒）               |
+
 注意：
+
+- 虽然Session保存在服务器，对客户端是透明的，它的正常运行仍然需要客户端浏览器的支持。这是因为Session需要使用Cookie作为识别标志
 
 - 为了获得更⾼的存取速度，服务器⼀般把Session放在内存⾥、每个⽤户都会 有⼀个独⽴的Session
 
@@ -420,21 +435,113 @@ setMaxInactiveInterval(longinterval);  // 修改Session的超时时间
 
 在Servlet规范中，用于会话跟踪的Cookie的名字必须是JSESSIONID
 
+- HTTP协议是无状态的，Session不能依据HTTP连接来判断是否为同一客户，因此服务器向客户端浏览器发送一个名为JSESSIONID的Cookie，它的值为该Session的id（也就是HttpSession.getId()的返回值）、Session依据该Cookie来识别是否为同一用户
+- 该Cookie为服务器自动生成的，它的maxAge属性一般为–1，表示仅当前浏览器内有效，各浏览器间不共享，关闭浏览器就会失效
+- 如果客户端浏览器将Cookie功能禁用，或者不支持Cookie怎么办？Java Web提供了另一种解决方案：URL地址重写
+
+```java
+// URL重写就是在URL中附加标识客户的Session ID
+// Servlet容器解释URL，取出Session ID，根据Session ID将请求与特定的Session关联
+
+//当浏览器禁用Cookie时，每次访问都要手动添加jesessionid ，servlet中指定：
+HttpSession session=request.getSession();
+String path="sess;jsessionid="+session.getId();
+String path=response.encodeURL("sess");
+response.sendRedirect(path);
+```
+
+```jsp
+// 页面中使用
+<a href="sess;jsessionid=${requestScope.id}">点击</a>
+```
 
 
 
+## 7. 监听器和过滤器
 
-## 8. 监听器和过滤器
+有时候你可能想要在Web应用程序启动和关闭时来执行一些任务（如数据库连接的建立和释放），或者你想要监控Session的创建和销毁，你还希望在ServletContext、HttpSession，以及ServletRequest对象中的属性发生改变时得到通知，那么你可以通过Servlet监听器来实现你的这些目的
+
+Servlet API中定义了8个监听器接口，可以用于监听ServletContext、HttpSession和ServletRequest对象的生命周期事件，以及这些对象的属性改变事件
+
+![image-20211101171958362](vx_images/image-20211101171958362.png)
+
+```java
+@WebListener
+public class MyListener implements ServletContextListener, HttpSessionAttributeListener {
+    public MyListener() {
+    }
+
+    @Override
+    public void contextInitialized(ServletContextEvent sce) {
+        /* This method is called when the servlet context is initialized
+        (when the Web application is deployed). */
+    }
+
+    @Override
+    public void contextDestroyed(ServletContextEvent sce) {
+        /* This method is called when the servlet Context is undeployed or Application Server shuts down. */
+    }
+
+    @Override
+    public void attributeAdded(HttpSessionBindingEvent sbe) {
+        /* This method is called when an attribute is added to a session. */
+    }
+
+    @Override
+    public void attributeRemoved(HttpSessionBindingEvent sbe) {
+        /* This method is called when an attribute is removed from a session. */
+    }
+
+    @Override
+    public void attributeReplaced(HttpSessionBindingEvent sbe) {
+        /* This method is called when an attribute is replaced in a session. */
+    }
+}
+```
 
 
 
+过滤器（Filter）是从Servlet 2.3规范开始新增的功能，并在Servlet 2.4规范中得到增强。过滤器是一个驻留在服务器端的Web组件，它可以截取客户端和资源之间的请求与响应信息，并对这些信息进行过滤
+
+<img src="vx_images/image-20211101174816515.png" alt="image-20211101174816515" style="zoom: 80%;" />
+
+在一个Web应用程序中，可以部署多个过滤器，这些过滤器组成了一个过滤器链。过滤器链中的每个过滤器负责特定的操作和任务，客户端的请求在这些过滤器之间传递，直到目标资源
+
+```java
+// 登录拦截器示例
+@WebFilter(filterName = "LoginFilter", urlPatterns = "*")
+public class LoginFilter implements Filter {
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) 
+        throws ServletException, IOException {
+        HttpServletRequest req= (HttpServletRequest)request;
+        HttpServletResponse resp= (HttpServletResponse) response;
+        boolean isLogin = (boolean)req.getSession().getAttribute("isLogin");
+        if(isLogin){
+            chain.doFilter(request, response);
+        }else {
+           resp.sendRedirect("/login.html");
+        }
+    }
+}
+```
+
+除了使用注解，还可以在web.xml中配置：
+
+```xml
+<filter>
+    <filter-name>LoginFilter</filter-name>
+    <filter-class>com.example.filter.LoginFilter</filter-class>
+</filter>
+<filter-mapping>
+    <filter-name>LoginFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+</filter-mapping>
+```
 
 
 
-
-
-
-## 9. Servlet3.0-注解
+## 8. Servlet3.0-注解
 
 Servlet3.0的出现是servlet史上最大的变革，其中的许多新特性大大的简化了web应用的开发，主要新特性有以下几个：
 
@@ -487,11 +594,122 @@ public class UserServlet extends HttpServlet {
 
 
 
+## 9. 文件上传和下载
+
+上传页面示例：
+
+```jsp
+<!-- 注意:(1)form标签中要添加enctype属性 (2)提交方式必须是post -->
+<form action="${pageContext.request.contextPath}/fileUpload" method="POST" enctype="multipart/form-data" >
+ 	<!-- input表单项 -->
+    <input type="file" name="avatar"  />
+</form>
+```
+
+使用IO流将文件返回
+
+```java
+@WebServlet("/fileUpload")
+public class FileUploadServlet extends HttpServlet {
+    @Override
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        resp.setContentType("text/html;charset=utf-8");
+        ServletInputStream inputStream = req.getInputStream();
+        PrintWriter out = resp.getWriter();
+        int len;
+        byte[] buffer = new byte[1024];
+        while ( (len = inputStream.read(buffer)) != -1){
+            String str = new String(buffer, 0, len);
+            out.print(str);
+        }
+    }
+}
+```
+
+![image-20211104145337478](vx_images/image-20211104145337478.png)
 
 
-# 三 JSP
 
-## 1. JSP简介
+**文件上传 SmartUpload和FileUpload**： 
+
+- smartUpload： 是 www.jspsmart.com 一套上传的组件包，可以轻松的实现文件的上传和下载。使用简单、可以轻松的实现上传文件类型的限制、也可以轻易的取得上传文件的名称、后缀、大小等
+
+- FileUpload 是 Apache 组织提供的免费上传组件。可以从 Apache 网站下载。相比 SmartUpload 开发、FileUpload 稍微复杂一些。但SmartUpload 已经多年没更新了， 而FileUpload 有 Apache 的加持，框架开发如 Structs2 和 SpringMVC 整合的都是 FileUpload。
+
+  
+
+SmartUpload上传文件步骤：
+
+```java
+try {
+    // 实例化SmartUpload、并初始化
+    SmartUpload smartUpload = new SmartUpload();
+    PageContext pageContext = JspFactory.getDefaultFactory()
+        						.getPageContext(this, req, resp, null, false, 1024, true);
+    smartUpload.initialize(pageContext);
+    smartUpload.setCharset("utf-8");
+
+    // 上传文件、获取上传文件的 File 对象、及文件基本信息
+    smartUpload.upload();
+    File file = smartUpload.getFiles().getFile(0);
+    String fileName = file.getFileName();
+
+    // 保存文件到指定目录
+    String path = "file/" + fileName;
+    file.saveAs(path, SmartUpload.SAVE_VIRTUAL);
+
+    req.setAttribute("filename", fileName);
+
+    // 如果表单中有其他数据时，不能通过request直接获取，需要通过SmartUpload对象获取
+    String username = smartUpload.getRequest().getParameter("username");
+    System.out.println(username);
+
+    req.getRequestDispatcher("success.jsp").forward(req, resp);
+} catch (SmartUploadException e) {
+    e.printStackTrace();
+}
+```
+
+```jsp
+<!-- success.jsp -->
+<img src="file/${filename}">
+<a href="downloadImg?filename=${filename}">下载</a>
+```
+
+```java
+// 文件下载代码：
+String filename = request.getParameter("filename");
+
+// 将响应的内容设置为通用的二进制流
+response.setContentType("application/octet-stream");
+
+// attachment 告诉浏览器以附件的方式下载文件(弹出下载框)
+filename = URLEncoder.encode(filename, "utf-8");
+response.addHeader("Content-Disposition", "attachment;filename="+filename);
+
+request.getRequestDispatcher("file/"+filename).forward(request,response);
+response.flushBuffer();
+```
+
+
+
+
+
+FileUpload上传文件步骤：
+
+```xml
+<!--maven导入FileUpload依赖-->
+<dependency>
+    <groupId>commons-fileupload</groupId>
+    <artifactId>commons-fileupload</artifactId>
+    <version>1.4</version>
+</dependency>
+<dependency>
+    <groupId>commons-io</groupId>
+    <artifactId>commons-io</artifactId>
+    <version>2.6</version>
+</dependency>
+```
 
 
 
@@ -499,13 +717,429 @@ public class UserServlet extends HttpServlet {
 
 
 
-## 2. EL标签
+
+
+# 三 JSP技术
+
+JSP全名为Java Server Pages，中⽂名叫java服务器⻚⾯，其根本是⼀个简化的Servlet设计
+
+一个JSP页面由**元素**和**模板数据**组成。元素是必须由JSP容器处理的部分，而模板数据（HTML）是JSP容器不处理的部分
+
+
+
+注释：在JSP页面中，可以使用两种类型的注释
+
+- 一种是HTML注释，这种注释可以在客户端看到  
+- 一种是为JSP页面本身所做的注释，通常是给程序员看的，我们称之为JSP注释
+
+```html
+<!-- HTML注释 -->
+```
+
+```jsp
+<%-- JSP注释 --%>
+```
+
+
+
+## 1. JSP运行机制
+
+JSP是一种建立在Servlet规范功能之上的动态网页技术、JSP文件在用户第一次请求时，会被编译成Servlet，然后再由这个Servlet处理用户的请求，所以JSP也可以被看成是运行时的Servlet。（Web容器和JSP容器是同义的）
+
+![image-20211101170023815](vx_images/image-20211101170023815.png)
+
+JSP容器管理JSP页面生命周期的两个阶段：
+
+- 转换阶段（translation phase）：当有一个对JSP页面的客户请求到来时，JSP容器检验JSP页面的语法是否正确，将JSP页面转换为Servlet源文件，然后调用javac工具类编译Servlet源文件生成字节码文件
+
+- 执行阶段（execution phase）：Servlet容器加载转换后的Servlet类，实例化一个对象处理客户端的请求，在请求处理完成后，响应对象被JSP容器接收，容器将HTML格式的响应信息发送到客户端
+
+Note：
+
+- 当第一次加载JSP页面时，因为要将JSP文件转换为Servlet类，所以响应速度较慢
+
+- 当再次请求时，JSP容器就会直接执行第一次请求时产生的Servlet，而不会重新转换JSP文件，所以其执行速度和原始的Servlet执行速度几乎相同
+
+- 在JSP执行期间，JSP容器会检查JSP文件，看是否有更新或修改。如果有更新或修改，则JSP容器会再次编译JSP或Servlet；如果没有更新或修改，就直接执行前面产生的Servlet，这也是JSP相对于Servlet的好处之一
+
+
+
+## 2. JSP指令元素
+
+指令元素（directive element）：主要用于为转换阶段提供整个JSP页面的相关信息，指令不会产生任何输出到当前的输出流中
+
+三大指令: page指令、include指令和taglib指令 
+
+```jsp
+<%--1. page指令  (要注意的是，在page指令中只有import属性可以重复设置)--%>
+<%@page import="javax.servlet.*, java.util.Vector" %>
+<%@page import="java.util.Random" %>
+
+<%-- page指令不常用的属性：
+language：当前JSP编译后的语言！默认为java，当前也只能选择java
+info：当前JSP的说明信息,可以通过调用Servlet接口的getServletInfo()方法来得到
+isThreadSafe：当前JSP是否执行只能单线程访问，默认为false，表示支持并发访问
+session：当前页面是否可以使用session，默认为false，表示在JSP页面中可以使用隐含的session对象
+extends：指定JSP编译的servlet的父类！ 
+--%>
+```
+
+| page指令常用属性                             | 默认值 | 作用                                                         |
+| -------------------------------------------- | ------ | ------------------------------------------------------------ |
+| import="importList"                          |        | 指定在脚本环境中可以使用的Java类                             |
+| buffer="none\|size kb"                       | 8kb    | 指定out对象（类型为JspWriter）使用的缓冲区大小，如果设置为none，则将不使用缓冲区 |
+| autoFlush="true\|false"                      | true   | 当缓冲区满的时候，缓存的输出是否应该自动刷新                 |
+| errorPage="error_url"                        |        | 当JSP页面发生异常时，将转向哪一个错误处理页面。如果一个页面通过使用该属性定义了错误页面，那么在web.xml文件中定义的任何错误页面将不会被使用 |
+| isErrorPage="true\|false"                    | false  | 用于指定当前的JSP页面是否是另一个JSP页面的错误处理页面       |
+| pageEncoding="peinfo"                        |        | 指定JSP页面使用的字符编码。如果没有设置这个属性，则JSP页面使用contentType属性指定的字符集，如果这两个属性都没有指定，则使用字符集“ISO-8859-1” |
+| contentType="ctinfo"                         |        | 用于响应的JSP页面的MIME类型和字符编码                        |
+| isELIgnored="true\|false"                    | false  | 在JSP页面中是否执行或忽略EL表达式(Servlet 2.3或之前版本的格式，则默认值是true) |
+| deferredSyntaxAllowedAsLiteral="true\|false" |        | JSP页面的模板文本中是否允许出现字符序列`#{`                  |
+| trimDirectiveWhitespaces="true\|false"       | false  | 指示模板中的空白应该如何处理(默认值是false，即不删除空白)    |
+
+```jsp
+<%--2. include指令 --%>
+<%--用于在JSP页面中静态包含一个文件，该文件可以是JSP页面、HTML网页、文本文件或一段Java代码--%>
+<%@include file="demo.jsp"%>
+
+<%-- 3. taglib指令是用来在当前jsp页面中导入第三方的标签库--%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+prefix：指定标签前缀，这个东西可以随意起名
+uri：   指定第三方标签库的uri（唯一标识）
+```
+
+
+
+## 3. JSP脚本元素
+
+脚本元素（scripting element）包括：声明（declaration）、脚本段（scriptlet）、表达式（expression）
+
+JSP 2.0增加了EL表达式，作为脚本元素的另一个选择
+
+```java
+<%--脚本元素（scripting element）--%>
+<%--1. 声明（declaration）：用于在JSP页面中声明合法的变量和方法。以“<%!”开始，以“%>”结束 --%>
+<%!
+    public String getTodaysDate() {
+        return (new Date()).toString();
+    }
+%>
+
+<%--2. 脚本（scripts）：合法的Java代码。以“<%”开始，以“%>”结束。--%>
+<%
+    for(Enumeration<String> e = request.getHeaderNames(); e.hasMoreElements();){
+        String header = e.nextElement();
+        out.println(header + ": " + request.getHeader(header) + "<br />");
+    }
+    String message = "Thank you";
+%>
+
+<%--3. 表达式（expression）：计算表达式的值，并使用隐式对象out将结果以字符串的形式输出 --%>
+Today is <%=java.util.Calendar.getInstance().getTime() %>
+Today is
+<%
+    out.println(java.util.Calendar.getInstance().getTime());
+%>
+
+```
+
+
+
+## 4. JSP动作元素
+
+动作元素（action element）：动作元素为请求处理阶段提供信息
+
+- 与JSP指令元素不同的是，JSP动作元素在请求处理阶段起作用。JSP动作元素是用XML语法写成的
+- 利用JSP动作可以动态地插入文件、重用JavaBean组件、把用户重定向到另外的页面、为Java插件生成HTML代码
+
+- 动作元素基本上都是预定义的函数，JSP规范定义了一系列的标准动作，它用JSP作为前缀，可用的标准动作元素如下
+
+| 语法            | 描述                                          |
+| --------------- | --------------------------------------------- |
+| jsp:include     | 在页面被请求的时候引入一个文件                |
+| jsp:useBean     | 寻找或者实例化一个JavaBean                    |
+| jsp:setProperty | 设置JavaBean的属性                            |
+| jsp:getProperty | 输出某个JavaBean的属性                        |
+| jsp:forward     | 把请求转到一个新的页面                        |
+| jsp:plugin      | 根据浏览器类型为Java插件生成OBJECT或EMBED标记 |
+| jsp:element     | 定义动态XML元素                               |
+| jsp:attribute   | 设置动态定义的XML元素属性                     |
+| jsp:body        | 设置动态定义的XML元素内容                     |
+| jsp:text        | 在JSP页面和文档中使用写入文本的模板           |
+
+```jsp
+<jsp:useBean id="test" class="com.example.main.TestBean" />
+
+<jsp:setProperty name="test" property="message" value="hehe..." />
+<jsp:getProperty name="test" property="message" />
+```
+
+```java
+public class TestBean {
+   private String message;
+ 
+   public String getMessage() {
+      return(message);
+   }
+   public void setMessage(String message) {
+      this.message = message;
+   }
+}
+```
 
 
 
 
 
-## 3. 
+## 5. JSP隐含对象
+
+在JSP中一共有9个隐含对象，这个9个对象我可以在JSP中直接使用
+
+| 隐含对象    | 类型                                   | 说明                                     |
+| ----------- | -------------------------------------- | ---------------------------------------- |
+| request     | javax.servlet.http.HttpServletRequest  | 可以获取用户发送的请求信息               |
+| response    | javax.servlet.http.HttpScrvletResponse | 向浏览器发送响应信息                     |
+| pageContext | javax.scrvlet.jsp.PageContext          | 当前页面的上下文                         |
+| session     | javax.scrvlet.http.HttpSession         | 域对象，用来共享数据                     |
+| application | javax.servlet.ServletContext           | 代表整个WEB应用，是JavaWeb中最大的域对象 |
+| out         | javax.servlet.jsp.JspWriter            | 向页面输出内容                           |
+| config      | javax.servlet.ServletConfig            | 当前JSP的配置信息(初始化参数)            |
+| page        | java.lang.Object                       | 代表当前JSP的对象                        |
+| exception   | java.lang.Throwable                    | 页面中的异常                             |
+
+
+
+## 6. EL表达式语言
+
+表达式语言（Expression Language，简称EL）语法简单，使用方便。所有的EL表达式都是以 `${` 开始，以 `}` 结束 
+
+当EL表达式作为标签的属性值时，还可以使用`#{expr}`语法，这是在JSP 2.1版本中引入的延迟表达式（Deferred Expression）的语法
+
+| EL基础操作符 |             **描述**             |
+| :----------: | :------------------------------: |
+|      .       | 访问一个Bean属性或者一个映射条目 |
+|      []      |    访问一个数组或者链表的元素    |
+|     ( )      |   组织一个子表达式以改变优先级   |
+|      +       |                加                |
+|      -       |              减或负              |
+|      *       |                乘                |
+|   / or div   |                除                |
+|   % or mod   |               取模               |
+|   == or eq   |           测试是否相等           |
+|   != or ne   |           测试是否不等           |
+|   < or lt    |           测试是否小于           |
+|   > or gt    |           测试是否大于           |
+|   <= or le   |         测试是否小于等于         |
+|   >= or ge   |         测试是否大于等于         |
+|  && or and   |            测试逻辑与            |
+|  \|\| or or  |            测试逻辑或            |
+|   ! or not   |             测试取反             |
+|    empty     |           测试是否空值           |
+
+```jsp
+<!--使用表达式及操作符-->
+Box Perimeter is: ${2*box.width + 2*box.height}
+```
+
+
+
+| EL隐含对象       | **描述**                      |
+| :--------------- | :---------------------------- |
+| pageScope        | page 作用域                   |
+| requestScope     | request 作用域                |
+| sessionScope     | session 作用域                |
+| applicationScope | application 作用域            |
+| param            | Request 对象的参数，字符串    |
+| paramValues      | Request对象的参数，字符串集合 |
+| header           | HTTP 信息头，字符串           |
+| headerValues     | HTTP 信息头，字符串集合       |
+| initParam        | 上下文初始化参数              |
+| cookie           | Cookie值                      |
+| pageContext      | 当前页面的pageContext         |
+
+pageScope，requestScope，sessionScope，applicationScope变量用来访问存储在各个作用域层次的变量
+
+```jsp
+<!-- 脚本元素和表达式取值对比 -->
+<%=pageContext.getAttribute("address1") %>
+<%=pageContext.getAttribute("address", PageContext.REQUEST_SCOPE) %>
+<%=pageContext.getAttribute("address", PageContext.SESSION_SCOPE) %>
+<%=pageContext.getAttribute("address", pageContext.APPLICATION_SCOPE) %>
+
+${pageScope.address1 }
+${requestScope.address }
+${sessionScope.address }
+${applicationScope.address }
+
+<!-- 需求2: 通过el表达式 从不确定域中获取数据 -->
+<%=pageContext.findAttribute("address") %>
+```
+
+当表达式没有指定变量或者对象的范围时， 那么容器会依次从 `pageContext—>request—>session—>application` 中查找该变量或对象
+
+**注意：** 
+
+1. EL表达式只可以从四大域中获取数据，但不可以存放数据
+
+2. EL表达式中的内容会显示到浏览器上
+3. 使用pageContext的getAttribute方法或者findAttribute方法从4个范围中取出数据的时候、如果指定的key不存在、会返回null，而使用el表达式取出的时候指定的key不存在，页面上什么都不会显示
+
+
+
+## 7. JSP标准标签库
+
+JSP标准标签库（JavaServer Pages Standard Tag Library，JSTL）是一个JSP标签集合，它封装了JSP应用的通用核心功能
+
+JSTL 库安装：
+
+- 官方下载地址：http://tomcat.apache.org/taglibs/ 
+- 菜鸟下载地址：[jakarta-taglibs-standard-1.1.2.zip](http://static.runoob.com/download/jakarta-taglibs-standard-1.1.2.tar.gz)  
+
+maven引入：
+
+```xml
+<dependency>
+    <groupId>javax.servlet</groupId>
+    <artifactId>jstl</artifactId>
+    <version>1.2</version>
+</dependency>
+<!--  jstl-1.2之后可不再使用standard.jar-->
+```
+
+
+
+| JSTL标签分类 | 引用语法                                                     |      |
+| ------------ | ------------------------------------------------------------ | ---- |
+| 核心标签     | <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> |      |
+| 格式化标签   | <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %> |      |
+| SQL标签      | <%@ taglib prefix="sql"  uri="http://java.sun.com/jsp/jstl/sql" %> |      |
+| XML标签      | <%@ taglib prefix="x" uri="http://java.sun.com/jsp/jstl/xml" %> |      |
+| JSTL函数     | <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %> |      |
+
+
+
+## 8. JSTL核心标签
+
+Core标签库主要包括了`一般用途的标签`、`条件标签`、`迭代标签`和`与URL相关的标签 ` 
+
+```jsp
+<!-- 在JSP页面中使用Core标签库，要使用taglib指令，指定引用的标签库 -->
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+```
+
+
+
+一般用途的标签有：`<c:out>`、`<c:set>`、`<c:remove>`和`<c:catch>` 
+
+```jsp
+<%-- 1. <c:out>: 类似于JSP的表达式<%=expression%>，或者EL表达式${el-expression} --%>
+<c:out value="hello"></c:out>
+
+<%-- 2. <c:set>: 用于设置范围变量（即范围属性）的值或者JavaBean对象的属性 --%>
+<c:set var="width" value="25" scope="page" />
+<c:out value="width: ${width}" /> <br/>
+
+<%-- 3. <c:remove>: 用于移除指定范围的某个变量 --%>
+<C:remove var="width" scope="page" />
+
+<%-- 4. <c:catch>用于捕获在其中嵌套的操作所抛出的异常对象，并将异常信息保存到变量中 --%>
+<c:catch var="exception">
+    <%
+        int temp = 5/0;
+    %>
+</c:catch>
+<c:out value="exception: ${exception}" />
+```
+
+
+
+条件标签包括`<c:if>`、`<c:choose>`、`<c:when>`和`<c:otherwise>` 
+
+```jsp
+<%-- 1. <c:if> 用于实现Java语言中if语句的功能 --%>
+<c:if test="${3 > 0}">
+    显示: 3>0为true <br/>
+</c:if>
+
+<%-- 2. <c:choose>、<c:when>和<c:otherwise>一起实现互斥条件的执行，类似于Java语言的if/else if/else语句 --%>
+<c:set var="username" value="admin" scope="application" />
+<c:choose>
+    <c:when test="${username == 'zhangsan'}">
+        ${username} 是一个普通用户！ <br/>
+    </c:when>
+    <c:when test="${username == 'admin'}">
+        ${username} 是管理员！ <br/>
+    </c:when>
+    <c:otherwise>
+        ${username} 是一个临时访客！ <br/>
+    </c:otherwise>
+</c:choose>
+```
+
+
+
+迭代标签有`<c:forEach>`和`<c:forTokens>` 
+
+```jsp
+<%-- 1. <c:forEach>用于对包含了多个对象的集合进行迭代 --%>
+<c:forEach var="i" begin="1" end="5">
+    Item <c:out value="${i}"/><br/>
+</c:forEach>
+
+<%
+    Map<String, Object> map = new HashMap<>();
+    map.put("key1", "value1");
+    map.put("key2", "value2");
+    map.put("key3", "value3");
+    request.setAttribute("testMap", map);
+%>
+<c:forEach items="${requestScope.testMap}" var="entry">
+    ${entry} <br/>  <%--  等同于： ${entry.key} = ${entry.value} <br/>  --%>
+</c:forEach>
+
+<%-- 2. <c:forTokens>用于迭代字符串中由分隔符分隔的各成员 --%>
+<c:forTokens items="zhangsan:lisi:wangwu" delims=":" var="name">
+    ${name} <br/>
+</c:forTokens>
+```
+
+
+
+超链接、页面的包含和重定向是Web应用中常用的功能，在JSTL中，也提供了相应的标签来完成这些功能，
+
+这些标签包括`<c:import>`、`<c:url>`、`<c:redirect>`和`<c:param>` 
+
+- `<c:import>` 用于导入一个基于URL的资源
+- `<c:url>` 使用正确的URL重写规则构造一个URL
+- `<c:param>` 为一个URL添加请求参数
+- `<c:redirect>` 将客户端的请求重定向到另一个资源
+
+```jsp
+<%-- 1. <c:import>标签类似于 <jsp:include>动作元素 --%>
+<c:import url="demo.jsp"/>
+
+<%-- 2.  <c:url>和<c:param>用于构造一个URL、<c:redirect>遵循和<c:url>同样的重写规则 --%>
+<c:url value="http://localhost:8080/login" var="loginUrl">
+    <c:param name="username" value="admin"/>
+    <c:param name="password" value="admin"/>
+</c:url>
+<a href="${loginUrl}" >登录</a>
+```
+
+
+
+## 9. JSTL其他标签
+
+格式化标签包括`<fmt:timeZone>`、`<fmt:setTimeZone>`、`<fmt:formatNumber>`、`<fmt:parseNumber>`、`<fmt:formatDate>`和`<fmt:parseDate>`  
+
+```jsp
+<%-- <fmt:formatDate>标签用于使用不同的方式格式化日期 --%>
+<c:set var="now" value="<%=new Date() %>"/>
+<fmt:formatDate value="${now}" type="both" dateStyle="long" timeStyle="long"/><br/>
+<fmt:formatDate value="${now}" pattern="yyyy-MM-dd HH:mm:ss"/> <br/>
+```
+
+
 
 
 
@@ -519,7 +1153,11 @@ public class UserServlet extends HttpServlet {
 
 
 
+
+
 ## 2. 
+
+
 
 
 
