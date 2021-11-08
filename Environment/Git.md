@@ -14,10 +14,16 @@
 
 ## 2. 搭建本地仓库
 1. `git init` ——初始化git仓库（创建新的 git 仓库）[更多](https://github.com/geeeeeeeeek/git-recipes/wiki/2.2-创建代码仓库)
+
 2. `git status`  ——经常被用于查看仓库状态，列出已缓存、未缓存、未追踪的文件。
+
 3. `git add 文件列表`  —— 添加到缓存区 [更多](https://github.com/geeeeeeeeek/git-recipes/wiki/2.3.1-Git-add)
+
 4. `git commit -m 提交信息`   ——向本地仓库中提交代码
+
 5. `git log`  ——查看提交记录
+
+   
 
 
 ## 3. 撤销与删除
@@ -30,7 +36,9 @@
 - 将 git 仓库中指定的更新记录恢复出来，并且覆盖暂存区和工作目录：`git rest --hard commitID` 
 
 
+
 # 二 远程代码仓库
+
 ## 1. 远程仓库连接
 
 ```shell
@@ -43,6 +51,8 @@ git remote rename <old-name> <new-name>  #将远程连接从 <old-name> 重命�
 git remote add origin https://gitee.com/drizzletowne/develop.git
 git remote set-url --add origin https://github.com/drizzletowne/Develop.git
 ```
+
+
 
 ## 2. 代码推送到远程仓库
 
@@ -64,7 +74,10 @@ git push origin --delete master
 git push -f origin master        #强制用本地的代码去覆盖掉远程仓库的代码 (-f为force，意为：强行、强制)
 ```
 
+
+
 # 三 其他情景
+
 ## 1.  ssh免登陆
 
 生成秘钥：`ssh-keygen`

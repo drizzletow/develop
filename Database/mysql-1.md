@@ -599,7 +599,7 @@ from employee as e
 
 
 
-# 二 MySQL高级
+# 二 MySQL理论
 
 ## 1. 数据完整性
 
