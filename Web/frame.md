@@ -287,7 +287,7 @@ $("input").val("123");         // 设置表单值
 
   ```JavaScript
   // 创建元素
-  $("<li><fli>");          // 动态的创建了一个li元素
+  $("<li></li>");          // 动态的创建了一个li元素
   $("<a/>", {
       html: "This is a <strong>new</strong> link",
       "class": "new",
@@ -625,34 +625,56 @@ hover([over,]out)     // 其中over和out为两个函数
 
 
 
+## 9. 生成二维码
 
+jquery.qrcode.js 是一个纯浏览器 生成 QRcode 的 jQuery 插件（可以从https://github.com/jeromeetienne/jquery-qrcode 获取）
 
-# 二 Bootstrap
-
-## 1. Bootstrap简介
-
-中文官网: http://www.bootcss.com/     官网: http://getbootstrap.com/       
-
-教程手册：https://www.shouce.ren/api/view/a/772 
+它使用非常简单，生成的 QRcode 无需下载图片，并且不依赖第三方服务，插件压缩之后大小小于 4K
 
 
 
-Bootstrap 是由 *Twitter* 在 2011 年8月在 GitHub 上发布的开源产品
+使用步骤：
 
-- **移动设备优先**：自 Bootstrap 3 起，框架包含了贯穿于整个库的移动设备优先的样式
-- **响应式设计**：Bootstrap 的响应式 CSS 能够自适应于台式机、平板电脑和手机
+1. 下载并引入 [Jquery.js](file/jquery-1.11.1.js) 文件、[jquery.qrcode.js](file/jquery.qrcode.js) 文件、 （utf-16转utf-8:  [utf.js](file/utf.js) ）
+
+   ```HTML
+   <script src="js/jquery-1.11.1.js"></script>
+   <script src="js/jquery.qrcode.js"></script>
+   <script src="js/utf.js"></script>
+   ```
+
+2. 网页中编写一个div 用于显示二维码
+
+   ```HTML
+   <div id="qrcode"></div>
+   ```
+
+3. 通过jquery对象的qrcode函数生成二维码
+
+   ```javascript
+   // 准备二维码的规格对象(JSON)
+   var config  = {
+       width:数字,	           // 值是number类型, 表示的单位是px  必须传递
+       height:数字,	           // 值是number类型, 表示的单位是px  必须传递 
+       text:"内容",	           // text就表示二维码中存储的数据  必须传递
+       correctLevel:数字,       // 取值为0|1|2|3 表示二维码的纠错级别0:L/1:M/2:Q/3:H ,默认0  可选参数
+       background:"#rrggbb",   // 默认白色, 表示二维码的后景颜色 可选参数
+       foreground:"#rrggbb",   // 默认黑色, 表示二维码的前景颜色 可选参数
+       render:"绘制模式"        // 取值:table/canvas , 默认table 可选参数
+   };
+   // 通过选择器, 查找到上述的div ,得到Jquery对象, 通过jquery对象的qrcode函数生成二维码
+   $("#qrcode").qrcode(config);
+   ```
+
+示例：
+
+![image-20211111172238720](vx_images/image-20211111172238720.png)
 
 
 
-## 2. Bootstrap引入
-
-下载及引入：https://www.shouce.ren/api/view/a/773
 
 
-
-
-
-# 三 AJAX技术
+# 二 AJAX技术
 
 AJAX = > Asynchronous JavaScript and XML（异步的 JavaScript 和 XML）
 
@@ -737,4 +759,50 @@ $.post(url, data, function(result) {
  	//省略将服务器返回的数据显示到⻚⾯的代码
 });
 ```
+
+
+
+
+
+# 三 相关框架和技术
+
+## 1. Bootstrap
+
+中文官网: http://www.bootcss.com/     官网: http://getbootstrap.com/       
+
+教程手册：https://www.shouce.ren/api/view/a/772 
+
+
+
+Bootstrap 是由 *Twitter* 在 2011 年8月在 GitHub 上发布的开源产品
+
+- **移动设备优先**：自 Bootstrap 3 起，框架包含了贯穿于整个库的移动设备优先的样式
+- **响应式设计**：Bootstrap 的响应式 CSS 能够自适应于台式机、平板电脑和手机
+
+
+
+Bootstrap下载及引入：https://www.shouce.ren/api/view/a/773
+
+
+
+
+
+## 2. layui
+
+layui（谐音：类 UI) 是一套开源的 Web UI 解决方案，采用自身经典的模块化规范，并遵循原生 HTML/CSS/JS 的开发方式
+
+2021年10月13日，layui 原官网（layui.com）已正式关闭。详见：
+
+- [layui 官网下线公告](https://images.gitee.com/uploads/images/2021/1013/100054_8c382d31_92529.jpeg) 
+- [layui 官网为什么要下线？](https://www.zhihu.com/question/488668647/answer/2159962082) 
+
+
+
+文档参考链接：http://layui-doc.pearadmin.com/doc/index.html 
+
+
+
+
+
+## 3. ElementUI
 

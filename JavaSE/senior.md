@@ -385,7 +385,10 @@ public class MethodDemo {
 
 ## 5. 反射的应用
 
+下WEB开发中，有很多技术和框架底层都用到了反射，例如：
 
+- JSP中的 `<jsp:useBean>` 、`<jsp:setProperty>` 、`<jsp:getProperty>` 标签的底层实现 
+- 
 
 
 

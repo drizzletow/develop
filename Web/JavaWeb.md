@@ -1,4 +1,4 @@
-# 一 环境准备
+#  一 环境准备
 
 ## 1. HTTP协议
 
@@ -503,7 +503,7 @@ public class MyListener implements ServletContextListener, HttpSessionAttributeL
 
 过滤器（Filter）是从Servlet 2.3规范开始新增的功能，并在Servlet 2.4规范中得到增强。过滤器是一个驻留在服务器端的Web组件，它可以截取客户端和资源之间的请求与响应信息，并对这些信息进行过滤
 
-<img src="vx_images/image-20211101174816515.png" alt="image-20211101174816515" style="zoom: 80%;" />
+<img src="vx_images/image-20211101174816515.png" alt="image-20211101174816515"  />
 
 在一个Web应用程序中，可以部署多个过滤器，这些过滤器组成了一个过滤器链。过滤器链中的每个过滤器负责特定的操作和任务，客户端的请求在这些过滤器之间传递，直到目标资源
 
