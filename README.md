@@ -1,14 +1,14 @@
 Notes Of Java Develop：local( Vnote + Typora + Git )，Online ( synchronize to Gitee and GitHub )
 
-Gitee：https://gitee.com/drizzletowne/develop
+Gitee：https://gitee.com/itdrizzle/develop
 
-GitHub：https://github.com/drizzletowne/Develop
+GitHub：https://github.com/itdrizzle/develop
 
 # Java基础
 
 * [Java发展历史](JavaSE/detail/history.md) &nbsp;&nbsp; [开发环境](JavaSE/detail/env.md) &nbsp;&nbsp; [Java基础语法](JavaSE/base.md)  &nbsp;&nbsp;  [Java面向对象](JavaSE/oop.md)&nbsp;&nbsp;  [常用类库、集合](JavaSE/classlib.md) &nbsp;&nbsp; 
 
-*  [Java多线程](JavaSE/thread.md) &nbsp;&nbsp;   [JavaIO和网络编程](JavaSE/JavaIO.md) &nbsp;&nbsp;  [枚举、反射、注解](JavaSE/senior.md) &nbsp;&nbsp; 
+*  [Java多线程](JavaSE/thread.md) &nbsp;&nbsp;   [JavaIO和网络编程](JavaSE/javaIO.md) &nbsp;&nbsp;  [枚举、反射、注解](JavaSE/senior.md) &nbsp;&nbsp; 
 
 *  [正则表达式](JavaSE/regex.md) &nbsp;&nbsp; [Lambda表达式、Stream流](JavaSE/lambda.md) &nbsp;&nbsp; [Java SE API & 文档](https://www.oracle.com/cn/java/technologies/java-se-api-doc.html)&nbsp;&nbsp; 
 
@@ -41,7 +41,7 @@ GitHub：https://github.com/drizzletowne/Develop
 
 # 开发环境及中间件
 
-* [Git版本控制](Environment/Git.md) &nbsp;&nbsp;  [Maven](Environment/maven.md) &nbsp;&nbsp; [Linux基础](Environment/Linux.md) &nbsp;&nbsp;  [Docker](Environment/Docker.md) &nbsp;&nbsp; [Kubernetes](Environment/kubernetes.md) &nbsp;&nbsp; [项目部署上线](Environment/deployment.md) &nbsp;&nbsp;
+* [Git版本控制](Environment/Git.md) &nbsp;&nbsp;  [Maven](Environment/maven.md) &nbsp;&nbsp; [Linux](Environment/Linux.md) &nbsp;&nbsp;  [Docker](Environment/Docker.md) &nbsp;&nbsp; [Kubernetes](Environment/kubernetes.md) &nbsp;&nbsp; [项目部署上线](Environment/deployment.md) &nbsp;&nbsp;
 
 * [ElasticSearch](Environment/ElasticSearch.md) &nbsp;&nbsp; [RabbitMQ](Environment/RabbitMQ.md) &nbsp;&nbsp; 
 

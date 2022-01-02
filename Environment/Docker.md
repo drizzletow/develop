@@ -251,7 +251,7 @@ docker run -p 2181:2181 --name zookeeper --restart=always \
 
  [dockerfile-instructions](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#dockerfile-instructions) &nbsp; &nbsp;  [菜鸟教程](https://www.runoob.com/docker/docker-dockerfile.html)
 
-![](vx_images/2393629239290.png =666x)
+![](vx_images/2393629239290.png)
 
 # 四 Docker Compose
 

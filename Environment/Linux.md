@@ -1,14 +1,48 @@
-# 一 命令
+# 一 常用命令
+
+## 1. 用户管理
 
 
 
-# 二 vim
 
 
-# 三 Bash
+## 2. 文件和目录
 
 
-# 四 虚拟机
+
+
+
+## 3. 文件权限
+
+
+
+
+
+## 4. 压缩和解压
+
+
+
+
+
+## 5. 网络操作
+
+
+
+
+
+## 6. 软件安装
+
+
+
+
+
+# 二 Vim
+
+
+
+
+
+# 三 虚拟机
 
 ## 1. vagrant
 
@@ -23,7 +57,7 @@ vagrant version
 
 - 配置vagrant (虚拟机镜像文件存储目录，默认为：C:\Users\用户名\.vagrant.d)  —— `VAGRANT_HOME`
 
-![](vx_images/1721139220770.png =999x)
+![](vx_images/1721139220770.png)
 
 
 3. 下载虚拟机镜像
@@ -76,7 +110,7 @@ config.vm.network "private_network", ip: "192.168.56.10"
 ```
 ipconfig
 ```
-![](vx_images/4608247249196.png =666x)
+![](vx_images/4608247249196.png)
 
 ```shell
 #修改Vagrantfile文件后，需要重启虚拟机，若重启失败可删除重装，先修改Vagrantfile，再vagrant up
@@ -94,13 +128,14 @@ end
 > 【注意】5、6 两步骤修改后可能会导致虚拟机无法启动，可在安装前先修改好Vagrantfile文件。系统用户密码均为 ：vagrant
 
 
+
 ## 2. VMware
 
 **（1）设置静态网络IP**：
 
     VMware 点击 编辑 ——> 虚拟网络编辑器 (如图：)
 
-![](vx_images/2467802020864.png =888x)
+![](vx_images/2467802020864.png)
 
 
 ```shell
@@ -110,8 +145,7 @@ vi /etc/sysconfig/network-scripts/ifcfg-ens33
 service network restart 
 ```
 
-</br>
-</br>
+
 
 **（2）设置虚拟机自启动**：
 
@@ -126,6 +160,8 @@ service network restart
 
 #测试运行文件: 双击启动文件vm_start.bat，如果弹出dos窗口且虚拟机启动则无误,双击停止文件vm_stop.bat，如果弹出dos窗口且虚拟机停止则无误
 ```
+
+
 
 2. 添加到自启动任务
 

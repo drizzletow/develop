@@ -298,7 +298,10 @@ mkdir /var/run/nginx
 /usr/local/nginx/sbin/nginx -s reload
 ```
 
+
+
 # 三 高可用集群负载均衡
+
 ## 1. Keepalived
 
 ## 2. LVS

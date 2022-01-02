@@ -29,7 +29,7 @@
  * @Classname ${NAME}
  * @Description TODO
  * @Date ${DATE} ${TIME}
- * @Author  drizzletowne
+ * @Author  idrizzle
  */
 ```
 
@@ -52,7 +52,7 @@
 ```java
 **
 $params$ 
- * @author drizzletowne
+ * @author itdrizzle
  * @date $date$ $time$ 
  * @return $return$
  */
