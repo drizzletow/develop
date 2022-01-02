@@ -66,7 +66,7 @@ GitHub：https://github.com/itdrizzle/develop
 
 <br/>
 
-# 设计模式理论及实践
+# 设计模式理论
 
 
 
