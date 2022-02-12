@@ -1,12 +1,14 @@
 ## 一 JVM简介
 
+Oracle所给的相关规范：https://docs.oracle.com/javase/specs/index.html
+
 Java Virtual Machine，JAVA程序的**运行环境**（JAVA二进制字节码的运行环境）
 
 - 一次编写，到处运行
 - 自动内存管理，垃圾回收机制
 - 数组下标越界检查
 
-### 
+
 
 关于jdk、jre和jvm三个基本概念的中英文及解释：
 
@@ -22,7 +24,14 @@ Java Virtual Machine，JAVA程序的**运行环境**（JAVA二进制字节码的
 
 
 
-![image-20220207233628302](vx_images/image-20220207233628302.png)
+![image-20220210090802242](vx_images/image-20220210090802242.png)
+
+
+
+值得注意的是：Java 虚拟机不和包括Java 在内的任何语言绑定，它只与“Class 文件”这种特定的二进制文件格式所关联。
+无论使用何种语言进行软件开发，只要能将源文件编译为正确的Class文件，那么这种语言就可以在Java虚拟机上执行。可以说，统一而强大的Class文件结构，就是Java虚拟机的基石、桥梁。
+
+
 
 
 

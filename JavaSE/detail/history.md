@@ -1,9 +1,10 @@
-# 1. Java的起源
+# 一. Java的起源和历史
+## 1. Java的起源
 
 ![](vx_images/2941416182408.png)
 
 
-# 2. Java发展史
+## 2. Java发展史
 1. 1996年1月23日，JDK 1.0发布，Java语言有了第一个正式版本的运行环境。JDK 1.0提供了一个纯解释执行的Java虚拟机实现（Sun Classic VM）。JDK 1.0版本的代表技术包括：Java虚拟机、Applet、AWT等。
 
     1996年4月，十个最主要的操作系统和计算机供应商声明将在其产品中嵌入Java技术。同年9月，已有大约8.3万个网页应用了Java技术来制作。在1996年5月底，Sun于美国旧金山举行了首届JavaOne大会，从此JavaOne成为全世界数百万Java语言开发者每年一度的技术盛会。
@@ -79,3 +80,167 @@
 12. 2019年3月20日，JDK 12发布，只包含8个JEP，其中主要有Switch表达式、Java微测试套件（JMH）等新功能，最引人注目的特性无疑是加入了由RedHat领导开发的Shen-andoah垃圾收集器。Shenandoah作为首个由非Oracle开发的垃圾收集器，其目标又与Oracle在JDK 11中发布的ZGC几乎完全一致，两者天生就存在竞争。Oracle马上用实际行动抵制了这个新收集器，在JDK 11发布时才说应尽可能保证OracleJDK和OpenJDK的兼容一致，转眼就在OracleJDK 12里把Shenandoah的代码通过条件编译强行剔除掉，使其成为历史上唯一进入了OpenJDK发布清单，但在OracleJDK中无法使用的功能。
 
     Oracle收购Sun是Java发展历史上一道明显的分界线。在Sun掌舵的前十几年里，Java获得巨大成功，同时也渐渐显露出来语言演进的缓慢与社区决策的老朽；而在Oracle主导Java后，引起竞争的同时也带来新的活力，Java发展的速度要显著高于Sun时代。Java的未来是继续向前、再攀高峰，还是由盛转衰、锋芒挫缩，你我拭目以待。
+
+
+# 一 Java程序执行步骤
+
+​	假设我们现在需要开发一个最简单的java程序（以HelloWorld为例），那么就需要了解java程序的运行过程：
+
+![image-20210930210717404](vx_images/image-20210930210717404.png)
+
+
+
+
+
+## 1. JDK和JVM
+
+​	关于jdk、jre和jvm三个基本概念的中英文及解释：
+
+- **JDK (Java Development Kits)** -- Java 开发工具集 
+
+  JDK 是整个 JAVA 的核心，包括了 Java 运行环 境（Java Runtime Environment），一堆 Java 工具（javac/java/jdb 等）和 Java 基的类库（即 Java API 包括 rt.jar），它不提供具体的开发软件，它提供的是无论你用何种开发软件写 Java 程序都必须用到的类库和 Java 语言规范。
+
+- **JRE (Java Runtime Environment)** --Java 运行时环境
+
+  
+
+- **JVM （Java Virtual Machine）**-- Java虚拟机
+
+  JVM 可以理解成一个可运行 Java 字节码的虚拟计算机系统， 它有一个解释器组件，可以实现 Java 字节码和计算机操作系统之间的通信 ，对于不同的运行平台，有不同 的 JVM，JVM 屏蔽了底层运行平台的差别，实现了“一次编译，随处运行”。
+
+
+
+如果需要开发java程序，必须先安装JDK：
+
+1. 官网下载地址：https://www.oracle.com/cn/index.html
+
+2. 无脑安装、配置环境变量即可
+
+
+
+## 2. 第一个JAVA程序
+
+使用记事本完成HelloWorld的编辑，并在命令行编译运行：
+
+```java
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello World");
+    }
+}
+```
+
+![image-20210930214733019](vx_images/image-20210930214733019.png)
+
+# 三 Eclipse
+
+## 1. 下载与安装
+
+1. 官网下载地址：https://www.eclipse.org/downloads/packages/ （该地址直接到下载界面，如下：）
+
+![image-20210930215702909](vx_images/image-20210930215702909.png)
+
+2. 安装： 解压即可
+
+   
+
+## 2. 创建 Java 工程
+
+![image-20210930220715630](vx_images/image-20210930220715630.png)
+
+
+
+写个Demo试试：
+
+```java
+import java.io.IOException;
+
+public class ShutdownDemo {
+
+	public static void main(String[] args) throws IOException {
+		//Runtime.getRuntime().exec("shutdown -s -t 3600");
+		Runtime.getRuntime().exec("shutdown -a");
+	}
+
+}
+```
+
+
+
+## 3. Eclipse代码提示
+
+```text
+填入内容：
+.ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
+```
+
+![image-20210930222024886](vx_images/image-20210930222024886.png)
+
+
+
+如需要键入输出语句时：
+
+![image-20210930222252395](vx_images/image-20210930222252395.png)
+
+
+
+## 4. 全局永久UTF-8
+
+- 找到eclipse的安装目录下的ecilpse.ini文件
+- 在文件最后加上：**-Dfile.encoding=UTF-8**
+
+
+
+# 四 Summary
+
+## 1. Java体系与特性
+
+**1）. Java 体系：**
+
+- Java SE：Java Platform，Standard Edition  （标准版：各应用平台的基础，桌面开发和低端商务应用的解决方案）
+
+- Java EE：Java Platform，Enterprise Edition （企业版：以企业为环境而开发应用程序的解决方案）
+
+- Java ME ：Java Platform, Micro Edition （微型版：致力于消费产品 和嵌入式设备的最佳解决方案）
+
+
+
+**2）. Java 特性：**
+
+- 一种纯面向对象的编程语言。
+- 一种与平台无关（跨平台）的语言。(它提供了在不同平台下运行的解释环境)
+-  一种健壮的语言，吸收了 C/C++语言的优点。
+- 有较高的安全性。(自动回收垃圾-Garbage Collection ，强制类型检查，取消指针)
+
+
+
+## 2. 垃圾回收器(GC)
+
+1. 不再使用的内存空间应当进行回收-垃圾回收
+
+2. 在 C/C++等语言中，由程序员负责回收无用内存，Java 语言消除了程序员回收无用内存空间的责任；
+
+3. JVM 提供了一种系统线程跟踪存储空间的分配情况、并在 JVM 的空闲时，检查并释放那些可以被释放的存储空间；
+
+4. 垃圾回收器在 Java 程序运行过程中自动启用，程序员无法精确控制和干预。
+
+
+
+## 3. java基本语法规则
+
+```java
+//单行注释
+
+/*
+多行注释
+*/
+
+/** 文档注释
+*/
+```
+
+- java 是严格区分大小写的 
+- java 是一种自由格式的语言 
+- 代码分为结构定义语句和功能执行语句
+-  功能执行语句的最后必须用分号结束
+

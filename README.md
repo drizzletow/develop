@@ -6,11 +6,11 @@ GitHub：https://github.com/itdrizzle/develop
 
 # Java基础
 
-* [Java发展历史](JavaSE/detail/history.md) &nbsp;&nbsp; [开发环境](JavaSE/detail/env.md) &nbsp;&nbsp; [Java基础语法](JavaSE/base.md)  &nbsp;&nbsp;  [Java面向对象](JavaSE/oop.md)&nbsp;&nbsp;  [常用类库、集合](JavaSE/classlib.md) &nbsp;&nbsp; 
+* [Java发展历史和开发环境](JavaSE/detail/history.md) &nbsp;&nbsp; [Java基础语法](JavaSE/base.md)  &nbsp;&nbsp;  [Java面向对象](JavaSE/oop.md)&nbsp;&nbsp;  [常用类库、集合](JavaSE/classlib.md) &nbsp;&nbsp; 
 
 *  [Java多线程](JavaSE/thread.md) &nbsp;&nbsp;   [JavaIO和网络编程](JavaSE/javaIO.md) &nbsp;&nbsp;  [枚举、反射、注解](JavaSE/senior.md) &nbsp;&nbsp; 
 
-*  [正则表达式](JavaSE/regex.md) &nbsp;&nbsp; [Lambda表达式、Stream流](JavaSE/lambda.md) &nbsp;&nbsp; [Java SE API & 文档](https://www.oracle.com/cn/java/technologies/java-se-api-doc.html)&nbsp;&nbsp; 
+*  [正则表达式](JavaSE/regex.md) &nbsp;&nbsp; [Lambda表达式和Stream流](JavaSE/lambda.md) &nbsp;&nbsp; [Java SE API & 文档](https://www.oracle.com/cn/java/technologies/java-se-api-doc.html)&nbsp;&nbsp; 
 
 * [JVM内存管理](Jvm/Jvm内存管理.md)  
 

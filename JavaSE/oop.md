@@ -691,14 +691,14 @@ abstract class class_name {
 }
 ```
 
-- 抽象类不能使用 new 关键字创建对象。但是在子类创建对象时， 抽象父类也会被JVM实例化。
+- 抽象类不能使用 new 关键字创建对象。但是在子类创建对象时， 抽象父类构造方法同样会被调用。
 - 抽象类不能使用final声明，因为final属修饰的类是不能有子类的 ， 而抽象类必须有子类实现。
 - 如果一个子类继承抽象类，那么必须实现其所有的抽象方法。如果有未实现的抽象方法，那么子类也必须定义为
   abstract类
 
 
 
-- 如果一个方法使用 abstract 来修饰，则说明该方法是抽象方法，抽象方法只有声明没有实现。需要注意的是 abstract 关键字只能用于普通方法，不能用于 static 方法或者构造方法中。
+- 如果一个方法使用 abstract 来修饰，则说明该方法是抽象方法，抽象方法只有声明没有实现。需要注意的是 abstract 关键字只能用于普通成员方法，不能用于 static 方法或者构造方法中。
 - 抽象方法没有方法体，抽象方法必须存在于抽象类中，子类重写父类时，必须重写父类所有的抽象方法。
 - 在使用 abstract 关键字修饰抽象方法时不能使用 private 修饰，因为抽象方法必须被子类重写。
 
@@ -714,10 +714,11 @@ abstract class class_name {
 }
 ```
 
-- 接口没有构造方法，不能被实例化。一个接口可以有多个直接父接口，但接口只能继承接口，不能继承类
+- 接口没有普通成员变量、代码块、构造方法，也不能被实例化
+- 一个接口可以有多个直接父接口，但接口只能继承接口，不能继承类
 - 具有 public 访问控制符的接口，允许任何类使用；没有指定 public 的接口，其访问将局限于所属的包。
 - 方法的声明不需要其他修饰符，在接口中声明的方法，将隐式地声明为公有的（public）和抽象的（abstract）。
-- 在 Java 接口中声明的变量其实都是常量，接口中的变量声明，将隐式地声明为 public、static 和 final，即常量，所以接口中定义的变量必须初始化。
+- 在 Java 接口中声明的变量其实都是常量，接口中的变量声明，将隐式地声明为 public、static 和 final，即常量，所以接口中定义的变量必须初始化（且只能是直接赋值的方式）。
 
 
 
@@ -735,41 +736,37 @@ abstract class class_name {
 **接口和抽象类的区别**：
 
 1. 抽象类要被子类继承，接口要被类实现。
+
 2. 接口只能声明抽象方法，抽象类中可以声明抽象方法，也可以写非抽象方法。
-3. 接口里定义的变量只能是公共的静态的常量，抽象类中的变量是普通变量。
-4. 抽象类使用继承来使用， 无法多继承。 接口使用实现来使用， 可以多实现
+
+3. 接口里定义的变量只能是公共的静态的常量，抽象类中则可以定义普通变量。
+
+4. 抽象类使用继承来使用， 无法多继承。 接口使用实现来使用， 可以多实现。接口可以继承多个接口
+
 5. 抽象类中可以包含static方法 ，但是接口中不允许（静态方法不能被子类重写，因此接口中不能声明静态方法）
+
+   但jdk1.8后，接口新增了default方法和static方法的实现
+
 6. 接口不能有构造方法，但是抽象类可以有
 
+| **区别点** |                **抽象类**                | **接口**                                  |
+| :--------: | :--------------------------------------: | :---------------------------------------- |
+|    定义    |             包含抽象方法的类             | 抽象方法和全局常量的集合                  |
+|    组成    | 构造方法、抽象方法、普通方法、常量、变量 | 常量、抽象方法、(jdk8:默认方法、静态方法) |
+|    使用    |         子类继承抽象类(extends)          | 子类实现接口(implements)                  |
+|    关系    |          抽象类可以实现多个接口          | 接口不能继承抽象类，但允许继承多个接口    |
+|    对象    |       不能创建对象，但是有构造方法       | 不能创建对象，也没有构造方法              |
+|    局限    |            抽象类不能被多继承            | 接口之间能多继承，能被多实现              |
+|    思想    |   作为模板或对共性属性和行为抽象，is-a   | 作为标准或对共性行为抽象，like-a          |
+|  访问权限  |    抽象类的成员，写访问权限比较自由。    | 接口的成员，必须是public修饰的            |
+
+选择 :  **如果抽象类和接口都可以使用的话，优先使用接口，避免单继承的局限**   
+
+总之，抽象类和接口除了都是抽象外，区别相当明显。抽象类是作为继承层次中的顶层父类存在的，接口则比较自由。
 
 
 
-
-## 7. Object类
-
-Object类是所有类的父类（基类），如果一个类没有明确的继承某一个具体的类，则将默认继承Object类。
-
-```java
-public class Person{
-}
-// 其实它被使用时 是这样的：
-public class Person extends Object{
-}
-
-// Object的多态：使用Object可以接收任意的引用数据类型
-Object obj = new Person();  
-```
-
-
-
-**建议重写Object中的toString和equals方法**：
-
-- `toString`方法： 此方法的作用：返回对象的字符串表示形式。Object的toString方法， 返回对象的内存地址。
-- `equals`方法：此方法的作用：指示某个其他对象是否“等于”此对象。Object的equals方法比较的是地址值，不是对象的内容
-
-
-
-## 8. is-a & has a
+## 7. is-a & has a
 
 面向对象的核心思想是：抽象、封装、继承、多态。在实践中用的比较多的术语就是 is a（是一个） ，和 has a（有一个）
 
@@ -802,18 +799,16 @@ Object obj = new Person();
 
   
 
-# 三 Other
 
 
-
-## 1. 内部类
+# 三 内部类
 
 在Java中，可以将一个类定义在另一个类里面或者一个方法里面，这样的类称为内部类。广泛意义上的内部类一般来说包括这四种：
 
 1. 成员内部类
-2. 局部内部类
-3. 匿名内部类
-4. 静态内部类
+2. 静态内部类
+3. 局部内部类
+4. 匿名内部类
 
 内部类的特点：
 
@@ -823,89 +818,375 @@ Object obj = new Person();
 
 
 
-**成员内部类**：是最普通的内部类，它的定义为位于另一个类的内部，形如下面的形式：
+按照它是一个类，还是一个对象来分类：
 
-```java
-class Outer {
-    private double x = 0;
-    public Outer(double x) {
-        this.x = x;
-    }
-    
-	class Inner { //内部类
-		public void say() {
-            // 成员内部类可以无条件访问外部类的所有成员属性和成员方法（包括private成员和静态成员）。
-			System.out.println("x="+x);
-		}
-	}
-}
-/*
-如果要访问外部类的同名成员，需要以下面的形式进行访问：
-    外部类.this.成员变量
-    外部类.this.成员方法
-*/
-Outter outter = new Outter();
-Outter.Inner inner = outter.new Inner();
-```
+1. **语法定义了一个类，包括成员内部类、静态内部类和局部内部类。**既然是定义了一个类，使用时还需要创建对象才能用。
+2. **语法直接创建了一个对象，包括匿名内部类和Lambda表达式。**由于已经通过语法创建了对象，可以直接使用。
 
 
 
-**局部内部类**：是定义在一个方法或者一个作用域里面的类，它和成员内部类的区别在于局部内部类的访问仅限于方法内或者该作用域内。
 
-例如：(注意:局部内部类就像是方法里面的一个局部变量一样，是不能有public、protected、private以及static修饰符的。) 
 
-```java
-class Person{
-	public Person() {}
-}
+## 1. 成员内部类
 
-class Man{
-	public Man(){}
-    
-	public People getPerson(){
-		class Student extends People{ //局部内部类
-			int age =0;
-		}
-		return new Student();
-	}
-}
-```
+成员内部类是最普通的内部类，它的定义为位于另一个类的内部（成员位置，可以**看成该类的一个成员** ）
+
+- <font color=red>**成员内部类可以看成该类的一个成员。所以，想要得到成员内部类对象，必须先创建外围类对象** </font> 
+- 可以定义普通成员变量、成员方法、构造器、构造代码块
+- 但没有静态声明（包括静态变量，静态方法，静态代码块）
+- 但可以有静态全局常量。（只允许那些不触发类加载的，这些常量编译器会直接存在常量池中，和变量特点不一样。可以认为和这个类完全没有关系）
 
 
 
-**静态内部类**： 是指使用 static 修饰的内部类。示例代码如下：
+**成员内部类的访问特点**：
 
-```java
-public class Outer {
-    int a = 0;           // 实例变量a
-    static int b = 0;    // 静态变量b
-    
-    static class Inner {
-        // 静态内部类中可以定义静态成员和实例成员
-        int m = 0;           // 实例变量m
-        static int n = 0;    // 静态变量n
-        
-        // 静态内部类可以直接访问外部类的静态成员，如果要访问外部类的实例成员，则需要通过外部类的实例去访问
-        Outer o = new Outer;
-        int a2 = o.a;    // 访问实例变量
-        int b2 = b;      // 访问静态变量
-    }
-}
+1. **成员内部类内部访问外围类**  
 
-class OtherClass {
-    // 在创建静态内部类的实例时，不需要创建外部类的实例
-    Outer.Inner oi = new Outer.Inner();
-    
-    // 外部类以外的其他类需要通过完整的类名访问静态内部类中的静态成员，
-    // 如果要访问静态内部类中的实例成员，则需要通过静态内部类的实例
-    int a2 = oi.m;             // 访问实例成员
-    int b2 = Outer.Inner.n;    // 访问静态成员
-}
-```
+   可以直接访问，不受权限限制
+
+   ```java
+   public class Demo {
+       public static void main(String[] args) {
+           Outer.Inner inner = new Outer().new Inner();
+           inner.say();
+       }
+   }
+   ```
+
+   ![image-20220210231711195](vx_images/image-20220210231711195.png)
+
+   
+
+2. **外围类访问成员内部类成员**  
+
+   - 外围类的成员方法中访问成员内部类成员：
+
+     ```java
+     public class Demo {
+         public static void main(String[] args) {
+             new Outer().print();
+         }
+     }
+     ```
+
+     ```java
+     public class Outer {
+         private int a = 10;
+     
+         public void print() {
+             Inner inner = new Inner();
+             System.out.println(inner.a);  // 11
+         }
+     
+         class Inner {
+             private int a = 11;
+         }
+     }
+     ```
+
+   - 外围类的静态成员方法中访问成员内部类成员
+
+     ```java
+     public class Demo {
+         public static void main(String[] args) {
+             Outer.print();
+         }
+     }
+     ```
+
+     ```java
+     public class Outer {
+         private int a = 10;
+     
+         public static void print() {
+             // 成员内部类对象依赖外围类对象而存在， 所以得先存在外围类对象再创建内部类对象
+             Inner inner = new Outer().new Inner(); 
+             System.out.println(inner.a);  
+         }
+     
+         class Inner {
+             private int a = 11;
+         }
+     }
+     ```
+
+3. **外部类访问成员内部类成员** 
+
+   **注意**： 内部类的设计往往就是为了不让外界访问，一般都是 private 修饰的。此处讨论的外界可访问情形仅作为了解
+
+   外部类要访问成员内部类成员，条件比较苛刻，由于成员内部类属于外围类的一个成员，所以首先外部类需要有外围类的访问权限，再次还需要成员内部类的访问权限。
+
+   ```java
+   public class Outer {
+       private int a = 10;
+   
+       class Inner {
+           private int a = 11;
+           public int b = 12;
+       }
+   }
+   ```
+
+   ![image-20220210233637084](vx_images/image-20220210233637084.png)
+
+​		
+
+4. **成员内部类访问外部类成员** 
+
+   在成员内部类中访问外部类成员，和在普通类中访问其它类成员别无二致 
+
+   ```java
+   public class Demo {
+       public static void main(String[] args) {
+           Outer.Inner inner = new Outer().new Inner();
+           inner.print();
+       }
+   }
+   ```
+
+   ```java
+   public class Outer {
+   
+       class Inner {
+           public void print() {
+               Other other = new Other();
+               System.out.println(other.a);
+           }
+       }
+   }
+   
+   class Other {
+       int a = 5;
+   }
+   ```
 
 
 
-**匿名内部类**：是指没有类名的内部类，必须在创建时使用 new 语句来声明类
+
+
+## 2. 静态内部类
+
+**（静态嵌套类）**： 在Oracle公司官网有一段文字解释静态内部类和成员内部类的区别：
+
+Nested classes that are declared static are called static nested classes. Non-static nested classes are called inner classes.
+
+翻译过来就是：声明为static的嵌套类称为静态嵌套类，非static嵌套类才被成为内部类。
+
+理解这句话，关键点就在于nested和inner的区别：
+
+1. nested，嵌套，指的是：`直接把一个类丢到另一个类中，两个类其实没太大关系。` 
+2. inner，内部，指的是：`某个类本身就是另一个类的一部分，在内部。` 
+
+这其实就已经说明白了，成员内部类和静态内部类的区别：
+
+1. **成员内部类必须依赖外围类存在，创建成员内部类对象必须持有外围类对象的引用。** 
+
+2. **静态内部类和外围类就是独立的两个类，只不过静态内部类借用外围类来保护自己罢了。** 
+
+   **相比较而言，成员内部类和外围类的关系是：心脏——身体，CPU——计算机** 
+
+   **而静态内部类和外围类的关系是：寄居蟹——螺壳** 
+
+
+
+静态内部类对象和外围类对象完全独立， **静态内部类对象不会持有外围类对象引用**，所以它是内部类中的异类。实际开发中，你就将它作为一个可以定义在类的内部，隐藏自身存在的一个普通类，去使用就可以了。
+
+
+
+
+
+**静态内部类的访问特点**： 
+
+1. ### 静态内部类内部访问外围类
+
+   不管是静态内部类中的静态方法还是成员方法，都没有外围类对象存在，需要创建对象访问 (`new Outer()`) 
+
+   ```java
+   public class Demo {
+       public static void main(String[] args) {
+           Outer.Inner inner = new Outer.Inner();
+           inner.print();
+       }
+   }
+   ```
+
+   ```java
+   public class Outer {
+       private int a = 11;  
+   
+       static class Inner {
+           public void print() {
+               Outer outer = new Outer();
+               System.out.println(outer.a); // 且不受访问权限限制
+           }
+       }
+   }
+   ```
+
+   
+
+2. ### 外围类访问静态内部类成员
+
+   不管是外围类中的静态方法还是成员方法，都没有静态内部类对象存在，需要创建对象访问 (直接new对象就可以了)
+
+   ```java
+   public class Demo {
+       public static void main(String[] args) {
+           Outer outer = new Outer();
+           outer.print();
+       }
+   }
+   ```
+
+   ```java
+   public class Outer {
+       public void print() { 
+           Inner inner = new Inner();
+           System.out.println(inner.a); // 同样不受访问权限限制,即便是静态方法也一样
+       }
+   
+       static class Inner {
+           private int a = 18; 
+       }
+   }
+   ```
+
+   
+
+3. ### 外部类访问静态内部类成员
+
+   主要就是考虑权限，先要有外围类权限，再要有静态内部类权限
+
+   ![image-20220211085657120](vx_images/image-20220211085657120.png)
+
+   
+
+   
+
+4. ### 静态内部类访问外部类成员
+
+   创建对象访问即可，受权限控制
+
+   
+
+   
+
+
+
+
+
+## 3. 局部内部类
+
+是定义在一个方法或者一个作用域里面的类（看成是局部变量即可），该类的有效范围仅在作用域内部。（这意味着要创建它的对象，必须在作用域内部创建）
+
+1. **局部内部类是一种比成员内部类更加极致封装思想的体现，成员内部类在成员位置，类中都是可以访问到它的。但是局部内部类一旦出了作用域等就不再生效了。** 
+2. **局部内部类的使用会显著增加代码层级，导致代码可读性很变差，所以如无必要不要使用局部内部类。如果你在局部位置碰到问题，希望有一个对象能够解决问题，需要定义一个类，同时又希望该类不被外界所感知，仅在方法内部生效，就可以使用局部内部类。当然，局部内部类在某些时候，还能节省一些代码量，会方便一些。** 
+3. 局部内部类的成员特点和成员内部类一模一样：
+   1. 没有静态static声明，但可以创建全局常量（不触发类加载的）
+   2. 有构造方法和构造代码块
+4. 局部内部类可以继承和实现外部的类或者接口，这是局部内部类的一个重要用途
+
+注意: 局部内部类就像是方法里面的一个局部变量一样，是不能有public、protected、private以及static修饰符的
+
+
+
+
+
+**局部内部类的访问特点**： 
+
+**局部内部类访问外围类成员仍不受权限限制。但局部内部类的作用域已被限制死了，外围类中只有装着局部内部类的作用域内，能访问到该局部内部类。** 外部类已经完全无法访问到局部内部类了
+
+
+
+1. ### 局部内部类在外围类的成员方法中
+
+   外围类的成员方法中，是隐含自身类对象的引用的，并且这个引用编译器会自动加入到局部内部类中。也就是说， **处在外围类成员方法中的局部内部类，会持有外围类对象的引用。** 即可以直接在局部内部类的成员方法中，访问外围类的成员
+
+   ```java
+   public class Outer {
+       private int a = 18;
+   
+       public void print() {
+           class Inner {
+               int a = 10;
+   
+               public void method() {
+                   System.out.println("Inner a = " + a);
+                   System.out.println("Outer a = " + Outer.this.a);
+               }
+           }
+   
+           Inner inner = new Inner();
+           inner.method();
+       }
+   }
+   ```
+
+   ```java
+   public class Demo {
+       public static void main(String[] args) {
+           Outer outer = new Outer();
+           outer.print();
+       }
+   }
+   
+   /** 运行结果：
+       Inner a = 10
+       Outer a = 18
+   */
+   ```
+
+   
+
+2. ### 局部内部类在外围类的静态成员方法中
+
+   与成员方法不同的是，静态方法中，局部内部类对象不会持有外围类对象的引用
+   
+   ```java
+   public class Outer {
+       private int a = 18;
+   
+       public static void print() {
+           class Inner {
+               int a = 10;
+   
+               public void method() {
+                   System.out.println("Inner a = " + a);
+                   System.out.println("Outer a = " + new Outer().a); //想要访问外围类成员，需要创建对象
+               }
+           }
+   
+           Inner inner = new Inner();
+           inner.method();
+       }
+   }
+   ```
+   
+   ```java
+   public class Demo {
+       public static void main(String[] args) {
+           Outer .print();
+       }
+   }
+   ```
+
+
+
+
+
+
+
+
+
+<font color=red>**匿名内部类** 和 **Lambda表达式**  的本质依然是 局部内部类 </font>  
+
+
+
+## 4. 匿名内部类
+
+**即没有名字的 局部内部类**： 是指没有类名的内部类，必须在创建时使用 new 语句来声明类
+
+<font color=red>**匿名内部类的本质：是一个继承了类或者实现了接口的匿名子类对象** </font> 
 
 有两种实现方式：
 
@@ -913,16 +1194,39 @@ class OtherClass {
 - 实现一个接口（可以是多个），实现其方法。
 
 ```java
-public static void main(String[] args) {
-    int a = 10;
-    final int b = 10;
-    Out anonyInter = new Out() {
-        void show() {
-            // System.out.println("调用了匿名类的 show() 方法"+a);    // jdk1.8前的版本编译出错
-            System.out.println("调用了匿名类的 show() 方法"+b); 
-        }
-    };
-    anonyInter.show();
+public class Demo {
+    public static void main(String[] args) {
+        final int NUM = 10;
+        
+        // 继承一个类，重写其方法 （父引用接收对象，然后再用引用访问方法）
+        OuterClass oc = new OuterClass() {
+            int a = 11;
+            
+            public void show() {
+                System.out.println("匿名内部内的show");
+            }
+        };
+        oc.show();
+        // System.out.println(oc.a); // 不能访问子类独有成员（真的无法访问，无法强转，因为子类已经匿名了)
+        
+        // 直接在后面调用方法，访问它的方法（当一个匿名对象使用）
+        new OuterClass() {
+            @Override
+            public void show() {
+                super.show();
+            }
+
+            public void print() {
+                System.out.println("匿名内部类访问局部变量：NUM = " + NUM);
+            }
+        }.print();
+    }
+}
+
+class OuterClass {
+    public void show() {
+        System.out.println("OuterClass show");
+    }
 }
 ```
 
@@ -933,6 +1237,38 @@ public static void main(String[] args) {
 4. 匿名内部类为局部内部类，所以局部内部类的所有限制同样对匿名内部类生效。
 5. 匿名内部类不能是抽象的，它必须要实现继承的类或者实现的接口的所有抽象方法。
 6. 只能访问final型的局部变量。局部内部类和匿名内部类访问的局部变量必须由 final 修饰，以保证内部类和外部类的数据一致性。但从 Java 8 开始，我们可以不加 final 修饰符，由系统默认添加，当然这在 Java 8 以前的版本是不允许的。Java 将这个功能称为 `Effectively final` 功能。
+
+
+
+
+
+# 四 Other
+
+## 1. Object类
+
+Object类是所有类的父类（基类），如果一个类没有明确的继承某一个具体的类，则将默认继承Object类。
+
+```java
+public class Person{
+}
+// 其实它被使用时 是这样的：
+public class Person extends Object{
+}
+
+// Object的多态：使用Object可以接收任意的引用数据类型
+Object obj = new Person();  
+```
+
+
+
+**建议重写Object中的toString和equals方法**：
+
+- `toString`方法： 此方法的作用：返回对象的字符串表示形式。Object的toString方法， 返回对象的内存地址。
+- `equals`方法：此方法的作用：指示某个其他对象是否“等于”此对象。Object的equals方法比较的是地址值，不是对象的内容
+
+
+
+
 
 
 
