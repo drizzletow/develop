@@ -1,6 +1,6 @@
 # 一 lambda表达式
 
-## 1. lambda
+## 1. 语法简介
 
 Lambda 表达式是 JDK8 的一个新特性，可以取代接口的匿名内部类，写出更优雅的Java 代码。
 
@@ -168,6 +168,99 @@ interface IA{
 - 过于简单的Lambda表达式，显然可读性很低
 - 过于简洁也意味着不容易Debug。（当然idea有专门调试Lambda表达式的功能）
 - 语法难度不低，熟练使用需要时间锻炼
+
+
+
+
+
+## 6. 应用示例
+
+按照 **规则** 过滤字符串数组中的元素：
+
+```java
+public class FilterDemo {
+    public static void main(String[] args) {
+        String[] strArr = {"23333", "China666", "people666", "computer", "886"};
+
+        System.out.println("原数组：" + Arrays.toString(strArr));
+
+        // 过滤规则：保留所有以 666 结尾的字符串
+        String[] str1 = StringTool.getNewStringArrByFilter(strArr, str -> str.endsWith("666"));
+        System.out.println(Arrays.toString(str1));
+
+        // 过滤规则：去除所有末尾为 6 的字符串
+        String[] str2 = StringTool.getNewStringArrByFilter(strArr, str -> !str.endsWith("6"));
+        System.out.println(Arrays.toString(str2));
+    }
+
+    // 功能接口,表示过滤,表示对String数组中元素的过滤规则
+    @FunctionalInterface
+    interface StringArrFiler {
+        boolean accept(String str);
+    }
+
+    static class StringTool {
+        public static String[] getNewStringArrByFilter(String[] oldArr, StringArrFiler filter) {
+            ArrayList<String> list = new ArrayList<>();
+            for (String str : oldArr) {
+                if (filter.accept(str)) {
+                    list.add(str);
+                }
+            }
+            String[] result = new String[list.size()];
+            list.toArray(result);
+            return result;
+        }
+    }
+}
+```
+
+![image-20220212150411737](vx_images/image-20220212150411737.png)
+
+
+
+
+
+集合排序示例：
+
+```java
+public class SortDemo {
+    public static void main(String[] args) {
+        List<Student> list = new ArrayList<>();
+        list.add(new Student(1L, "张三疯", 68));
+        list.add(new Student(2L, "张无忌", 18));
+        list.add(new Student(3L, "张翠山", 38));
+
+        for (Student student : list) {
+            System.out.println(student);
+        }
+
+
+        // 在java8以前(没有Lambda表达式)对于对象排序，需要实现匿名内部类来做比较
+        System.out.println("——————————————按年龄由小到大排序——————————————");
+        Collections.sort(list, new Comparator<Student>() {
+            @Override
+            public int compare(Student o1, Student o2) {
+                return o1.getAge().compareTo(o2.getAge());
+            }
+        });
+        for (Student student : list) {
+            System.out.println(student);
+        }
+
+        // 使用Lambda表达式实现排序
+        System.out.println("——————————————按年龄由大到小排序——————————————");
+        Collections.sort(list, (o1, o2) -> o2.getAge().compareTo(o1.getAge()));
+        for (Student student : list) {
+            System.out.println(student);
+        }
+    }
+}
+```
+
+![image-20220212154115918](vx_images/image-20220212154115918.png)
+
+
 
 
 
