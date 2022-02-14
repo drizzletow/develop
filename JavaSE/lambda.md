@@ -28,6 +28,8 @@ Lambda 表达式是 JDK8 的一个新特性，可以取代接口的匿名内部�
 
 
 
+
+
 ## 2. 功能接口
 
 Lambda表达式虽然说是取代接口的匿名内部类，但也不是什么接口都能用Lambda表达式创建子类对象。
@@ -64,6 +66,8 @@ interface IA{
 
 
 
+
+
 ## 3. 类型推断
 
 在方法等局部位置，写上述语法后，肯定会报错。原因在于Java是强类型语言，任何变量都有它的数据类型，而直接写Lambda表达式语言，编译器是无从得知它的数据类型的——**这个Lambda表达式创建了接口的子类对象，到底是哪个接口的子类对象呢？**
@@ -95,10 +99,9 @@ interface IA{
 3. **借助方法完成类型推断（最主要的使用方式）**  
 
    1. 可以借助方法的返回值数据类型完成类型推断，因为方法的返回值编译器已经知道该返回什么对象
-
    2. 可以借助方法的形参的数据类型完成类型推荐，因为方法的实参编译器已经知道该传入什么对象
 
-      
+
 
 ## 4. 简化使用
 
@@ -138,6 +141,80 @@ interface IA{
       double add(double a, double b);
   }
   ```
+
+
+
+```java
+/**
+ * @Classname Demo
+ * @Description 一些Lambda表达式的简单使用示例
+ * @CreateTime 2022/2/12 13:58
+ * @CreatedBy itdrizzle
+ */
+public class Demo {
+    public static void main(String[] args) {
+        INoReturnNoParam nrnp = () -> System.out.println("无返回值无参数的功能接口");
+        nrnp.test();
+
+        INoReturnOneParam nrop = a -> System.out.println("无返回值有一个参数的功能接口, a = " + a);
+        nrop.test(11);
+
+        INoReturnTwoParam nrtp = Demo::method;
+        nrtp.test(1, 2);
+
+        IHasReturnNoParam hrnp = () -> 111;
+        System.out.println("有返回值无参数的功能接口, 方法的返回值为：" + hrnp.test());
+
+        IHasReturnOneParam hrop = a -> a * 2;
+        System.out.println("有返回值一个参数的功能接口, a * 2 = " + hrop.method(3));
+
+        IHasReturnTwoParam hrtp = (int a, int b) -> a + b;
+        System.out.println("有返回值两个参数的功能接口, 两数之和为：" + hrtp.test(1, 1));
+    }
+
+    public static void method(int a, int b){
+        System.out.println("无返回值两个参数的功能接口, a = " + a + ", b = " + b);
+    }
+}
+
+//无返回值无参数的功能接口
+@FunctionalInterface
+interface INoReturnNoParam {
+    void test();
+}
+
+//无返回值有一个参数的功能接口
+@FunctionalInterface
+interface INoReturnOneParam {
+    void test(int a);
+}
+
+//无返回值两个参数的功能接口
+@FunctionalInterface
+interface INoReturnTwoParam {
+    void test(int a, int b);
+}
+
+//有返回值无参数的功能接口
+@FunctionalInterface
+interface IHasReturnNoParam {
+    int test();
+}
+
+//有返回值一个参数的功能接口
+@FunctionalInterface
+interface IHasReturnOneParam {
+    int method(int a);
+}
+
+//有返回值两个参数的功能接口
+@FunctionalInterface
+interface IHasReturnTwoParam {
+    int test(int a, int b);
+}
+```
+
+![image-20220212155127508](vx_images/image-20220212155127508.png)
 
 
 
@@ -221,7 +298,7 @@ public class FilterDemo {
 
 
 
-集合排序示例：
+**集合排序**示例：
 
 ```java
 public class SortDemo {

@@ -766,7 +766,58 @@ abstract class class_name {
 
 
 
-## 7. is-a & has a
+## 7. 包装类
+
+在Java中有一个设计的原则“一切皆对象”，那么这样一来Java中的一些基本的数据类型，就完全不符合于这种设计思
+想，因为Java中的八种基本数据类型并不是引用数据类型，所以Java中为了解决这样的问题，引入了八种基本数据类型
+的包装类。八种包装类也是分为两种大的类型的：
+
+- Number：Integer、Short、Long、Double、Float、Byte都是Number的子类，表示是一个数字。
+- Object：Character、Boolean都是Object的直接子类。
+
+
+
+**装箱和拆箱**：
+
+- 基本数据类型转换为包装类的过程称为装箱，例如把 int 包装成 Integer 类的对象；
+
+- 包装类变为基本数据类型的过程称为拆箱，例如把 Integer 类的对象重新简化为 int。
+
+```java
+// 装箱操作：
+// 在JDK1.4及之前 ，如果要想装箱，直接使用各个包装类的构造方法即可，例如：
+int temp = 10 ;                
+Integer x = new Integer(temp) ; // 将基本数据类型变为包装类
+
+// 从JDK1.5起，Java新增了自动装箱和自动拆箱，而且可以直接通过包装类进行四则运算和自增自建操作。例如：
+Float f = 10.3f ; // 自动装箱
+float x = f ;     // 自动拆箱
+```
+
+
+
+**字符串与数值的转换**：
+
+```java
+public class Demo {
+    public static void main(String[] args) {
+        String str1 = "30";
+        String str2 = "30.3";
+        
+        int x = Integer.parseInt(str1);    // 将字符串变为int型
+        float f = Float.parseFloat(str2);  // 将字符串变为float型
+        
+        int num = 500;
+        String s = Integer.toString(num);  // 将整数转换为字符串
+    }
+}
+```
+
+
+
+
+
+## 8. is-a & has a
 
 面向对象的核心思想是：抽象、封装、继承、多态。在实践中用的比较多的术语就是 is a（是一个） ，和 has a（有一个）
 
@@ -797,7 +848,10 @@ abstract class class_name {
   } 
   ```
 
-  
+
+
+
+
 
 
 
@@ -1242,86 +1296,426 @@ class OuterClass {
 
 
 
-# 四 Other
+# 四 Object类
 
-## 1. Object类
+Object类是所有类继承层次的祖先类，Java中所有类（包括数组）都直接或者间接的继承自该类，都实现了该类的方法
 
-Object类是所有类的父类（基类），如果一个类没有明确的继承某一个具体的类，则将默认继承Object类。
+- 自定义类时，我们并不需要特别的标注`extends Object`，这是一个隐式的继承。如果一个类没有明确的指出它的父类，Object类就默认是这个类的父类
+
+- **Object是没有成员变量定义的，并且由于子类对象的隐式初始化，Object类有且仅有一个默认提供的无参构造方法。所以我们学习Object类，主要关注它的成员方法** 
+
+  - `getClass()`方法是Java反射的前置知识点。
+  - `toString()`方法提供了将对象字符串化的方式。
+  - `equals(Object obj)` **方法用于判断对象相等，非常重要。**
+  - `hashCode()`**方法用于获取哈希值，在集合使用中非常重要。**
+  - `finalize()`方法，仅作了解，实际意义很小。
+  - `clone()`方法，一种创建对象的新方式。
+
+  注：像`notify()`、`wait()`等成员方法的详细功能，在Java的线程相关笔记中
+
+
+
+
+
+## 1. toString
+
+**在Java中，如果直接打印一个对象名（引用名），默认就会调用该类的toString方法**, 如果类中没有重写该方法，就会去使用Object类的默认实现 （把对象名和字符串操作连接起来的地方，会自动调用对象的`toString`方法）
+
+
+
+关于`toString`方法的作用，在JDK文档中，有详细的说明，主要说以下四点：
+
+1. 返回该对象（调用toString方法的对象）的字符串表示。
+2. 通常，`toString`方法会返回一个“以文本方式表示”此对象的字符串。
+3. 结果应是一个简明但易于读懂的信息表达式。
+4. 建议所有子类都重写此方法。toString方法的默认实现是输出：`全限定类名 +  @  +  对象的十六进制地址值` 
+
+
+
+
+
+**注意事项**：
+
+- toString方法就是**为了完成打印成员变量取值的工作的，不要在里面写一些奇怪的代码**。 
+
+  IDEA的debug模式下，会自动调用类的toString方法，去在界面上展示对象。如果你在toString方法中写赋值语句，就会导致debug报错，但正常run不报错的奇怪情况
+
+- toString方法可以快速自动生成，仍然用alt+insert。一般情况下，没有特殊需求，直接自动生成即可，没有必要手写。
+- 如果类中有（自定义）引用数据类型成员变量，也需要重写它的toString方法，不然就会打印地址值了。
+- 为了避免空指针异常，**打印对象名或对象名拼接字符串中**的**隐含调用的toString方法**能不写出来就不要写出来，不要画蛇添足。
+
+
+
+## 2. equals
+
+用于指示其他某个对象是否与此对象 "相等"
 
 ```java
-public class Person{
-}
-// 其实它被使用时 是这样的：
-public class Person extends Object{
-}
+public boolean equals(Object obj)
+```
 
-// Object的多态：使用Object可以接收任意的引用数据类型
-Object obj = new Person();  
+- 该方法是有参数的，需要传入一个对象（任意一个对象就行）
+- 方法是有返回值的，返回一个布尔类型的值，真或假
+
+
+
+**equals默认实现**： 
+
+```java
+public boolean equals(Object obj) {
+ return (this == obj);
+}
+```
+
+双等号直接连接引用，比较对象的地址。即比较两个引用是否指向同一个对象，只有当两个引用完全指向同一个对象时，方法才会返回true，否则都会返回false
+
+
+
+**重写equals方法的常规协定**： Java官方为我们提供了官方的要求，称之为`equals方法重写的常规协定`：
+
+1. 自反性：对于任何非空引用值 x，`x.equals(x)`都应返回 true
+2. 排他性：当比对的不是同种类型的对象或者是一个null时，默认返回false
+3. 对称性：对于任何非空引用值 x 和 y，当且仅当`y.equals(x)` 返回 true 时，x.equals(y) 才应返回true
+4. 传递性：对于任何非空引用值 x、y 和 z，如果`x.equals(y)`返回 true，并且 `y.equals(z)` 返回 true，那么`x.equals(z)` 应返回 true。
+5. 一致性：对于任何非空引用值 x 和 y，多次调用 `x.equals(y)`始终返回 true 或始终返回 false。
+
+以上5点常规协定， **其中自反性和排它性需要写代码做判断，而对称性，一致性，传递性，只需要用成员变量的取值来判断对象相等，就自动满足它们。** 
+
+```java
+// Animal类的 equals 方法重写示例：
+@Override
+    public boolean equals(Object obj) {
+        // 自反性：即自己和自己比较,应该无条件返回tru
+        if (this == obj) {
+            return true;
+        }
+        // 排他性：如果传入的对象不是同种类型对象或者为null,直接认定不相等,返回false
+        // 1.严格判断是否同一个类型
+        if (obj == null || this.getClass() != obj.getClass()) {
+            return false;
+        }
+        // 2. 允许子类传入
+        /* if(!(obj instanceof Animal)){
+            return false;
+        }
+         */
+
+        // 用成员变量的取值来判断对象相等,对称性,传递性,一致性自动满足
+        Animal animal = (Animal) obj;
+        return this.age == animal.age && Objects.equals(animal.name, this.name) &&
+           	   Double.compare(this.price, animal.price) == 0;
+    }
 ```
 
 
 
-**建议重写Object中的toString和equals方法**：
+**重写equals方法的注意事项**： 
 
-- `toString`方法： 此方法的作用：返回对象的字符串表示形式。Object的toString方法， 返回对象的内存地址。
-- `equals`方法：此方法的作用：指示某个其他对象是否“等于”此对象。Object的equals方法比较的是地址值，不是对象的内容
+- 在实现排他性时，实际上有两种选择：
+
+  - **使用getClass方法比较**。  **这个比较是比较苛刻的，只有在完全是同一个类型时才会返回true** 
+  - **使用instanceof比较**。 这个比较的条件就比较宽松了，可以允许传入子类对象
+
+- equals方法也是可以用快捷键自动生成的，使用快捷键`alt + insert`。而且可以选择在实现`排它性`时的方式。
+
+- 浮点数比较特殊，它具有规格化和非规格化的区别，还有非数(NaN)，无穷大，无穷小很多特殊的概念，正常情况下，如果仅仅比较数值，用`==`比较相等是够用的。但为了避免因浮点数特殊值，而出现的错误。实际开发中，从严谨角度出发，浮点数的比较仍然建议使用对应包装类型的`compare`方法去比较浮点数的大小：
+
+  1. Float.compare(float a,float b)
+  2. Double.compare(double a,doublet b)
+
+  这两个方法在,a < b时返回-1(负数)，在a>b时，返回1(正数)，只有在两个浮点数相等时，才会返回0
+
+- 如果类中有引用数据类型成员变量，需要去调用它们的equals方法完成比较。这就意味着还需要重写这个类的equals方法。
+
+- 财务金额上的运算是不推荐使用浮点数的，会出现精度问题。推荐使用`BigDecimal`这个类完成运算
 
 
 
+## 3. hashCode
 
-
-
-
-## 2. 包装类
-
-在Java中有一个设计的原则“一切皆对象”，那么这样一来Java中的一些基本的数据类型，就完全不符合于这种设计思
-想，因为Java中的八种基本数据类型并不是引用数据类型，所以Java中为了解决这样的问题，引入了八种基本数据类型
-的包装类。八种包装类也是分为两种大的类型的：
-
-- Number：Integer、Short、Long、Double、Float、Byte都是Number的子类，表示是一个数字。
-- Object：Character、Boolean都是Object的直接子类。
-
-
-
-**装箱和拆箱**：
-
-- 基本数据类型转换为包装类的过程称为装箱，例如把 int 包装成 Integer 类的对象；
-
-- 包装类变为基本数据类型的过程称为拆箱，例如把 Integer 类的对象重新简化为 int。
+Java中的hashCode方法表示一种哈希映射的规则，它把一个无限大小的集合(某个类的对象)，映射到一个有限大小的集合(int整数)
+即把一个对象变成一个int整数，这个int整数就是该对象的哈希值。在这个过程中,可能会出现"多对一"的情况,称之为"哈希冲突".
 
 ```java
-// 装箱操作：
-// 在JDK1.4及之前 ，如果要想装箱，直接使用各个包装类的构造方法即可，例如：
-int temp = 10 ;                
-Integer x = new Integer(temp) ; // 将基本数据类型变为包装类
+public native int hashCode();
+```
 
-// 从JDK1.5起，Java新增了自动装箱和自动拆箱，而且可以直接通过包装类进行四则运算和自增自建操作。例如：
-Float f = 10.3f ; // 自动装箱
-float x = f ;     // 自动拆箱
+它是一个本地方法，返回该对象的哈希码值。支持此方法是为了提高哈希表（例如 java.util.Hashtable 提供的哈希表）的性能
+
+
+
+Object类当中的哈希算法实现（本地方法）：是根据对象的地址计算出一个十进制int整数
+
+- 如果对象的地址一样(同一个对象) 那么它们的哈希值是一定相同的(因为映射的定义告诉我们,集合A唯一映射集合B)
+*      反之，如果不是同一个对象,一般来说哈希值是不同的.(但是出现相同的情况,也很正常,因为哈希冲突)
+
+
+
+**重写hashCode方法**： equals方法和hashCode方法要么都不重写,要么必须都同时重写（ 如果都不重写的话,它们都 是依据地址来计算的） ，即和equals方法保证一样的重写规则：使用相同的成员变量的取值重写
+
+<font color=red> 一般来说,使用IDEA自动生成就可以了.如果有特殊需求,可以自己重写 </font>  
+
+
+
+注意事项：
+
+- toString方法的默认实现, 会调用该对象的hashCode方法、默认的hashCode方法实现是通过计算地址得到的一个值
+       但是如果重写过hashCode方法,尤其是通过成员变量的取值重写,那么默认的toString方法就不会再打印地址值了.
+       所以如果重写了hashCode方法,可以顺手一起重写toString方法
+- 如果类中有引用数据类型成员变量,建议一起重写该类的hashCode方法
+
+
+
+
+
+## 4. clone
+
+clone就是克隆,Java中的克隆是通过一个对象,获取一个和原先对象完全相同,但又相对独立的对象。
+
+clone方法是完全不同于new对象的一种创建对象的方式,不依赖于构造器,依赖于本地方法创建对象。
+
+
+
+clone方法的使用步骤：
+
+- 继承 java.lang.Cloneable接口
+- 重写方法（突破protected访问权限的限制）
+- 重写返回值类型(选 做,非必须)
+
+
+
+注意事项：
+
+```
+1.clone方法和new对象是平行的两种创建对象方式,clone不会调用构造方法
+2.Cloneable接口说明,它是一个比较特殊的接口,它是一个空接口,它完全没有抽象方法.
+  空接口的作用,它是一种标记接口，实现它虽然不能新增成员,但是能够允许做某些操作
+3.clone方法不是final修饰的,如果确有必须,是可以重写的(这种需求很少见,一般使用Object类的默认实现就足够了)
+*      重写clone方法的原则:
+*          1. x.clone() != x 为 true
+*          2. x.clone().getClass() == x.getClass() 一般也为true
+*          3. x.clone().equals(x) 一般情况下也为true
+
+上述规定告诉我们：
+1. 克隆必须是一个新的独立的对象
+2. 克隆最好不要改变数据类型，除非你真的有需要。
+3. 克隆后的两个对象调用equals方法，应该返回true。前提是，必须按照成员变量的取值重写equals方法。
+   如果equals方法没有重写,依据地址比较两个对象,那结果肯定是false.
 ```
 
 
 
-**字符串与数值的转换**：
+**深度克隆**： 
+
+- 如果类中有引用数据类型的成员变量,那就需要做深度克隆,来保证两个对象完全独立 
+- 如果引用数据类型的成员变量的类中,还有引用数据类型,再做一次深度克隆即可 
+
+在浅拷贝的基础上, 继续克隆成员变量引用所指向的对象,然后让克隆引用指向克隆后对象、最后克隆对象即可和原先对象保持完全独立
 
 ```java
-public class Demo {
-    public static void main(String[] args) {
-        String str1 = "30";
-        String str2 = "30.3";
-        
-        int x = Integer.parseInt(str1);    // 将字符串变为int型
-        float f = Float.parseFloat(str2);  // 将字符串变为float型
-        
-        int num = 500;
-        String s = Integer.toString(num);  // 将整数转换为字符串
+public class CloneDemo {
+    public static void main(String[] args) throws CloneNotSupportedException {
+        Teacher t1 = new Teacher(22, "张三", new Student(12, "李四", new Star(18, "如花")));
+        Teacher cloneTeacher = t1.clone();
+
+        System.out.println(t1.stu);
+        System.out.println(cloneTeacher.stu);
+
+        System.out.println(t1.stu.s);
+        System.out.println(cloneTeacher.stu.s);
+
+        System.out.println(t1.stu == cloneTeacher.stu);
+        System.out.println(t1.stu.s == cloneTeacher.stu.s);
+    }
+}
+
+class Teacher implements Cloneable {
+    int age;
+    String name;
+    Student stu;
+
+    public Teacher() {
+    }
+
+    public Teacher(int age, String name, Student stu) {
+        this.age = age;
+        this.name = name;
+        this.stu = stu;
+    }
+
+    @Override
+    protected Teacher clone() throws CloneNotSupportedException {
+        Teacher result = (Teacher) super.clone();
+        result.stu = (Student) this.stu.clone();
+        return result;
+    }
+}
+
+class Student implements Cloneable {
+    int age;
+    String name;
+    Star s;
+
+    public Student() {
+    }
+
+    public Student(int age, String name, Star s) {
+        this.age = age;
+        this.name = name;
+        this.s = s;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        Student cloneStudent = (Student) super.clone();
+        cloneStudent.s = (Star) this.s.clone();
+        return cloneStudent;
+    }
+}
+
+class Star implements Cloneable {
+    int age;
+    String name;
+
+    public Star() {
+    }
+
+    public Star(int age, String name) {
+        this.age = age;
+        this.name = name;
+    }
+
+    @Override
+    protected Star clone() throws CloneNotSupportedException {
+        return (Star) super.clone();
     }
 }
 ```
 
+![image-20220214205624892](vx_images/image-20220214205624892.png)
 
 
-## 3. Java异常
+
+
+
+## 5. finalize
+
+```java
+protected void finalize() throws Throwable { }
+```
+
+finalize方法在Java中,是一个比较失败的设计.它是模仿借鉴自C++中的析构函数,来实现析构函数的作用,但是没有成功.（finalize方法仅做了解即可）
+
+
+C++中和对象生命周期相关的两个函数:
+
+- 和对象的"出生"相关的,构造函数.——对应Java的构造器或者构造方法
+
+- 和对象的"销毁"相关的,析构函数.——对应Java的finalize方法
+
+析构函数的作用是在销毁对象的同时,释放对象所占内存空间的同时,释放掉对象所占用的系统资源
+
+对象往往会占用两种资源:
+
+* 自身存储所占的内存空间
+
+* 对象实现功能,需要占用系统的额外资源.
+
+  (比如对象做IO操作时,需要占用的系统IO资源,还有做数据库操作时占用数据库资源,网络操作时,占用的网络资源)
+
+  
+
+资源1,往往都可以正常释放资源,而资源2也需要释放,如果对象一直占用系统资源,就会导致系统资源一直被占用却不使用的情况.
+
+C++的析构函数就是来释放对象所占的额外资源的,做对象"销毁"的善后工作，finalize方法和析构函数类似,也是在对象销毁的同时被JVM自动调用, 理想情况下,Java程序员也可以把释放资源代码写入finalize方法，达到销毁对象的同时,释放对象所占系统资源的目的.
+
+但是这种想法是实现不了的(C++中可以实现,Java中不行)这和GC是相关的,C++中的对象销毁具有准时性和确定性,析构函数的执行也具有确定性,能够及时的释放系统资源，但是Java的GC具有不确定性和非准时性,连带着finalize方法的执行也是不确定的,释放资源是非常重要的事情,重要的事情不能交给不靠谱的"人"做.
+
+释放资源需要及时释放，所以Java中的,对象所占资源释放是全手动的,需要程序员手动完成,这样才能保证及时释放资源.
+
+
+```java
+// java垃圾回收具有 不确定性和非准时性 的实例说明
+public class FinalizeDemo {
+    public static void main(String[] args) {
+        // 创建匿名对象
+        new Person();
+        // 通知GC进行垃圾回收,一旦GC回收匿名对象A,那么该类的finalize方法会自动执行
+        System.gc();
+    }
+}
+
+class Person {
+    @Override
+    protected void finalize() throws Throwable {
+        System.out.println("释放资源!");
+    }
+}
+```
+
+多次运行上述代码，有时打印 "释放资源!"，有时又不打印，表示垃圾回收具有不确定性和非准时性
+
+![image-20220214210814669](vx_images/image-20220214210814669.png)
+
+
+
+
+
+## 6. getClass
+
+通过一个本地方法的实现，去获取Class对象
+
+```java
+public final native Class<?> getClass();
+```
+
+
+
+**Class对象（运行时类对象）**： 
+
+- **程序运行期间，JVM通过类加载能够了解某个类型的信息，那如果程序员也想在程序的运行期间获取某个类的类型信息呢？** （这种需求是很常见的，因为如果运行期间程序员也能获取类型信息，那就意味着程序具有了动态性，大大提升程序的灵活性。）
+
+- 为了满足程序员的这种需求，于是，JVM在类加载某个类的同时，会在堆上会自动创建一个该类的**运行时类对象**，也就是这个类的Class对象。Class对象当中，包含了该类的所有类型信息**（比如类名，方法、变量、构造器等）** 
+
+![image-20220214124021669](vx_images/image-20220214124021669.png)
+
+
+
+
+
+**使用`getClass`方法的注意事项** ：
+
+- 对象是JVM在类加载时创建的，不是`getClass`方法创建的。Class对象和某个类的对象也没有关系（还有几种获取Class对象的方式，可以不创建某个类的对象也能获取类的Class对象
+- **一个类的类加载只有一次，同一个类型的运行时Class对象在内存中，也只有唯一一个。**而不同类的Class对象必然不是同一个对象。 **这一点是非常重要的，用这个特点，可以判断两个引用所指向的对象是否是同一个类型的对象** 
+- 运行时类的Class对象只有一个，而类的对象可以有无数个。有时，我们也把类的运行时对象，称之为"类对象"。而具体的类的对象，称之为"类的对象"
+
+```java
+public class ClassDemo {
+    public static void main(String[] args) {
+        Cat cat1 = new Cat();
+        Cat cat2 = new Cat();
+        System.out.println(cat1.getClass());
+        System.out.println(cat2.getClass());
+
+        Animal ac = new Cat();
+        System.out.println(ac.getClass());
+        System.out.println(cat1.getClass() == cat2.getClass() && cat1.getClass() == ac.getClass()); // true
+    }
+}
+
+class Animal{}
+class Cat extends Animal{}
+```
+
+![image-20220214103004016](vx_images/image-20220214103004016.png)
+
+
+
+
+
+# 五 Java异常
+
+## 1. 异常简介
 
 Java中的异常是一个在程序执行期间发生的事件，它中断正在执行程序的正常指令流。
 
@@ -1380,7 +1774,7 @@ try{
 
 
 
-## 4. finally和return
+## 2. finally和return
 
 上面提到过除非在try块、catch块中调用了退出虚拟机的方法`System.exit(int status)`，否则finally语句块都会执行，但是当有return语句块存在时，返回值有时却会让人误解
 
@@ -1480,7 +1874,7 @@ public class ExceptionDemo2 {
 
 
 
-## 5. throw和throws
+## 3. throw和throws
 
 **throws 声明异常**：
 
@@ -1516,7 +1910,7 @@ throw ExceptionObject;  // ExceptionObject 必须是 Throwable 类或其子类�
 
 
 
-## 6. 自定义异常
+## 4. 自定义异常
 
 如果 Java提供的内置异常类型不能满足程序设计的需求，这时我们可以自己设计 Java 类库或框架，其中包括异常类型。实现自定义异常类需要继承 Exception 类或其子类，如果自定义运行时异常类需继承 RuntimeException 类或其子类。
 
