@@ -86,7 +86,7 @@
 
 ​	假设我们现在需要开发一个最简单的java程序（以HelloWorld为例），那么就需要了解java程序的运行过程：
 
-![image-20220214214143886](vx_images/image-20220214214143886.png)
+![image-20220214223232988](vx_images/image-20220214223232988.png)
 
 
 
@@ -112,7 +112,7 @@
 
 如果需要开发java程序，必须先安装JDK：
 
-1. 官网下载地址：https://www.oracle.com/cn/index.html
+1. 官网下载地址：https://www.oracle.com/cn/index.html 
 
 2. 无脑安装、配置环境变量即可
 
