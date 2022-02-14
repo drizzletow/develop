@@ -130,7 +130,9 @@ public class HelloWorld {
 }
 ```
 
-![image-20210930214733019](vx_images/image-20210930214733019.png)
+![image-20210930214733019](../vx_images/image-20210930214733019.png)
+
+
 
 # 三 Eclipse
 
@@ -138,7 +140,7 @@ public class HelloWorld {
 
 1. 官网下载地址：https://www.eclipse.org/downloads/packages/ （该地址直接到下载界面，如下：）
 
-![image-20210930215702909](vx_images/image-20210930215702909.png)
+![image-20210930215702909](vx_images/image-20210930215702909-16448449150812.png)
 
 2. 安装： 解压即可
 
@@ -146,7 +148,7 @@ public class HelloWorld {
 
 ## 2. 创建 Java 工程
 
-![image-20210930220715630](vx_images/image-20210930220715630.png)
+![image-20210930220715630](vx_images/image-20210930220715630-16448449022921.png)
 
 
 
@@ -174,13 +176,13 @@ public class ShutdownDemo {
 .ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
 ```
 
-![image-20210930222024886](vx_images/image-20210930222024886.png)
+![image-20210930222024886](vx_images/image-20210930222024886-16448449293303.png)
 
 
 
 如需要键入输出语句时：
 
-![image-20210930222252395](vx_images/image-20210930222252395.png)
+![image-20210930222252395](../vx_images/image-20210930222252395.png)
 
 
 
