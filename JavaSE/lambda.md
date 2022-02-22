@@ -298,6 +298,8 @@ public class FilterDemo {
 
 
 
+## 7. 自然排序
+
 **集合排序**示例：
 
 ```java

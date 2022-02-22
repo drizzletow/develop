@@ -112,7 +112,7 @@
 
 如果需要开发java程序，必须先安装JDK：
 
-1. 官网下载地址：https://www.oracle.com/cn/index.html 
+1. 官网下载地址：https://www.oracle.com/java/technologies/downloads/ 
 
 2. 无脑安装、配置环境变量即可
 

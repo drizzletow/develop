@@ -1,10 +1,4 @@
-# 一 JavaIO
-
-Java中所有数据都是使用流读写的。流是一组有序的数据序列，将数据从一个地方带到另一个地方。根据数据流向的不同，可以分为输入（Input）流和输出（Output）流两种。
-
-
-
-## 1. File类
+# 一 File类
 
 File类是文件和目录路径名的抽象表示，文件和目录都可以通过File封装成对象，对于File而言，其封装的并不是一个真正存在的文件，仅仅是一个路径名而已。它可以是存在的，也可以是不存在的。将来可以通过具体的操作把这个路径的内容转换为具体存在
 
@@ -24,6 +18,8 @@ File file2 = new File(".\\data\\b.txt");
 ```
 
 
+
+## 1. 常用方法
 
 **创建、删除文件/目录**：
 
@@ -63,6 +59,7 @@ if(!file1.exists()) file1.createNewFile();
 | 方法名称                      | 说明                                                         |
 | ----------------------------- | ------------------------------------------------------------ |
 | String getAbsolutePath()      | 返回由该对象表示的文件的绝对路径名                           |
+| String getPath()              | 返回构造file时候的路径                                       |
 | String getName()              | 返回表示当前对象的文件名或路径名（如果是路径，则返回最后一级子路径名） |
 | String getParent()            | 返回当前 File 对象所对应目录（最后一级子目录）的父目录名     |
 | long lastModified()           | 返回当前 File 对象表示的文件最后修改的时间                   |
@@ -70,9 +67,60 @@ if(!file1.exists()) file1.createNewFile();
 | String[] list()               | 返回当前 File 对象指定的路径文件列表                         |
 | String[] list(FilenameFilter) | 返回当前 File 对象指定的目录中满足指定过滤器的文件列表       |
 
+【注】因为 `getPath()` 得到的是构造file的时候的路径，如果构造的时候就是全路径那直接返回全路径
+
+  		 如果构造的时候为相对路径，返回的就是构造file时候的路径
+
+```java
+public class FileDemo {
+    public static void main(String[] args) {
+        File file = new File("..\\temp\\a.txt");
+        System.out.println(file.getPath());
+        System.out.println(file.getAbsolutePath());
+
+        File file1 = new File("E:\\WorkPlace\\Java\\Demo\\temp");
+        System.out.println("\n" + file1.getPath());
+        System.out.println(file1.getAbsolutePath() + "\n");
+    }
+}
+```
+
+![image-20220217202032863](vx_images/image-20220217202032863.png)
 
 
-**File 类中有以下两个常用常量**：（File 类出现较早，当时并没有对命名规范有严格的要求）
+
+## 2. FileFilter
+
+**文件过滤器** `FileFilter` 的三种应用方式： 
+
+- 手写实现类
+- 匿名内部类
+- lambda表达式
+
+```java
+// 通过匿名内部类和Lambda表达式过滤文件
+public class ListFileDemo {
+    public static void main(String[] args) {
+        File file = new File("app2");
+
+        // 匿名内部类
+        File[] f1 = file.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                // 仅留下文件夹名包括a的文件夹
+                return pathname.isDirectory() && pathname.getName().contains("a");
+            }
+        });
+
+        // Lambda表达式, 仅留下.txt结尾的文本文件
+        File[] f2 = file.listFiles(f -> f.isFile() && f.getName().endsWith(".txt"));
+    }
+}
+```
+
+
+
+【注】**File 类中有以下两个常用常量**：（File 类出现较早，当时并没有对命名规范有严格的要求）
 
 - `pathSeparator`：分隔连续多个路径字符串的分隔符
 - `separator`：目录分隔符
@@ -86,57 +134,47 @@ public static final String separator     //Windows下指`/`
 
 
 
-## 2. 流的分类
+# 二 Java IO流
+
+## 1. 流的分类
+
+Java中所有数据都是使用流读写的。流是一组有序的数据序列，将数据从一个地方带到另一个地方。
 
 数据流是 Java 进行 I/O 操作的对象，它按照不同的标准可以分为不同的类别。
 
-- 按照流的方向主要分为：输入流、输出流
+- 按照流的方向主要分为：输入（Input）流和输出（Output）流两种
+
+  ![image-20220217210243271](vx_images/image-20220217210243271.png)
+
 - 数据流按照数据单位的不同分为：字节流、字符流
+
+  - 字节流: 逻辑单位是字节,一个字节一个字节的传输 0000 0000   1B
+
+  - 字符流: 逻辑单位是字符(理解为一种文化符号, 你好, ABC, の)，一个字符一个字符的传输
+
+  - 一般情况下，如果是文本文件,一般采用字符流方便一些，对于非文本文件,一般采用字节流(字节流是万能的)
+
+    
+
 - 按照功能可以划分为：节点流、处理流
 
 
+
+**常用的IO流实现类**：
 
 ![image-20211018023119385](vx_images/image-20211018023119385.png)
 
 
 
-## 3. 系统流和编码
-
-每个 Java程序运行时都带有一个系统流，系统流对应的类为 java.lang.System。Sytem 类封装了 Java 程序运行时的 3 个系统流：
-
-- `System.in`：标准输入流，默认设备是键盘
-- `System.out`：标准输出流，默认设备是控制台
-- `System.err`：标准错误流，默认设备是控制台
 
 
 
-- System.in 是 InputStream 类的一个对象
 
-- System.out 和 System.error 是 PrintStream 类的对象
+## 2. 字节流
 
-```java
-public final static InputStream in = null;
-public final static PrintStream out = null;
-public final static PrintStream err = null;
-```
+![image-20220218161429055](vx_images/image-20220218161429055.png)
 
-
-
-**Java 中常见编码说明如下**：
-
-- `ISO8859-1`：属于单字节编码，最多只能表示 0~255 的字符范围。向下兼容ASCII
-- `GBK/GB2312`：中文的国标编码，用来表示汉字，属于双字节编码。GBK 可以表示简体中文和繁体中文，而 GB2312 只能表示简体中文。GBK 兼容 GB2312。
-- `Unicode`：是一种编码规范，是为解决全球字符通用编码而设计的。UTF-8 和 UTF-16 是这种规范的一种实现，此编码不兼容 ISO8859-1 编码。Java 内部采用此编码。
-- `UTF`：UTF 编码兼容了 ISO8859-1 编码，同时也可以用来表示所有的语言字符，不过 UTF 编码是不定长编码，每一个字符的长度为 1~6 个字节不等。一般在中文网页中使用此编码，可以节省空间。
-
-```java
- // 获取当前系统编码
- System.out.println("系统默认编码：" + System.getProperty("file.encoding"));
-```
-
-
-
-## 4. 字节流
+### OutputStream
 
 **字节输出流**：（OutputStream 类的常用方法）
 
@@ -146,7 +184,9 @@ public final static PrintStream err = null;
 - `void close()`：关闭输出流
 - `void flush()`：使用 flush() 方法则可以强制将缓冲区中的数据写入输出流， 并清空缓冲区
 
-在创建 FileOutputStream 类的对象时，如果指定的文件不存在，则创建一个新文件；如果文件已存在，则清除原文件的内容重新写入
+
+
+在创建 FileOutputStream 类的对象时，如果指定的文件不存在，则创建一个新文件；**如果文件已存在，则清除原文件的内容重新写入**
 
 ```java
 public class OutputStreamDemo {
@@ -162,10 +202,10 @@ public class OutputStreamDemo {
         byte[] b2 = ",abcde".getBytes();
         fos.write(b);
         fos.write(b2);
-        //      指定写入的字节数组内容
+        // 指定写入的字节数组内容
         fos.write(b2,0,b2.length);
 
-        // 3. 写数据时如何实现换行？ （各个操作系统的换行符不同 win: \r\n  mac: \r  linux: \n ）
+        // 3. 写数据时如何实现换行？ （ ）
         fos.write("\n\r".getBytes());
         for (int i = 0; i < 5; i++) {
             fos.write("Hello\n\r".getBytes());
@@ -175,7 +215,27 @@ public class OutputStreamDemo {
 }
 ```
 
+【注】两种输出换行符的方式：
 
+- `System.lineSeparator() ` 根据不同的操作系统使用对应的换行符
+
+- 各个操作系统的换行符不同 win: `\r\n` ，  mac: `\r` ,   linux: `\n` ，直接使用 `\r\n` 即可三个平台都生效
+
+  | 缩写  | ASCⅡ转义 | 系统                   | ASCⅡ值 |
+  | ----- | -------- | ---------------------- | ------ |
+  | CR    | \r       | MacIntosh（早期的Mac） | 13     |
+  | LF    | \n       | Unix/Linux/Mac OS X    | 10     |
+  | CR LF | \r\n     | Windows                |        |
+
+  - CR：Carriage Return，对应ASCII中转义字符\r，表示回车
+  - LF：Linefeed，对应ASCII中转义字符\n，表示换行
+  - CRLF：Carriage Return & Linefeed，\r\n，表示回车并换行
+
+
+
+
+
+### InputStream
 
 **字节输入流**：（InputStream 类的常用方法）
 
@@ -183,13 +243,13 @@ public class OutputStreamDemo {
 
   如果返回 -1，则表示已经到了输入流的末尾。为了提高 I/O 操作的效率，建议尽量使用 read() 方法的另外两种形式
 
-- `int read(byte[] b)`：从输入流中读取若干字节，并把它们保存到字节数组中
+- `int read(byte[] b)`：从输入流中读取若干字节，并把它们保存到字节数组中。返回结果读到数组中的字节数
 
 - `int read(byte[] b, int off, int len)`：off 指定在字节数组中开始保存数据的起始下标；len 指定读取的字节数
 
 - `void close()`：关闭输入流
 
-- `int available()`：返回可以从输入流中读取的字节数
+- `int available()`：返回可以从输入流中读取的字节数 
 
 
 
@@ -200,7 +260,36 @@ public class OutputStreamDemo {
 
 
 
-## 5. 复制图片
+```java
+public class FileInputStreamDemo {
+    public static void main(String[] args) {
+        try (FileInputStream fis = new FileInputStream("abc.txt")) {
+            // read() 方法一次读一个字节（8位）
+            int r1 = fis.read();
+            int r2 = fis.read();
+            System.out.println(r1 + ", " + r2);
+
+            // int read(byte[] b) 从输入流中读取若干字节，并把它们保存到字节数组中
+            byte[] bytes = new byte[10];
+            int count = fis.read(bytes);
+            System.out.println("读取的字符个数：" + count);
+            System.out.println("读到的字符：" + new String(bytes, 0, count));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+![image-20220218132819531](vx_images/image-20220218132819531.png)
+
+
+
+
+
+
+
+### 复制图片示例
 
 【应用】：利用字节流复制图片
 
@@ -227,16 +316,23 @@ public class CopyPicture {
 
 
 
-## 6. 字节缓冲流
+
+
+### 字节缓冲流
+
+普通字节流（一个字节一个字节的读）读取数据量大的文件时，读取的速度会很慢，很影响我们程序的效率，
+
+Java中提高了一套缓冲流，它的存在，可提高IO流的读写速度
 
 ```java
 BufferedOutputStream(QutputStream out)  // 字节缓冲输出流
-BuffecedInputStream(lnputStream in)     // 字节缓冲输入流
+BufferedInputStream(lnputStream in)     // 字节缓冲输入流
 ```
 
 为什么构造方法需要的是字节流，而不是具体的文件或者路径呢?
 
-- 因为字节缓冲流**仅仅提供缓冲区**，而真正的读写数据还得依靠基本的字节流对象进行操作
+- 因为字节缓冲流**仅仅提供缓冲区**（默认为 8kb ），而真正的读写数据还得依靠基本的字节流对象进行操作
+- 这种需要传递底层类对象的， 又称为包装类
 
 ```java
 public class BufferStreamDemo {
@@ -246,7 +342,7 @@ public class BufferStreamDemo {
         BufferedOutputStream bos = new BufferedOutputStream(fos);
         bos.write("Hello\r\n".getBytes());
         bos.write("World\r\n".getBytes());
-        bos.close();
+        bos.close();  // close() 内会调用 flush() 方法
 
         // 字节缓冲输入流：
         FileInputStream fis = new FileInputStream(".\\data\\buffer\\buffer.txt");
@@ -254,14 +350,14 @@ public class BufferStreamDemo {
         bis.mark(1);  // 设置标记
         // 一次读取一个字节：
         int b;
-        while ((b= bis.read())!= -1){
+        while ((b = bis.read())!= -1){
             System.out.print((char) b);
         }
         bis.reset();  // 将输入流的指针返回到设置标记的起始处
         // 一次读取一个字节数组：
         byte[] bys = new byte[1024];
         int len;
-        while ((len= bis.read(bys)) != -1){
+        while ((len = bis.read(bys)) != -1){
             System.out.println(new String(bys,0,len));
         }
         bis.close();
@@ -271,7 +367,46 @@ public class BufferStreamDemo {
 
 
 
-## 7. 字符流
+
+
+## 3. 字符流
+
+![image-20220218162134606](vx_images/image-20220218162134606.png)
+
+
+
+
+
+### 编码和解码
+
+| 常见编码表 | 每个字符多少字节            | 其他说明                                               |
+| ---------- | --------------------------- | ------------------------------------------------------ |
+| ASCII      | 用**一个字节**的7位         |                                                        |
+| ISO8859-1  | 用**一个字节**的8位         | 拉丁码表                                               |
+| GB2312     | 中文2个字节，英文1个字节    | 中国的中文编码表                                       |
+| GBK        | gbk中文2个字节，英文1个字节 | 中国的中文编码表升级，融合了更多的中文文字符号         |
+| GB18030    | 中文2个字节，英文1个字节    | GBK的取代版本                                          |
+| BIG-5码    |                             | 通行于台湾、香港地区的一个繁体字编码方案，俗称“大五码” |
+| Unicode    | 两个字节                    | 国际标准码，融合了多种文字                             |
+| UTF-8      | 中文3个字节，英文1个字节    | 可变长度来表示一个字符, 使用1-4个字节表示一个符号      |
+
+**Java 中常见编码说明如下**：
+
+- `ISO8859-1`：属于单字节编码，最多只能表示 0~255 的字符范围。向下兼容ASCII
+- `GBK/GB2312`：中文的国标编码，用来表示汉字，属于双字节编码。GBK 可以表示简体中文和繁体中文，而 GB2312 只能表示简体中文。**GBK 兼容 GB2312**。
+- `Unicode`：是一种编码规范，是为解决全球字符通用编码而设计的。UTF-8 和 UTF-16 是这种规范的一种实现，此编码不兼容 ISO8859-1 编码。Java 内部采用此编码。
+- `UTF`：UTF 编码兼容了 ISO8859-1 编码，同时也可以用来表示所有的语言字符，不过 UTF 编码是不定长编码，每一个字符的长度为 1~6 个字节不等。一般在中文网页中使用此编码，可以节省空间。
+
+```java
+ // 获取当前系统编码
+ System.out.println(System.getProperty("file.encoding"));
+```
+
+
+
+
+
+### Reader和Writer
 
 **InputStreamReader和OutputStreamWriter**：
 
@@ -344,6 +479,10 @@ public class CharStreamDemo {
 
 
 
+
+
+### FileReader和FileWriter
+
 **FileReader和FileWriter**：
 
 ```java
@@ -356,6 +495,8 @@ public FileWriter(String fileName) throws IOException {
     super(new FileOutputStream(fileName));
 }
 ```
+
+
 
 相较于InputStreamReader和OutputStreamWriter，FileReader和FileWriter不用再自行定义字节流了。省了一小步。。。
 
@@ -383,9 +524,16 @@ public class FileReaderDemo {
 
 
 
-## 8. 字符缓冲流
+
+
+### 字符缓冲流
 
 **BufferedReader和BufferedWriter**：
+
+【注】虽然字符流缓冲区大小和字节流缓冲区一样是一个 8192 的常量，但是真正存储数据的 数组的数据类型 并不相同
+
+- 字节流缓冲区的单位是 byte ，`protected volatile byte buf[]; ` 故其缓冲区实际大小为 8kb
+- 字符流缓冲区的单位是 char ，`private char cb[]; ` 故其缓冲区实际大小为 16kb
 
 ```java
 // 构造函数
@@ -429,17 +577,218 @@ public class BufferedReaderDemo {
 
 
 
-## 9. 对象序列化
+### 缓冲流和flush
 
-- Java序列化：是指把Java对象转换为字节序列的过程
+缓冲字节流和字符流都使用了缓冲区，详细如下：
 
-- Java反序列化：是指把字节序列恢复为Java对象的过程
+![image-20220219135347553](vx_images/image-20220219135347553.png)
+
+【注】flush方法的使用说明：
+
+- 调用close()方法时会自动flush, 在不调用close()的情况下，缓冲区不满，又需要把缓冲区的内容写入到文件或通过网络发送到别的机器时，才需要调用flush();
+
+- FileInputStream的 flush()是继承于其父类OutputStream的，但是OutputStream类的flush()什么都没做。
+
+- 当OutputStream是BufferedOutputStream时，BufferedOutputStream中重写了flush()方法，并在其中调用了flushBuffer()方法以及OutputStream的flush()方法
+
+
+
+
+
+
+
+## 4. 其他流
+
+### 数据流(Data)
+
+![image-20220219150027978](vx_images/image-20220219150027978.png)
+
+- DataOutputStream
+
+  数据输出流允许应用程序以适当方式将基本 Java 数据类型写入输出流中。然后，应用程序可以使用数据输入流将数据读入
+
+  ```java
+  // 构造方法
+  DataOutputStream(OutputStream out)        // 创建一个新的数据输出流，将数据写入指定基础输出流
+  ```
+
+  ```java
+  // 成员方法
+  // 每个java基本数据类型 都有1个write方法与之对应 比如
+      DataOutputStream dos = new DataOutputStream(new FileOutputStream("dos.txt"));
+      dos.writeByte(1);
+      dos.writeShort(20);
+      dos.writeInt(300);
+      dos.writeLong(4000);
+      dos.writeFloat(12.34f);
+      dos.writeDouble(12.56);
+      dos.writeChar('a');
+      dos.writeBoolean(true);
+      dos.close();
+  ```
 
   
 
- **Serializable实现Java序列化**：
+- DataInputStream
 
-要实现Java对象的序列化，只要将类实现标识接口——Serializable接口即可，不需要重写任何方法。
+  **构造方法**
+
+  ```java
+  DataInputStream(InputStream in)        // 使用指定的底层 InputStream 创建一个 DataInputStream
+  ```
+
+  **成员方法**
+
+  每个java基本数据类型都有1个read方法与之对应， 如 readInt()
+
+  
+
+
+
+### 打印流(Print)
+
+把java基本数据类型,转为相应的字符串,写到文件中
+
+![image-20220219145810616](vx_images/image-20220219145810616.png)
+
+- **字节打印流 PrintStream**  
+
+  `PrintStream` 为其他输出流添加了功能，使它们能够方便地打印各种数据值表示形式 
+
+  | *构造方法*                                                   |
+  | ------------------------------------------------------------ |
+  | PrintStream(File file)        创建具有指定文件且不带自动行刷新的新打印流。 |
+  | PrintStream(OutputStream out)        创建新的打印流。        |
+  | PrintStream(OutputStream out,  boolean autoFlush)       创建新的打印流。 |
+  | PrintStream(String fileName)        创建具有指定文件名称且不带自动行刷新的新打印流。 |
+
+  *成员方法*
+
+  每个java基本数据类型都有1个print方法与之对应，比如 printInt(int i)
+
+
+
+
+- **字符打印流PrintWriter** 
+
+  | *构造方法*                                                   |
+  | ------------------------------------------------------------ |
+  | PrintWriter(File file)        使用指定文件创建不具有自动行刷新的新 PrintWriter。 |
+  | PrintWriter(OutputStream out)        根据现有的 OutputStream 创建不带自动行刷新的新 PrintWriter。 |
+  | PrintWriter(OutputStream out,  boolean autoFlush)       通过现有的 OutputStream 创建新的  PrintWriter。 |
+  | PrintWriter(String fileName)        创建具有指定文件名称且不带自动行刷新的新 PrintWriter。 |
+  | PrintWriter(Writer out)        创建不带自动行刷新的新 PrintWriter。 |
+  | PrintWriter(Writer out,  boolean autoFlush)       创建新 PrintWriter。 |
+
+  *成员方法*
+
+  每个java基本数据都有1个相对应的print方法
+
+
+
+- 打印流的特点
+
+  - 只能操作目的地，不能操作数据来源。即只有输出流,没有1个与之对应的输入流
+
+  - 可以操作任意类型的数据。把不同类型的数据转为字符串
+
+  - 如果启动了自动刷新，能够自动刷新（但只有在调用 `println`、`printf` 或 `format`  的其中一个方法时才可以）
+
+    
+
+- **系统流**：每个 Java程序运行时都带有一个系统流，系统流对应的类为 java.lang.System
+
+  Sytem 类封装了 Java 程序运行时的 3 个系统流： 
+  - `System.in`：标准输入流，默认设备是键盘  （是 InputStream 类的一个对象） 
+  - `System.out`：标准输出流，默认设备是控制台（屏幕）（是 PrintStream 类的对象） 
+  - `System.err`：标准错误流，默认设备是控制台（屏幕）（是 PrintStream 类的对象） 
+
+  ```java
+  public final static InputStream in = null;
+  public final static PrintStream out = null;
+  public final static PrintStream err = null;
+  ```
+
+
+
+
+
+### 对象流(Object)
+
+对象流又称序列化、反序列化流。
+
+- 序列化: 把对象数据,转为二进制数据,持久化存储的过程 （即把Java对象转换为字节序列的过程）
+
+- 反序列化: 把二进制数据还原为对象数据 （即把字节序列恢复为Java对象的过程）
+
+- 要实现Java对象的序列化，只要将类实现标识接口——Serializable接口即可，不需要重写任何方法
+
+  **Serializable是1个空接口, 想要实现序列化功能, 须实现该接口 空接口, 起标记作用** 
+
+- <font color=purple> **transient** </font> 关键字：用于指定不需要序列化的对象属性
+
+  将不需要序列化的属性前添加关键字transient，序列化对象的时候，这个属性就不会序列化
+
+  ```java
+  class Student implements Serializable {
+      transient String name; // 不会被序列化
+      // ... other fields
+  }
+  ```
+
+
+
+![image-20220219145224024](vx_images/image-20220219145224024.png)
+
+- **ObjectOutputStream**
+
+  ObjectOutputStream 将 Java 对象的基本数据类型和图形写入 OutputStream
+
+  *构造方法* 
+
+  ```java
+  ObjectOutputStream(OutputStream out)       // 创建写入指定 OutputStream 的 ObjectOutputStream
+  ```
+
+  *成员方法* 
+
+  ```java
+  writeObject(Object obj)       // 将指定的对象写入 ObjectOutputStream。
+  ```
+
+  
+
+- **ObjectInputStream** 
+
+  ObjectInputStream 对以前使用 ObjectOutputStream 写入的基本数据和对象进行反序列化
+
+  *构造方法* 
+
+  ```java
+  ObjectInputStream(InputStream in)      //  创建从指定 InputStream 读取的 ObjectInputStream
+  ```
+
+  *成员方法* 
+
+  ```java
+  readObject()      //  从 ObjectInputStream 读取对象
+  ```
+
+【注意】
+
+- java.io.NotSerializableException 异常表示  对象没有实现Serializable接口
+
+- java.io.InvalidClassException:  xxxxx local class incompatible: stream classdesc serialVersionUID = -8449572629204967338, local class serialVersionUID = 5807530389656511599   
+
+  **serialVersionUID不匹配**   （一般是使用了不一样的类，或修改了相应的类定义 导致的） 可以可以通过显示声明方式解决
+
+  ```java
+  static final long serialVersionUID = -8449572629204967338l;
+  ```
+
+
+
+【例】
 
 ```java
 public class Student implements Serializable{...}
@@ -474,7 +823,80 @@ public class IOUtils {
 
 
 
-## 10. Properties
+
+
+## 5. IO资源释放
+
+方式一：直接释放（较为繁琐）
+
+```java
+public static void byteArrayTofile(byte[] src,String filePath){
+    InputStream is = null;
+    FileOutputStream os = null;
+    try {
+        is = new ByteArrayInputStream(src);
+        os = new FileOutputStream(dest);
+		// 一系列的IO流操作 ...... 
+    } catch (FileNotFoundException e) {
+        e.printStackTrace();
+    } catch (IOException e) {
+        e.printStackTrace();
+    }finally{     
+        try {
+            if (null != os) {
+                os.close();
+            } 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+
+
+方拾二：利用函数可变参数，可关闭多个流，更灵活
+
+```java
+public static void close2(Closeable...ios){    
+    for(Closeable io:ios){
+        try {
+            if(null!=io){  
+                io.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+
+
+方式三：try…with…resource
+
+jdk1.7之后可以不用手动释放资源，将声明与初始化写入 try () 中，删去 finally { } ，自动释放系统资源
+
+```java
+try (InputStream is = new FileInputStream("abc.txt");
+     OutputStream os = new FileOutputStream("abc_copy.txt");) {
+    // 具体IO操作
+    } catch (FileNotFoundException e) {
+        e.printStackTrace();
+    } catch (IOException e) {
+        e.printStackTrace();
+	}
+```
+
+
+
+
+
+
+
+# 三 补充和拓展
+
+## 1. Properties
 
 Properties类主要用于读取Java的配置文件，在Java中，其配置文件常为.properties文件，格式为文本文件，文件的内容的格式是“键=值”的格式，文本注释信息可以用"#"来注释。
 
@@ -540,222 +962,86 @@ System.out.println(properties);
 
 
 
-# 二 网络编程
+## 2. RandomAccessFile
 
-## 1. IP、端口和协议
+RandomAccessFile 类支持 “随机访问” 的方式，RandomAccessFile 对象包含一个记录指针，用以标示当前读写处的位置，程序可以直接跳到文件的任意位置来读、写文件 
 
-- **IP地址（Internet Protocol Address）**：是网络中设备的唯一标识
+| *构造方法*                                                   |
+| ------------------------------------------------------------ |
+| RandomAccessFile(File file, String mode)        创建从中读取和向其中写入（可选）的随机访问文件流，该文件由 File 参数指定。 |
+| RandomAccessFile(String name, String mode)        创建从中读取和向其中写入（可选）的随机访问文件流，该文件具有指定名称。 |
 
-  - IPv4：每个IP地址长32bit，也就是4个字节。如：11000000 10101000 00000001 01000010，十进制为：192.168.1.66
-  - IPv6：128位地址长度，每16个字节一组，分成8 组十六进制数
+创建 RandomAccessFile 类实例需要指定一个 mode 参数，该参数指 定 RandomAccessFile 的访问模式(介绍2种常用的)：
 
-  ```java
-  // java 关于IP地址的使用：
-  // InetAddress inetAddress = InetAddress.getByName("LAPTOP-TS9EH1VR");
-  InetAddress inetAddress = InetAddress.getByName("192.168.0.9");
-  
-  System.out.println(inetAddress.getHostName());     // LAPTOP-TS9EH1VR
-  System.out.println(inetAddress.getHostAddress());  // 192.168.0.9
-  ```
-
-- **端口（port）**： 设备上应用程序的唯一标识
-
-  - 端口用两个字节表示的整数，它的取值范围是0~65535
-  - 0~1023之间的端口号用于一些知名的网络服务和应用，普通的应用程序需要使用1024以上的端口号
-
-- **协议（Protocol）**：计算机网络中，连接和通信的规则被称为网络通信协议
-
-  - **UDP协议（User Datagram Protocol)**：用户数据报协议 （不建立逻辑连接，不会确认接收端是否存在或收到）
-
-  - **TCP协议（Transmission Control Protocol）**：传输控制协议 （建立可靠连接，提供无差错的数据传输）
-
-    
-
-## 2. UDP协议及通信
-
-UDP是无连接通信协议，即在数据传输时，数据的发送端和接收端不建立逻辑连接
-
-- 当一台 计算机向另外一台计算机发送数据时，发送端不会确认接收端是否存在，就会发出数据，同样接收端在 收到数据时，也不会向发送端反馈是否收到数据。 
-
-- 使用UDP协议消耗资源小，通信效率高，通常会用于音频、视频和普通数据的传输
-
-  例如视频会议通常采用UDP协议，因为这种情况即使偶尔丢失一两个数据包，也不会对接收结果产生太大影响
-
-- 由于UDP的面向无连接性，不能保证数据的完整性，因此在传输重要数据时不建议使用UDP协议
+- `r`: 以只读方式打开(不会创建文件,读取已经存在的文件)
+- `rw`:可读可写(文件不存在会创建,存在不会创建) 
 
 
 
-**DatagramPacket与DatagramSocket**：
+*成员方法*：
 
-这两个类所有构成的网络链接是基于UDP协议，是一种不可靠的协议
+除了常规的read write方法外， RandomAccessFile 类对象还有自由移动记录指针的相关方法： 
 
-- DatagramPacket：用于封装、存放数据
-
-- DatagramSocket：用于接收或发送数据报
-
-  
-
-1. DatagramSocket类的构造方法和常用方法：
-
-| 构造方法                                  | 说明                               |
-| ----------------------------------------- | ---------------------------------- |
-| DatagramSocket()                          | 默认使用本地地址和一个随机的端口号 |
-| DatagramSocket(int port)                  | 使用本地地址、并指定端口号         |
-| DatagramSocket(int port, InetAddress iad) | 指定地址和端口号                   |
-| DatagramSocket(SocketAddress sad)         | 使用特定的Socket地址               |
-
-| 常用方法                    | 说明       |
-| --------------------------- | ---------- |
-| send(DatagramPacket dp)     | 发送数据报 |
-| recevie(DatagramPacket  dp) | 接收数据报 |
-| close()                     | 关闭socket |
+- long getFilePointer()：获取文件记录指针的当前位置 
+- void seek(long pos)：将文件记录指针定位到 pos 位置
 
 
 
-2. DatagramPacket类的常用构造方法：
+随机读写示例：
 
-| 常用构造方法                                                 | 说明                                   |
-| ------------------------------------------------------------ | -------------------------------------- |
-| DatagramPacket(byte[] buf,  int length)                      | 用于接收数据 (即数据存于字节数组buf中) |
-| DatagramPacket(byte[] buf, int length, InetAddress address, int port) | 用于封装数据报、发送数据               |
-| DatagramPacket(byte[] buf, int length, SocketAddress address) | 同上，但地址和端口号采用SocketAddress  |
+```Java
+package cn.itdrizzle.javase.p19.demo;
 
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.charset.StandardCharsets;
 
+/**
+ * @Classname RandomAccessFileDemo
+ * @Description 向文件中指定位置插入数据
+ * @Date 2022/2/22 8:41
+ * @Author idrizzle
+ */
+public class RandomAccessFileDemo {
+    public static void main(String[] args) {
+        try (final RandomAccessFile raf = new RandomAccessFile("temp\\test\\raf.txt", "rw")) {
+            // 先向文件中写入一些数据
+            raf.write("abcdef".getBytes(StandardCharsets.UTF_8));
+            System.out.println("写入数据后，FilePointer：" + raf.getFilePointer());
 
-例：使用java实现使用UDP协议的发送、接收客户端
+            // 指定插入的位置
+            raf.seek(3);
+            System.out.println("指定插入位置后，FilePointer：" + raf.getFilePointer());
 
-	1. 发送数据客户端：可以一直接收键盘录入并发送数据，q退出
- 	2. 接收数据客户端：使用死循环，接收客户端的数据并打印到控制台
+            // 现将插入点后的数据暂存起来
+            final StringBuffer temp = new StringBuffer();
+            final byte[] bytes = new byte[1024];
+            int len;
+            while ((len = raf.read(bytes)) != -1) {
+                temp.append(new String(bytes, 0, len));
+            }
+            System.out.println("读数据后，FilePointer：" + raf.getFilePointer());
 
-```java
-public class ReceiveClient {
-    public static void main(String[] args) throws IOException {
-        DatagramSocket datagramSocket = new DatagramSocket(11111);
-
-        while (true) {
-            // 创建用于接收数据的数据包
-            byte[] bytes = new byte[1024];
-            DatagramPacket datagramPacket = new DatagramPacket(bytes, bytes.length);
-            datagramSocket.receive(datagramPacket);
-            // 解析数据并输出
-            String content = new String(datagramPacket.getData(), 0, datagramPacket.getLength());
-            System.out.println(content);
+            // 移动指针到插入位置
+            raf.seek(3);
+            System.out.println("重新指定插入位置后，FilePointer：" + raf.getFilePointer());
+            // 插入新的数据
+            raf.write("xyz2333".getBytes());
+            // 之前的数据重写回
+            raf.write(temp.toString().getBytes());
+            System.out.println("最后的位置，FilePointer：" + raf.getFilePointer());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
 ```
 
-```java
-public class SendClient {
-    public static void main(String[] args) throws Exception {
-        DatagramSocket datagramSocket = new DatagramSocket();
-
-        // 自行封装键盘录入
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-        String content;
-        while ((content = bufferedReader.readLine())!= null){
-            if("q".equals(content)) break;  // 输入q退出
-            // 封装待发送的数据包
-            byte[] bytes = content.getBytes();
-            DatagramPacket datagramPacket = new DatagramPacket(bytes, bytes.length, 
-                                                InetAddress.getByName("127.0.0.1"), 11111);
-            datagramSocket.send(datagramPacket);  //调用DatagramSocket对象的方法发送数据
-        }
-        datagramSocket.close();  //关闭发送端
-    }
-}
-```
-
-![image-20211019232420186](vx_images/image-20211019232420186.png)
-
-
-
-## 3. TCP协议及通信
-
-TCP协议是面向连接的通信协议，即传输数据之前，在发送端和接收端建立逻辑连接，然后再传输数 据，它提供了两台计算机之间可靠无差错的数据传输。
-
-- 在TCP连接中必须要明确客户端与服务器端，由客户端向服务端发出连接请求，每次连接的创建都需要经过“三次握手” 
-- 三次握手：TCP协议中，在发送数据的准备阶段，客户端与服务器之间的三次交互，以保证连接的可靠 
-  - 第一次握手，客户端向服务器端发出连接请求，等待服务器确认 
-  - 第二次握手，服务器端向客户端回送一个响应，通知客户端收到了连接请求 
-  - 第三次握手，客户端再次向服务器端发送确认信息，确认连接 
-- 完成三次握手，连接建立后，客户端和服务器就可以开始进行数据传输了。由于这种面向连接的特性， TCP协议可以保证传输数据的安全，所以应用十分广泛。例如上传文件、下载文件、浏览网页等
-
-
-
-**客户端—Socket类**：
-
-| 构造方法                              | 说明             |
-| ------------------------------------- | ---------------- |
-| Socket(InetAddress address, int port) | 指定IP和端口号   |
-| Socket(String host, int port)         | 指定主机和端口号 |
-
-| 常用方法                       | 说明       |
-| ------------------------------ | ---------- |
-| InputStream getInputStream()   | 返回输入流 |
-| OutputStream getOutputStream() | 返回输出流 |
-
-
-
-**服务器端—ServerSocket类**：
-
-| 构造方法                | 说明                             |
-| ----------------------- | -------------------------------- |
-| ServletSocket(int port) | 创建绑定到指定端口的服务器Socket |
-
-| 常用方法        | 说明                             |
-| --------------- | -------------------------------- |
-| Socket accept() | 监听要连接到此的Socket、并接收它 |
-
-
-
-例：使用Socket和ServerSocket实现数据的发送、接收
-
- 	1. 发送数据（客户端）：可以一直接收键盘录入并发送数据，q退出
- 	2. 接收数据（服务端）：接收客户端的数据并打印到控制台
-
-```java
-public class Server {
-    public static void main(String[] args) throws IOException {
-        ServerSocket serverSocket = new ServerSocket(11111);
-
-        Socket socket = serverSocket.accept();
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        String content;
-        while ((content = bufferedReader.readLine()) != null){
-            System.out.println(content);
-        }
-        serverSocket.close();
-    }
-}
-```
-
-```java
-public class Client {
-    public static void main(String[] args) throws IOException {
-        Socket socket = new Socket("192.168.0.9", 11111);
-
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-        String content;
-        while ((content = bufferedReader.readLine()) != null){
-            if("q".equals(content)) break;
-            bufferedWriter.write(content);
-            bufferedWriter.newLine();
-            bufferedWriter.flush();
-        }
-        socket.close();
-    }
-}
-```
-
-![image-20211020020651130](vx_images/image-20211020020651130.png)
+![image-20220222085601424](vx_images/image-20220222085601424.png)
 
 
 
 
-
-# 三 BIO和NIO
 
 
 

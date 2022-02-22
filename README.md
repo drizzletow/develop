@@ -6,14 +6,40 @@ GitHub：https://github.com/itdrizzle/develop
 
 # Java基础
 
-* [Java发展历史和开发环境](JavaSE/detail/history.md) &nbsp;&nbsp; [Java基础语法](JavaSE/base.md)  &nbsp;&nbsp;  [Java面向对象](JavaSE/oop.md)&nbsp;&nbsp;  [常用类库、集合](JavaSE/classlib.md) &nbsp;&nbsp; 
+* [开发环境](JavaSE/detail/history.md) &nbsp;&nbsp; [Java基础语法](JavaSE/base.md)  &nbsp;&nbsp;  [面向对象](JavaSE/oop.md)&nbsp;&nbsp;  [常用类库](JavaSE/classlib.md) &nbsp;&nbsp; [字符串和集合](JavaSE/collection.md) &nbsp;&nbsp; 
 
-*  [Java多线程](JavaSE/thread.md) &nbsp;&nbsp;   [JavaIO和网络编程](JavaSE/javaIO.md) &nbsp;&nbsp;  [枚举、反射、注解](JavaSE/senior.md) &nbsp;&nbsp; 
+* [JavaIO、NIO](JavaSE/javaIO.md) &nbsp;&nbsp;  [Java多线程](JavaSE/thread.md) &nbsp;&nbsp;   [Java网络编程](JavaSE/network.md) &nbsp;&nbsp;  [枚举、反射、注解](JavaSE/senior.md) &nbsp;&nbsp; 
 
 *  [正则表达式](JavaSE/regex.md) &nbsp;&nbsp; [Lambda表达式和Stream流](JavaSE/lambda.md) &nbsp;&nbsp; [Java SE API & 文档](https://www.oracle.com/cn/java/technologies/java-se-api-doc.html)&nbsp;&nbsp; 
 
 * [JVM内存管理](Jvm/Jvm内存管理.md)  
 
+
+<br/>
+
+
+# 数据结构与算法
+
+* [Introduction](DataStructure/introduction.md) &nbsp;&nbsp; [线性表和串](DataStructure/LinearList.md) 
+
+
+
+
+<br/>
+
+# 设计模式理论
+
+
+
+
+* 6大设计原则：
+ [单一职责](DesignPatterns/SRP.md)   &nbsp;&nbsp; [里氏替换](DesignPatterns/LSP.md)  &nbsp;&nbsp; [依赖倒置](DesignPatterns/DIP.md)  &nbsp;&nbsp; [接口隔离](DesignPatterns/ISP.md)   &nbsp;&nbsp; [迪米特法则](DesignPatterns/LoD.md)   &nbsp;&nbsp; [开闭原则](DesignPatterns/OCP.md)   
+
+* 23种设计模式：
+
+
+
+<br/>
 
 # DataBase
 
@@ -23,6 +49,7 @@ GitHub：https://github.com/itdrizzle/develop
 
 
 
+<br/>
 
 # JavaWeb+前端
 
@@ -34,7 +61,7 @@ GitHub：https://github.com/itdrizzle/develop
 
 * [XML和JSON](Web/XML.md) &nbsp;&nbsp;   [Servlet和JSP](Web/JavaWeb.md) &nbsp;&nbsp;  [MVC架构](Web/mvc.md) &nbsp;&nbsp;  
 
-
+<br/>
 
 # JAVA相关框架
 
@@ -54,26 +81,6 @@ GitHub：https://github.com/itdrizzle/develop
 
 
 
-
-
-<br/>
-
-
-# 数据结构与算法
-
-* [Introduction](DataStructure/introduction.md)
-
-
-
-
-<br/>
-
-# 设计模式理论
-
-* 6大设计原则：
- [单一职责](DesignPatterns/SRP.md)   &nbsp;&nbsp; [里氏替换](DesignPatterns/LSP.md)  &nbsp;&nbsp; [依赖倒置](DesignPatterns/DIP.md)  &nbsp;&nbsp; [接口隔离](DesignPatterns/ISP.md)   &nbsp;&nbsp; [迪米特法则](DesignPatterns/LoD.md)   &nbsp;&nbsp; [开闭原则](DesignPatterns/OCP.md)   
-
-* 23种设计模式：
 
 
 

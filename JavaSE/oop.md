@@ -1776,7 +1776,7 @@ try{
 
 ## 2. finally和return
 
-上面提到过除非在try块、catch块中调用了退出虚拟机的方法`System.exit(int status)`，否则finally语句块都会执行，但是当有return语句块存在时，返回值有时却会让人误解
+除非在try块、catch块中调用了退出虚拟机的方法`System.exit(int status)`，否则finally语句块都会执行，但是当有return语句块存在时，返回值有时却会让人误解
 
 下面先来看看finally语句块中存在return的情况：
 
@@ -1900,19 +1900,60 @@ throw ExceptionObject;  // ExceptionObject 必须是 Throwable 类或其子类�
 
 当 throw 语句执行时，它后面的语句将不执行，此时程序转向调用者程序，寻找与之相匹配的 catch 语句，执行相应的异常处理程序。如果没有找到相匹配的 catch 语句，则再转向上一层的调用程序。这样逐层向上，直到最外层的异常处理程序终止程序并打印出调用栈情况。
 
+```java
+public class Demo {
+    public static void main(String[] args) {
+        exceptionTest();
+    }
+
+    private static void exceptionTest() {
+        // 抛出运行时异常
+        throw new OutOfMemoryError("oom");
+    }
+}
+```
+
+```java
+public class Demo {
+    public static void main(String[] args) {
+        try {
+            exceptionTest();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+    }
+    
+	// 抛出编译时异常
+    private static void exceptionTest() throws CloneNotSupportedException {
+        throw new CloneNotSupportedException("clone failed");
+    }
+}
+```
+
 
 
 **throws 关键字和 throw 关键字在使用上的几点区别如下**：
 
-- throws 用来声明一个方法可能抛出的所有异常信息，表示出现异常的一种可能性，但并不一定会发生这些异常；throw 则是指拋出的一个具体的异常类型，执行 throw 则一定抛出了某种异常对象。
-- 通常在一个方法（类）的声明处通过 throws 声明方法（类）可能拋出的异常信息，而在方法（类）内部通过 throw 声明一个具体的异常信息。
-- throws 通常不用显示地捕获异常，可由系统自动将所有捕获的异常信息抛给上级方法； throw 则需要用户自己捕获相关的异常，而后再对其进行相关包装，最后将包装后的异常信息抛出。
+- throws 用来声明一个方法可能抛出的所有异常信息，表示出现异常的一种可能性，但并不一定会发生这些异常；
+
+  throw 则是指拋出的一个具体的异常类型，执行 throw 则一定抛出了某种异常对象。
+
+- 通常在一个方法（类）的声明处通过 throws 声明方法（类）可能拋出的异常信息，
+
+  而在方法（类）内部通过 throw 声明一个具体的异常信息。
+
+- throws 通常不用显示地捕获异常，可由系统自动将所有捕获的异常信息抛给上级方法； 
+
+  throw 则需要用户自己捕获相关的异常，而后再对其进行相关包装，最后将包装后的异常信息抛出。
 
 
 
 ## 4. 自定义异常
 
-如果 Java提供的内置异常类型不能满足程序设计的需求，这时我们可以自己设计 Java 类库或框架，其中包括异常类型。实现自定义异常类需要继承 Exception 类或其子类，如果自定义运行时异常类需继承 RuntimeException 类或其子类。
+如果 Java提供的内置异常类型不能满足程序设计的需求，这时我们可以自己设计 Java 类库或框架，其中包括异常类型。
+
+- 实现自定义（编译时）异常类需要继承 Exception 类或其子类（除RuntimeException 类及其子类外）
+- 如果自定义（运行时）异常类需继承 RuntimeException 类或其子类
 
 ```java
 class IntegerRangeException extends Exception {
