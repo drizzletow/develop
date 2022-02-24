@@ -8,7 +8,7 @@ GitHub：https://github.com/itdrizzle/develop
 
 * [开发环境](JavaSE/detail/history.md) &nbsp;&nbsp; [Java基础语法](JavaSE/base.md)  &nbsp;&nbsp;  [面向对象](JavaSE/oop.md)&nbsp;&nbsp;  [常用类库](JavaSE/classlib.md) &nbsp;&nbsp; [字符串和集合](JavaSE/collection.md) &nbsp;&nbsp; 
 
-* [JavaIO、NIO](JavaSE/javaIO.md) &nbsp;&nbsp;  [Java多线程](JavaSE/thread.md) &nbsp;&nbsp;   [Java网络编程](JavaSE/network.md) &nbsp;&nbsp;  [枚举、反射、注解](JavaSE/senior.md) &nbsp;&nbsp; 
+* [Java IO流](JavaSE/javaIO.md) &nbsp;&nbsp;  [Java多线程](JavaSE/thread.md) &nbsp;&nbsp;   [Java网络编程](JavaSE/network.md) &nbsp;&nbsp;  [枚举、反射、注解](JavaSE/senior.md) &nbsp;&nbsp; 
 
 *  [正则表达式](JavaSE/regex.md) &nbsp;&nbsp; [Lambda表达式和Stream流](JavaSE/lambda.md) &nbsp;&nbsp; [Java SE API & 文档](https://www.oracle.com/cn/java/technologies/java-se-api-doc.html)&nbsp;&nbsp; 
 
