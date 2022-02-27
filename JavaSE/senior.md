@@ -194,6 +194,8 @@ The Reflection API：https://docs.oracle.com/javase/tutorial/reflect/index.html
 
 Reflection is commonly used by programs which require the ability to examine or modify the runtime behavior of applications running in the Java virtual machine.
 
+
+
 ## 1. Class类
 
 在java中，一个普通事物、如人类可以用一个Person类来表示，那么众多的java类用什么来表示呢？其实所有的java类同样属于一类事物，而描述这类事物的java类就是 Class . 
@@ -361,7 +363,6 @@ public class MethodDemo {
         System.out.println(say.getName());
     }
 }
-
 ```
 
 ![image-20211108151109176](vx_images/image-20211108151109176.png)
@@ -383,7 +384,35 @@ public class MethodDemo {
 
 
 
-## 5. 反射的应用
+
+
+## 5. 注意事项
+
+`setAccessible()` 并不是在Field中的，而是在AccessibleObject中, AccessibleObject  类是 Field Method Constructor 类的基类。
+
+- 它提供反射对象绕过Java语言 **权限控制检查** 的权限。
+
+  当Fields Methods Constructors被用来set get 对象域，调用方法或者产生初始化对象实例的时候会践行权限检查（public default(package) protected private）
+
+- **将反射对象中的 accessible 标志位设置为 true，就意味着允许客户端拥有超级权限，比如Java对象序列化 或者 其他持久化机制等通常禁止的机制**  
+
+![image-20220226085101658](vx_images/image-20220226085101658.png)
+
+
+
+**带declared跟不带的API有什么区别**？
+
+> 以Field为例：
+>
+> ​	带declared能无视访问权限获取自身类的全部属性（包括private、static修饰的属性），但只能获取本类的成员
+>
+> ​	不带的只能获取自身public所修饰的属性（但还能获取继承自父类的public所修饰的属性、同样包括静态属性）
+
+
+
+
+
+## 6. 反射的应用
 
 下WEB开发中，有很多技术和框架底层都用到了反射，例如：
 
@@ -451,64 +480,18 @@ SuppressWarnings：抑制编译时的警告信息、常用使用方式：
 
 
 
+
+
+## 2. 元注解
+
 meta-annotation（元注解）：用来对注解类型进行注解的注解
 
-| Java元注解    | 说明                                                         |
-| ------------- | ------------------------------------------------------------ |
-| `@Retention`  | 标识这个注解怎么保存，是只在代码中，还是编入class文件中，或者是在运行时可以通过反射访问 |
-| `@Documented` | 标记这些注解是否包含在用户文档中                             |
-| `@Target `    | 标记这个注解适用于哪种 Java 成员                             |
-| `@Inherited`  | 标记这个注解是继承于哪个注解类 (默认 注解并没有继承于任何子类) |
-
-
-
-## 2. 自定义注解
-
-先看看常用注解的定义（源码）：
-
-```java
-// @Override 注解的定义
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.SOURCE)
-public @interface Override {
-}
-```
-
-```java
-// @Deprecated 注解的定义
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target(value={CONSTRUCTOR, FIELD, LOCAL_VARIABLE, METHOD, PACKAGE, PARAMETER, TYPE})
-public @interface Deprecated {
-}
-```
-
-```java
-// @SuppressWarnings 注解的定义
-@Target({TYPE, FIELD, METHOD, PARAMETER, CONSTRUCTOR, LOCAL_VARIABLE})
-@Retention(RetentionPolicy.SOURCE)
-public @interface SuppressWarnings {
-    String[] value();
-}
-```
-
-注意事项：
-
-- 定义 Annotation 时，@interface 是必须的、定义的注解，自动继承了java.lang.annotation.Annotation接口
-- 注解中的方法，实际是声明的注解配置参数、方法的名称就是 配置参数的名称， 方法的返回值类型，就是配置参数的类型
-
-- 配置参数的类型只能是基本类型（即：Class/String/enum）、可以通过default来声明参数的默认值
-- 如果只有一个参数成员，一般参数名为value、注解元素必须要有值（常使用空字符串、0作为默认值）
-
-```java
-// 自定义注解格式
-@Documented
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface MyAnnotation1 {
-	参数类型 参数名() default 默认值;
-}
-```
+| Java元注解                            | 说明                                                         |
+| ------------------------------------- | ------------------------------------------------------------ |
+| `@Retention(RetentionPolicy.RUNTIME)` | 表示注解信息保留到什么时候，是只在代码中，还是编入class文件中，或者是在运行时可以通过反射访问 |
+| `@Documented`                         | 标记这些注解是否包含在用户文档中                             |
+| `@Target(ElementType.TYPE) `          | 标记这个注解适用于哪种 Java 成员                             |
+| `@Inherited`                          | 标记这个注解是继承于哪个注解类 (默认 注解并没有继承于任何子类) |
 
 
 
@@ -529,7 +512,7 @@ ElementType(注解的适用类型）：
 
 ```
 
-RetentionPolicy（注解作用域策略）：
+RetentionPolicy（注解作用域策略、或者说保留级别）：
 
 ```java
 // RetentionPolicy 源码分析：
@@ -544,7 +527,238 @@ public enum RetentionPolicy {
 
 
 
-## 3. 配置原理
+
+
+## 3. 自定义注解
+
+```java
+// 自定义注解格式
+@Documented
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface MyAnnotation1 {
+	参数类型 参数名() default 默认值;
+}
+```
+
+注意事项：
+
+- 定义 Annotation 时，@interface 是必须的、定义的注解，自动继承了java.lang.annotation.Annotation接口
+
+- 可以为注解定义一些参数，定义的方式是在注解内定义一些方法（返回值类型表示参数的类型）
+
+- 注解内参数的类型不是什么都可以的，合法的类型有基本类型、String、Class、枚举、注解，以及这些类型的数组
+
+- 参数定义时可以使用default指定一个默认值、如果定义了参数且没有提供默认值，在使用注解时必须提供具体的值，不能为null
+
+  （常使用空字符串、0作为默认值，下例定义了一个包含默认值参数的注解：）
+
+  ```java
+  @Target({ METHOD, CONSTRUCTOR, FIELD })
+  @Retention(RUNTIME)
+  @Documented
+  public @interface InjectAnnotation {
+  	boolean optional() default false;
+  }
+  ```
+
+  
+
+- 当只有一个参数，且名称为value时，提供参数值时可以省略 "value="
+
+  ```java
+  @SuppressWarnings(value={"deprecation", "unused"})
+  
+  // 可以省略"value=" ，如下：
+  @SuppressWarnings({"deprecation", "unused"})
+  ```
+
+  
+
+
+
+## 4. 查看注解信息
+
+创建了注解，就可以在程序中使用，注解指定的目标，提供需要的参数，但这还是不会影响到程序的运行。要影响程序，我们要先能查看这些信息。我们主要考虑 `@Retention` 为 `RetentionPolicy.RUNTIME` 的注解，利用反射机制在运行时进行查看和利用这些信息。
+
+
+
+**反射相关类中与注解有关的方法**，Class、Field、Method、Constructor中都有如下方法:
+
+```java
+//获取所有的注解
+public Annotation[] getAnnotations();
+    
+//获取所有本元素上直接声明的注解，忽略inherited来的
+public Annotation[] getDeclaredAnnotations();
+    
+//获取指定类型的注解，没有返回null
+public <A extends Annotation> A getAnnotation(Class<A> annotationClass);
+    
+//判断是否有指定类型的注解
+public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass);
+```
+
+
+
+对于Method和Contructor，它们都有方法参数，而参数也可以有注解，所以它们都有如下方法：
+
+```java
+public Annotation[][] getParameterAnnotations();
+```
+
+
+
+
+
+
+
+## 5. 实现DI容器
+
+使用注解和反射，实现简单的DI容器
+
+- 定义两个注解，注解`@SimpleInject`修饰类中字段，表达依赖关系，`@SimpleSingleton`用于修饰类，表示类型是单例
+
+  ```java
+  @Retention(RetentionPolicy.RUNTIME)
+  @Target(ElementType.FIELD)
+  public @interface SimpleInject {
+  }
+  ```
+
+  ```java
+  /**
+   * @Classname SimpleSingleton
+   * @Description 修饰类，表示类型是单例
+   * @Date 2022/2/26 11:30
+   * @Author idrizzle
+   */
+  @Retention(RetentionPolicy.RUNTIME)
+  @Target(ElementType.TYPE)
+  public @interface SimpleSingleton {
+  }
+  
+  ```
+
+​	
+
+- 定义两个简单的服务ServiceA、ServiceB和测试类, ServiceA依赖于ServiceB
+
+  ```java
+  public class Demo {
+      public static void main(String[] args) {
+          final ServiceA serviceA = SimpleContainer.getInstance(ServiceA.class);
+          serviceA.callB();
+      }
+  
+      static class ServiceA {
+          // ServiceA使用 @SimpleInject表达对ServiceB的依赖
+          @SimpleInject
+          ServiceB b;
+  
+          public void callB() {
+              b.method();
+          }
+      }
+  
+      @SimpleSingleton
+      static class ServiceB {
+          public void method() {
+              System.out.println("I'm ServiceB");
+          }
+      }
+  }
+  ```
+
+
+
+- 创建DI容器类
+
+  ```java
+  public class SimpleContainer {
+      private static Map<Class<?>, Object> instances = new ConcurrentHashMap<>();
+  
+      /***
+       * @param cls Class对象
+       * @author itdrizzle
+       * @date 2022/2/26 11:26
+       * @return {@link T}
+       */
+      public static <T> T getInstance(Class<T> cls) {
+          try {
+              boolean singleton = cls.isAnnotationPresent(SimpleSingleton.class);
+              // 首先检查类型是否是单例，如果不是，就直接调用createInstance创建对象。
+              if (!singleton) {
+                  return createInstance(cls);
+              }
+  
+              // 检查缓存，如果有，直接返回
+              Object obj = instances.get(cls);
+              if (obj != null) {
+                  return (T) obj;
+              }
+  
+              // 调用createInstance创建对象，并放入缓存中
+              synchronized (cls) {
+                  obj = instances.get(cls);
+                  if (obj == null) {
+                      obj = createInstance(cls);
+                      instances.put(cls, obj);
+                  }
+              }
+              return (T) obj;
+          } catch (Exception e) {
+              throw new RuntimeException(e);
+          }
+      }
+  
+      /***
+       * 创建需要的对象
+       * @param cls Class对象
+       * @author itdrizzle
+       * @date 2022/2/26 11:35
+       * @return {@link T}
+       */
+      private static <T> T createInstance(Class<T> cls) throws Exception {
+          T obj = cls.newInstance();
+          Field[] fields = cls.getDeclaredFields();
+          for (Field f : fields) {
+              if (f.isAnnotationPresent(SimpleInject.class)) {
+                  if (!f.isAccessible()) {
+                      f.setAccessible(true);
+                  }
+                  Class<?> fieldCls = f.getType();
+                  f.set(obj, getInstance(fieldCls));
+              }
+          }
+          return obj;
+      }
+  }
+  ```
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

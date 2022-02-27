@@ -431,6 +431,90 @@ c.set(2021, 11, 11);                     // 设置年月日，时分秒将默认
 
 
 
+## 5. 定时、周期任务
+
+Timer是jdk中提供的一个定时器工具，使用的时候会在主线程之外起一个单独的线程执行指定的计划任务，可以指定执行一次或者反复执行多次。Timer主要由TimerTask，TimerThread，TaskQueue组成
+
+- TimerTask是一个实现了Runnable接口的抽象类，代表一个可以被Timer执行的任务。
+
+- TaskQueue就是用来保存TimerTask的队列，当有新的Task add进来时，会保存到改队列中。
+
+  需要注意的是，TaskQueue的内部实现使用的是最小堆，堆顶的Task是最近即将到时间的Task，所以在调度任务时，每次只需要取出堆顶元素，判断时间是否已到即可，效率非常高
+
+- TimerThread就是用来调度TaskQueue中的任务的线程。
+
+  
+
+```java 
+// 定时器Timer构造方法:
+Timer timer = new Timer();  //其中会调用this("Timer-" + serialNumber());, 即它以Timer+序列号为该定时器的名字
+Timer timer = new Timer(String name);         // 以name作为该定时器的名字
+Timer timer = new Timer(boolean isDeamon);    // 是否将此定时器作为守护线程执行
+Timer timer = new Timer(name, isDeamon);      // 定时器名字, 是否为守护线程
+```
+
+
+
+简单的定时任务示例：
+
+```java 
+public class TimerDemo {
+    public static void main(String[] args) {
+        // 创建Timer对象
+        final Timer timer = new Timer();
+
+        try {
+            // 任务执行时间
+            final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date date = sdf.parse("2022-02-24 13:45:30");
+
+            // 创建定时任务
+            timer.schedule(new Task(), date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static class Task extends TimerTask{
+        @Override
+        public void run() {
+            System.out.println("Boom!"); // 炸弹爆炸
+        }
+    }
+}
+```
+
+
+
+**调用方法**：
+
+```Java
+schedule(TimerTask task, Date time) // 设定某个时间执行任务（只执行一次）
+schedule(TimerTask task, long delay) // 安排在指定延迟后执行指定的任务(毫秒)
+
+// 第一次在指定firstTime时间点执行任务，之后每隔period时间调用任务一次
+schedule(TimerTask task,Date firstTime,long period) 
+
+// delay时间后开始执行任务，并每隔period时间调用任务一次
+schedule(TimerTask task,long delay,long period) 
+
+scheduleAtFixedRate(TimerTask task,Date firstTime,long period) // 指定的时间开始进行重复的固定速率执行．
+
+scheduleAtFixedRate(TimerTask task,long delay,long period)  // 指定的延迟后开始进行重复的固定速率执行．
+    
+
+public boolean cancel()    // 取消定时器
+```
+
+【注】schedule() 和 scheduleAtFixedRate()
+
+- schedule()方法更注重保持间隔时间的稳定：保障每隔period时间可调用一次
+- scheduleAtFixedRate()方法更注重保持执行频率的稳定：保障多次调用的频率趋近于period时间，如果某一次调用时间大于period，下一次就会尽量小于period，以保障频率接近于period
+
+
+
+
+
 
 
 

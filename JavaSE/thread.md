@@ -1,4 +1,32 @@
-# 一 实现多线程
+# 一 多线程
+
+线程的优点及成本：
+
+> 为什么要创建单独的执行流？或者说线程有什么优点呢？至少有以下几点：
+>
+> ​	1）充分利用多CPU的计算能力，单线程只能利用一个CPU，使用多线程可以利用多CPU的计算能力。
+>
+> ​	2）充分利用硬件资源，CPU和硬盘、网络是可以同时工作的，一个线程在等待网络IO的同时，另一个线程完全可以利用CPU，
+>
+> ​          对于多个独立的网络请求，完全可以使用多个线程同时请求。
+>
+> ​	3）在用户界面（GUI）应用程序中，保持程序的响应性，界面和后台任务通常是不同的线程，否则，如果所有事情都是一个线程
+>
+> ​          来执行，当执行一个很慢的任务时，整个界面将停止响应，也无法取消该任务。
+>
+> ​	4）简化建模及IO处理，比如，在服务器应用程序中，对每个用户请求使用一个单独的线程进行处理，相比使用一个线程，处理
+>
+> ​         来自各种用户的各种请求，以及各种网络和文件IO事件，建模和编写程序要容易得多。
+
+
+
+> 关于线程，我们需要知道，它是有成本的。创建线程需要消耗操作系统的资源，操作系统会为每个线程创建必要的数据结构、栈、程序计数器等，创建也需要一定的时间。
+>
+> 此外，线程调度和切换也是有成本的，当有大量可运行线程的时候，操作系统会忙于调度，为一个线程分配一段时间，执行完后，再让另一个线程执行，一个线程被切换出去后，操作系统需要保存它的当前上下文状态到内存，上下文状态包括当前CPU寄存器的值、程序计数器的值等，而一个线程被切换回来后，操作系统需要恢复它原来的上下文状态，整个过程称为**上下文切换**，这个切换不仅耗时，而且使CPU中的很多缓存失效。
+>
+> 当然，这些成本是相对而言的，如果线程中实际执行的事情比较多，这些成本是可以接受的；如果执行的任务都是CPU密集型的，即主要消耗的都是CPU，那创建超过CPU数量的线程就是没有必要的，并不会加快程序的执行。
+
+
 
 ## 1. 基本概念
 
@@ -25,6 +53,8 @@
 - 并发：指两个或多个事件在同一个时间段内发生
 
 - 并行：指两个或多个事件在同一时刻发生（同时发生）
+
+
 
 
 
@@ -350,7 +380,7 @@ public enum State {
 
 ​             其“对象锁”（Object Monitor）上的信号，若“对象锁”上没有信号，则当前线程处于WAITING状态 
 
-​	（2）LockSupport.park()方法，对应的唤醒方式为：LockSupport.unpark(Thread)
+​	（2）LockSupport.park()方法，对应的唤醒方式为：LockSupport.unpark(Thread) 
 
 
 
@@ -788,7 +818,51 @@ public class SecurityInterruptThreadDemo {
 **多线程数据安全问题产生的原因**：
 
 - 多线程的运行环境、多线程共享数据  
-- 存在非原子操作（原子操作:一个操作要么完成,要么不完成）——这也是解决多线程数据安全问题的突破点
+
+- 存在非原子操作（原子操作:一个操作要么完成,要么不完成）或存在内存可见性问题
+
+  
+
+共享内存及可能存在的问题：
+
+**内存可见性**：多个线程可以共享访问和操作相同的变量，但一个线程对一个共享变量的修改，另一个线程不一定马上就能看到，甚至永远也看不到
+
+```java
+public class VisibilityDemo {
+    private static boolean shutdown = false;
+
+    static class MyThread extends Thread {
+        @Override
+        public void run() {
+            while (!shutdown) {
+                /*
+                 * 该线程很可能会永远都不会退出，也就是说，在MyThread执行流看来，shutdown永远为false，
+                 * 即使main线程已经更改为了true。这就是内存可见性问题。
+                 *
+                 * 这是怎么回事呢？在计算机系统中，除了内存，数据还会被缓存在CPU的寄存器以及各级缓存中，
+                 * 当访问一个变量时，可能直接从寄存器或CPU缓存中获取，而不一定到内存中去取，
+                 * 当修改一个变量时，也可能是先写到缓存中，稍后才会同步更新到内存中。
+                 * 在单线程的程序中，这一般不是问题，但在多线程的程序中，尤其是在有多CPU的情况下，这就是严重的问题。
+                 * 一个线程对内存的修改，另一个线程看不到，一是修改没有及时同步到内存，二是另一个线程根本就没从内存读。
+                 * */
+            }
+            System.out.println("Exit~");
+        }
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        new MyThread().start();
+
+        Thread.sleep(1000);
+        VisibilityDemo.shutdown = true;
+        System.out.println("exit main");
+    }
+}
+```
+
+
+
+**竞态条件（race condition）**是指，当多个线程访问和操作同一个对象时，最终执行结果与执行时序有关，可能正确也可能不正确
 
 
 
@@ -834,13 +908,25 @@ public class SellTicketDemo {
 
 多线程环境下，极可能存在多条语句操作共享数据的情形，这会导致极其糟糕的后果（如上例中票数问题），即多线程数据安全问题
 
-解决方案：synchronized 和 Lock
+解决方案：synchronized 和 Lock等
+
+
 
 
 
 
 
 ## 1. synchronized
+
+对于复杂一些的操作，synchronized可以实现原子操作，避免出现竞态条件。synchronized除了保证原子操作外，它还有一个重要的作用，就是保证内存可见性，在释放锁时，所有写入都会写回内存，而获得锁后，都会从内存中读最新数据。
+
+【注】如果只是为了保证内存可见性，使用synchronized的成本有点高，有一个更轻量级的方式，那就是给变量加修饰符volatile
+
+```java
+private volatile boolean flag;
+```
+
+
 
 ### 同步代码块
 
@@ -950,10 +1036,92 @@ synchronized方法和synchronized代码块有什么联系呢？
 
 
 
+
+
+### 死锁问题
+
+**什么是死锁**：2个以上线程争抢资源而造成的互相等待的现象，一般出现在同步代码块嵌套的情形下
+
+```java
+synchronized(obj A ){
+    synchronized(obj B ){
+        
+    }
+}
+```
+
+
+
+所谓死锁就是类似这种现象，比如，有a、b两个线程，a持有锁A，在等待锁B，而b持有锁B，在等待锁A, a和b陷入了互相等待，最后谁都执行不下去，如下：
+
+```java
+public class DeadLockDemo {
+    private static Object lockA = new Object();
+    private static Object lockB = new Object();
+
+    private static void startThreadA() {
+        Thread aThread = new Thread() {
+            @Override
+            public void run() {
+                synchronized (lockA) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                    }
+                    synchronized (lockB) {
+                    }
+                }
+            }
+        };
+        aThread.start();
+    }
+
+    private static void startThreadB() {
+        Thread bThread = new Thread() {
+            @Override
+            public void run() {
+                synchronized (lockB) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                    }
+                    synchronized (lockA) {
+                    }
+                }
+            }
+        };
+        bThread.start();
+    }
+
+    public static void main(String[] args) {
+        startThreadA();
+        startThreadB();
+    }
+}
+```
+
+
+
+如果出现了死锁，怎么解决呢？
+
+- 更改加锁顺序
+
+  首先，应该尽量避免在持有一个锁的同时去申请另一个锁，如果确实需要多个锁，所有代码都应该按照相同的顺序去申请锁
+
+- 再加一把锁、将嵌套的两个操作变为一个原子操作
+
+- 使用显式锁接口Lock
+
+  Lock支持尝试获取锁（tryLock）和带时间限制的获取锁方法，使用这些方法可以在获取不到锁的时候释放已经持有的锁，然后再次尝试获取锁或干脆放弃，以避免死锁。
+
+
+
+
+
 ## 2. Lock接口
 
 -  创建ReentrantLock对象（Lock是接口，不能直接实例化，这里采用它的实现类ReentrantLock来实例化）
-- 在代码块中显式的调用`lock()`和`unlock()`方法
+-  在代码块中显式的调用`lock()`和`unlock()`方法
 
 ```java
 public class SellTicket implements Runnable {
@@ -1007,27 +1175,11 @@ public class SellTicket implements Runnable {
 
 
 
-## 3. 死锁问题
-
-**什么是死锁**：2个以上线程争抢资源而造成的互相等待的现象，一般出现在同步代码块嵌套的情形下
-
-```java
-synchronized(obj A ){
-    synchronized(obj B ){
-        
-    }
-}
-```
 
 
 
 
-
-
-
-
-
-## 4. 线程间通信
+## 3. 线程间通信
 
 Object类的等待和唤醒方法：
 
@@ -1075,7 +1227,7 @@ Object类的等待和唤醒方法：
 
 
 
-## 5. 生产者消费者
+## 4. 生产者消费者
 
 生产者消费者模式是一个十分经典的多线程协作的模式，生产者消费者问题主要是包含了两类线程：
 
@@ -1544,35 +1696,7 @@ public ScheduledFuture<?> scheduleAtFixedRate(Runnable command,long initialDelay
 
 
 
-## 3. Timer和TimerTask
-
-Timer是jdk中提供的一个定时器工具，使用的时候会在主线程之外起一个单独的线程执行指定的计划任务，可以指定执行一次或者反复执行多次。Timer主要由TimerTask，TimerThread，TaskQueue组成
-
-- TimerTask是一个实现了Runnable接口的抽象类，代表一个可以被Timer执行的任务。
-
-- TaskQueue就是用来保存TimerTask的队列，当有新的Task add进来时，会保存到改队列中。
-
-  需要注意的是，TaskQueue的内部实现使用的是最小堆，堆顶的Task是最近即将到时间的Task，所以在调度任务时，每次只需要取出堆顶元素，判断时间是否已到即可，效率非常高
-
-- TimerThread就是用来调度TaskQueue中的任务的线程。
-
-  
-
-```java 
-// 定时器Timer构造方法:
-Timer timer = new Timer();  //其中会调用this("Timer-" + serialNumber());, 即它以Timer+序列号为该定时器的名字
-Timer timer = new Timer(String name);         // 以name作为该定时器的名字
-Timer timer = new Timer(boolean isDeamon);    // 是否将此定时器作为守护线程执行
-Timer timer = new Timer(name, isDeamon);      // 定时器名字, 是否为守护线程
-```
-
-
-
-
-
-
-
-## 4. 自定义线程池
+## 3. 标准创建方式
 
 如果需要自定义线程池，可以用 `ThreadPoolExecutor ` 类创建，它有多个构造方法来创建线程池
 
