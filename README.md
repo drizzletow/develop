@@ -14,7 +14,7 @@ GitHub：https://github.com/itdrizzle/develop
 
 *  [正则表达式](JavaSE/regex.md) &nbsp;&nbsp; [Lambda表达式和Stream流](JavaSE/lambda.md) &nbsp;&nbsp; [Java SE API & 文档](https://www.oracle.com/cn/java/technologies/java-se-api-doc.html)&nbsp;&nbsp; 
 
-* [JVM内存管理](Jvm/Jvm内存管理.md)  &nbsp;&nbsp;  [JVM类加载机制](Jvm/Jvm类加载.md)  &nbsp;&nbsp; 
+* [JVM内存管理](Jvm/Jvm内存管理.md)  &nbsp;&nbsp;  [JVM类加载机制](Jvm/Jvm类加载.md)  &nbsp;&nbsp;   [垃圾回收](Jvm/gc.md)  &nbsp;&nbsp;  
 
 
 
@@ -80,13 +80,11 @@ GitHub：https://github.com/itdrizzle/develop
 
 ## 设计模式理论
 
+* [设计模式概述及七大原则](DesignPatterns/theory.md) 
 
 
-
-* 6大设计原则：
- [单一职责](DesignPatterns/SRP.md)   &nbsp;&nbsp; [里氏替换](DesignPatterns/LSP.md)  &nbsp;&nbsp; [依赖倒置](DesignPatterns/DIP.md)  &nbsp;&nbsp; [接口隔离](DesignPatterns/ISP.md)   &nbsp;&nbsp; [迪米特法则](DesignPatterns/LoD.md)   &nbsp;&nbsp; [开闭原则](DesignPatterns/OCP.md)   
-
-* 23种设计模式：
+* 创建型设计模式：
+    
 
 
 <br/>

@@ -149,7 +149,7 @@ class class_name {
 
 - 没有任何返回值，包括 void，默认返回类型就是对象类型本身
 
-  注意：如果为构造方法定义了返回值类型或使用 void 声明构造方法没有返回值，编译时不会出错，但 Java 会把这个所谓的构造方法当成普通方法来处理。实际上，类的构造方法是有返回值的，当使用 new 关键字来调用构造方法时，构造方法返回该类的实例，可以把这个类的实例当成构造器的返回值，因此构造器的返回值类型总是当前类，无须定义返回值类型。但必须注意不要在构造方法里使用 return 来返回当前类的对象，因为构造方法的返回值是隐式的。
+  注意：**如果为构造方法定义了返回值类型或使用 void 声明构造方法没有返回值，编译时不会出错，但 Java 会把这个所谓的构造方法当成普通方法来处理**。实际上，类的构造方法是有返回值的，当使用 new 关键字来调用构造方法时，构造方法返回该类的实例，可以把这个类的实例当成构造器的返回值，因此构造器的返回值类型总是当前类，无须定义返回值类型。但必须注意不要在构造方法里使用 return 来返回当前类的对象，因为构造方法的返回值是隐式的。
 
 
 
@@ -166,6 +166,8 @@ class class_name {
 - 方法名称相同, 参数类型或参数长度不同, 可以完成方法的重载 ! 
 - 方法的重载与返回值无关!
 - 方法的重载 ,可以让我们在不同的需求下, 通过传递不同的参数调用方法来完成具体的功能。
+
+
 
 
 
@@ -363,6 +365,8 @@ import 包名.*;        // 使用 import 语句导入指定包下全部类
 
 
 
+
+
 # 二 继承和多态
 
 ## 1. 继承和super
@@ -434,6 +438,8 @@ protected修饰的成员，在同类、同包下是可以随意访问的。
 
 
 
+## 2. 对象初始化
+
 <font color=red>**子类对象的初始化问题**</font>：
 
 **Java对象的初始化顺序**原则：**父类优于子类，静态优于非静态**，只有在第一次创建对象的时候才会初始化静态块。
@@ -452,6 +458,8 @@ protected修饰的成员，在同类、同包下是可以随意访问的。
 3. 如果有静态成员变量的显式赋值，那么显式赋值和静态代码块，按照代码的书写顺序从上往下执行。
 
 4. 类加载整个程序运行期间只有一次，如有通过继承连环触发类加载，那么顺序是`先父后子`，从最顶层父类开始。
+
+   
 
  **第二部分：创建对象**
 
@@ -483,7 +491,7 @@ protected修饰的成员，在同类、同包下是可以随意访问的。
 
 
 
-## 2. 重写和重载
+## 3. 重写和重载
 
 - `方法重写（override）`：又称为方法覆盖，即在子类中如果创建了一个与父类中相同名称、相同返回值类型(详见说明)、相同参数列表的方法，只是方法体中的实现不同，以实现不同于父类的功能。
 - `方法重载（overload）`：同一个类中包含了两个或两个以上方法名相同的方法，但形参列表不同。方法重载的要求是两同一不同：同一个类中方法名相同，参数列表不同。至于方法的其他部分，如**方法返回值类型、修饰符等，与方法重载没有任何关系**。
@@ -515,9 +523,67 @@ protected修饰的成员，在同类、同包下是可以随意访问的。
 
 
 
+```java
+// 阅读如下代码：
+1) class Super{ 
+2)		public float getNum(){return 3.0f;} 
+3) }
+4)
+5) public class Sub extends Super{
+6)	
+7) } 
+which method, placed at line 6, will cause a compiler error? B
+A. public float getNum(){return 4.0f;} // 重写
+B. public void getNum(){}  // 重写时基本数据类型和void必须相同 
+C. public void getNum(double d){} // 参数列表相同才构成重写！！！ 这里不是方法重写
+D. public double getNum(float d){return 4.0d;}
+
+```
 
 
-## 3. final修饰符
+
+**父类方法被子类覆盖，即使在父类中调用，调用到的也是子类方法**：
+
+```java
+public class Demo {
+    public static void main(String[] args) {
+        Father father = new Son(1000);
+    }
+}
+
+class Father {
+    int i = 10;
+
+    public Father() {
+        // 父类方法被子类覆盖，即使在父类中调用，调用到的也是子类方法
+        // 而此时父类对象还在初始化过程中，子类对象更是还未开始初始化，其成员变量的值还是默认值
+        System.out.println(getI());
+    }
+
+    public int getI() {
+        return i;
+    }
+}
+
+class Son extends Father {
+    int i = 100;
+
+    public Son(int i) {
+        this.i = i;
+    }
+
+    public int getI() {
+        return i;
+    }
+}
+// 输出结果为 0 
+```
+
+
+
+
+
+## 4. final修饰符
 
 final ：最终，表示最终形态，不可改变。final 应用于类、方法和变量时意义是不同的，但本质是一样的，都表示不可改变。
 
@@ -585,7 +651,7 @@ final ：最终，表示最终形态，不可改变。final 应用于类、方�
 
 
 
-## 4. 多态和转型
+## 5. 多态和转型
 
 什么是多态（ **polymorphic** ）: **同一个事物，在不同的时刻/情况表现出不同的状态，就可以称之为多态。**
 
@@ -609,7 +675,7 @@ Java多态有 3 个必要条件：继承、重写和向上转型。只有满足�
 
 - 继承：在多态中必须存在有继承关系的子类和父类。
 - 重写：子类对父类中某些方法进行重新定义，在调用这些方法时就会调用子类的方法。
-- 向上转型：即必须存在父类引用指向子类对象，只有这样该引用调用父类的同名的子类重写的方法才能执行子类的方法实现
+- 向上转型：即必须存在**父类引用指向子类对象**，只有这样该引用调用父类的同名的子类重写的方法才能执行子类的方法实现
 
 
 
@@ -625,7 +691,7 @@ Java多态有 3 个必要条件：继承、重写和向上转型。只有满足�
 
 - <font color=blue>成员方法</font>：多个子类同时重写了父类中的一个方法，并出现父类引用指向不同子类对象，并且用对象名点调用同名方法时，方法的调用结果就体现出多态的特点
 
-  <font color=red> **编译（访问范围）看左边，运行时（调用结果）看右边** </font>
+  <font color=red> **编译（访问范围）看左边，运行时（调用结果）看右边** </font> 
 
 
 
@@ -682,7 +748,7 @@ System.out.println(m1 instanceof Man);//true
 
  
 
-## 5. abstract
+## 6. abstract
 
 ```java
 // 抽象类
@@ -704,7 +770,7 @@ abstract class class_name {
 
 
 
-## 6. interface
+## 7. interface
 
 ```java
 [public] interface interface_name [extends interface1_name[, interface2_name,…]] {
@@ -766,7 +832,9 @@ abstract class class_name {
 
 
 
-## 7. 包装类
+
+
+## 8. 包装类
 
 在Java中有一个设计的原则“一切皆对象”，那么这样一来Java中的一些基本的数据类型，就完全不符合于这种设计思
 想，因为Java中的八种基本数据类型并不是引用数据类型，所以Java中为了解决这样的问题，引入了八种基本数据类型
@@ -796,6 +864,35 @@ float x = f ;     // 自动拆箱
 
 
 
+**注意缓存的坑！！！**：
+
+```java
+// 阅读代码
+public class Equals{
+    public static void add3(Integer i){ 
+       int val = i.intValue();
+       val += 3; 
+       i = new Integer(val); 
+    }
+    public static void main(String args[]){
+        Integer i=new Integer(0); 
+        add3(i); 
+        System.out.println(i.intValue());
+    }
+}
+what is the result?  B
+A. compile fail
+B. print out "0"
+C. print out "3"
+D. compile succeded but exception at line 3
+```
+
+Java中除了对Integer有缓存机制外，其中还有ByteCache，ShortCache，LongCache，CharacterCache分别对其对应的类型进行缓存，其中Byte，Short，Long的缓存范围都为-128——127，Character为0——127。特别要注意的是这几个缓存中，只有Integer的缓存上限（high）可以设置，其他的都不能进行设置，为固定范围。
+
+
+
+
+
 **字符串与数值的转换**：
 
 ```java
@@ -817,7 +914,7 @@ public class Demo {
 
 
 
-## 8. is-a & has a
+## 9. is-a & has a
 
 面向对象的核心思想是：抽象、封装、继承、多态。在实践中用的比较多的术语就是 is a（是一个） ，和 has a（有一个）
 
@@ -963,6 +1060,8 @@ public class Demo {
          }
      }
      ```
+     
+     
 
 3. **外部类访问成员内部类成员** 
 

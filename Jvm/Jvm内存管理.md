@@ -314,7 +314,7 @@ Java堆（Java Heap） 是虚拟机所管理的内存中最大的一块。 Java�
 年轻代GC触发条件: 
 
 - 年轻代空间不足,就会触发Minor GC， 这里年轻代指的是Eden代满，Survivor不满不会引发GC
-- Minor GC会引发  **STW(stop the world)**  , 暂停其他用户的线程,等垃圾回收接收,用户的线程才恢复.
+- Minor GC会引发  **STW (stop the world)**  , 暂停其他用户的线程,等垃圾回收接收,用户的线程才恢复.
 
 
 
