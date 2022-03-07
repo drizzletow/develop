@@ -1,5 +1,33 @@
 # 一 常用命令
 
+linux查看cpu、内存、版本信息
+
+```shell
+# 查看CPU信息
+cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c 
+cat /proc/cpuinfo | grep physical | uniq -c 
+
+
+getconf LONG_BIT   
+#32 (说明当前CPU运行在32bit模式下, 但不代表CPU不支持64bit) 
+
+cat /proc/cpuinfo | grep flags | grep ' lm ' | wc -l  
+# 8 (结果大于0, 说明支持64bit计算. lm指long mode, 支持lm则是64bit) 
+
+
+# 查看内存信息
+free
+cat /proc/meminfo  # 查看详细内存信息 
+
+dmidecode | grep "Product Name"    # 查看机器型号 
+
+lsb_release -a  # 查看操作系统版本
+```
+
+
+
+
+
 ## 1. 用户管理
 
 

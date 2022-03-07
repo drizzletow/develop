@@ -92,7 +92,9 @@ GitHub：https://github.com/itdrizzle/develop
 
 ## 数据结构与算法
 
-* [Introduction](DataStructure/introduction.md) &nbsp;&nbsp; [线性表和串](DataStructure/LinearList.md) 
+* [Introduction](DataStructure/introduction.md) &nbsp;&nbsp; [Linear List（线性表）](DataStructure/LinearList.md)  &nbsp;&nbsp; [Tree（树）](DataStructure/tree.md) 
+
+ 
 
 
 

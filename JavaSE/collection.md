@@ -246,13 +246,85 @@ public class Demo {
 
 # 二 Java泛型
 
-Java 泛型（generics）是 JDK 5 中引入的一个新特性, 泛型提供了编译时类型安全检测机制，该机制允许开发者在编译时检测到非法的类型。泛型的本质是参数化类型，也就是说所操作的数据类型被指定为一个参数。在使用/调用时传入具体的类型（类型实参）。
+泛型，即“参数化类型”。顾名思义，就是将类型由原来的具体的类型'参数化'，此时类型也定义成参数形式，然后在使用/调用时传入具体的类型。事先不确定类型, 先写一个东西代指, 在使用的时候具体指定
 
-Java采用类型擦除(Type erasure generics)的方式实现泛型。用大白话讲就是这个泛型只存在源码中，编译器将源码编译成字节码之时，就会把泛型『擦除』，所以字节码中并不存在泛型。注意 Java 泛型不支持基本数据类型。
+- Java 泛型（generics）是  **JDK 5**  中引入的一个新特性, 泛型提供了编译时类型安全检测机制，该机制允许开发者在编译时检测到非法的类型。
+
+- 泛型的本质是参数化类型，也就是说所操作的数据类型被指定为一个参数。在使用/调用时传入具体的类型（类型实参）。
+
+- Java采用 **类型擦除(Type erasure generics)** 的方式实现泛型，即这个泛型只存在源码中。
+
+   java中的泛型仅仅存在于编译之前, 经过编译之后全部泛型变成Object, 使用泛型变成类型强转
 
 
 
-## 1. 泛型类
+## 1. 注意事项
+
+```java
+// 泛型的写法: 一般常用T E K V (语法上可以使用别的字符都可以, 但是习惯上用这些)
+// T : type
+// E : element
+// K : key
+// V : value
+
+class User <T> {}
+```
+
+```java
+// 我们可以在泛型定义的时候定义多个泛型(语法完全允许), 但是建议不要超过两个 
+class User <T, E, X> {
+    E name;
+    T age;
+
+    public User(E name, T age) {
+        this.name = name;
+        this.age = age;
+    }
+}
+```
+
+
+
+**泛型使用的写法**： 
+
+```java
+User<Integer> zs1 = new User<Integer>("zs", 18);  // 在引用上 和  new 类型上都指定类型:  jdk1.5时候的写法
+
+User<Integer> zs2 = new User<>("zs", 18);         // 只写引用, 后面省略: jdk1.7时候做的写法优化
+
+ // 如果某个地方需要传泛型, 但是我们使用的时候没有指定具体的泛型类型, 这个泛型在这次使用中默认表现为Object
+User zs = new User("zs", 18);
+Object age = zs.age;
+```
+
+
+
+**泛型不允许使用基本类型**：
+
+```java
+// 泛型的使用不允许使用基本类型
+// 报错: User<int> zs3 = new User<>("zs", 18);
+```
+
+
+
+**泛型的好处**： 
+
+````java
+a. 提高了程序的安全性
+b. 将运行期遇到的问题转移到了编译期
+c. 省去了类型强转的麻烦
+````
+
+
+
+
+
+## 2. 泛型的使用
+
+
+
+### 泛型类
 
 ```java
 // 泛型类：（在实例化泛型类时，需要指明泛型类中的类型参数，并赋予泛型类属性相应类型的值）
@@ -272,11 +344,12 @@ public class ClassName<T>{
     	this.data = data;
     }
 }
+// 注意1: 定义一个泛型类, 这个泛型作用域范围, 仅在类名之后和类体上
 ```
 
 
 
-## 2. 泛型接口
+### 泛型接口
 
 ```java
 // 泛型接口
@@ -308,11 +381,15 @@ public class Interface1<T> implements IntercaceName<T> {
 
 
 
-## 3. 泛型方法
+
+
+### 泛型方法
 
 ```java
 // 泛型方法，例如: 
 public static <T> List find(Class<T> cs,int userId){
+    
+    // 使用了泛型的方法不一定是泛型方法, 定义了泛型的方法才是泛型方法
     
 }
 ```
@@ -322,50 +399,48 @@ public static <T> List find(Class<T> cs,int userId){
 
 
 
-## 4. 泛型限制
-
-限制泛型可用类型
-
-```java
-class ClassName<T extends AnyClass>    // AnyClass 指某个接口或类
-```
-
-使用泛型限制后，泛型类的类型 必须实现或继承 AnyClass 这个接口或类。
-
-或者说必须是 AnyClass类的子类 或 AnyClass接口的实现类。
+<br/>
 
 
 
-```java
-// 当没有使用 extends 关键字限制泛型类型时，其实是默认使用 Object 类作为泛型类型/
-public class ClassName<T> {}
-// 等同于：
-public class ClassName<T extends Object> {}
-```
+## 3. 泛型通配
+
+泛型是不允许类似数组一样协变的，但是有的时候, 我们又希望它能像数组一样, 产生类似协变的效果
+
+泛型通配:  这个泛型通配就是为了模拟数组的协变, 又避免了数组协变的坏处(类型问题)
 
 
 
-## 5. 类型通配符
+- `？`：任意类型，如果没有明确，那么就是Object以及任意的Java类了
 
-- ？表示不确定的 java 类型，通常用于泛型方法的调用代码和形参，不能用于定义类和泛型方法
-- T (type) 表示具体的一个java类型，通常用于泛型类和泛型方法的定义
-- K V (key value) 分别代表java键值中的Key Value
-- E (element) 代表Element
+  表示不确定的 java 类型，通常用于泛型方法的调用代码和形参，不能用于定义类和泛型方法
+
+  
+
+- `? extends E`（向下限定，E及其子类）
+
+  上界通配符` < ? extends E>`：限制泛型可用类型, 表示参数化的类型可能是所指定的类型，或者是此类型的子类。
+
+  - 如果传入的类型不是 E 或者 E 的子类，编译不成功
+  - 泛型中可以使用 E 的方法，否则需要强转成 E 才能使用
+
+  ```java
+  // 当没有使用 extends 关键字限制泛型类型时，其实是默认使用 Object 类作为泛型类型/
+  public class ClassName<T> {}
+  // 等同于：
+  public class ClassName<T extends Object> {}
+  ```
 
 
 
-上界通配符` < ? extends E>`：表示参数化的类型可能是所指定的类型，或者是此类型的子类。
 
-- 如果传入的类型不是 E 或者 E 的子类，编译不成功
-- 泛型中可以使用 E 的方法，否则需要强转成 E 才能使用
+- `? super E` （向上限定，E及其父类）
 
-下界通配符 `< ? super E>`：表示参数化的类型可能是所指定的类型，或者是此类型的父类型，直至 Object
+  下界通配符 `< ? super E>`：表示参数化的类型可能是所指定的类型，或者是此类型的父类型，直至 Object
 
 
 
-在编译之后程序会采取去泛型化的措施。也就是说Java中的泛型，只在编译阶段有效。在编译过程中，正确检验泛型结果后，会将泛型的相关信息擦出，并且在对象进入和离开方法的边界处添加类型检查和类型转换的方法。也就是说，泛型信息不会进入到运行时阶段。
-
-
+<br/>
 
 
 
@@ -381,6 +456,14 @@ public class ClassName<T extends Object> {}
 
 Java 集合类型分为 Collection 和 Map，它们是 Java 集合的根接口，下图为Collection 和 Map 的子接口及其常用实现类：
 
+```java
+集合类的分类:
+
+​    Collection集合体系: 存储单个数据
+
+​    Map集合体系: 存储的都是key-value数据 (具有自我描述性 )
+```
+
 ![image-20211014103244479](vx_images/image-20211014103244479.png)
 
 Java集合接口的作用：
@@ -394,18 +477,6 @@ Java集合接口的作用：
 | List       | 是最常用的接口。是有序集合，允许有相同的元素。使用 List 能够精确地控制每个元素插入的位置，用户能够使用索引（元素在 List 中的位置，类似于数组下标）来访问 List 中的元素，与数组类似。 |
 | Set        | 不能包含重复的元素。                                         |
 | Map        | 是存放一对值的最大接口，即接口中的每个元素都是一对，以 `key➡value` 的形式保存。 |
-
-Collection中定义了单列集合(List和Set)通用的一些方法， 这些方法可用于操作所有的单列集合。方法如下： 
-
-```java
-public boolean add(E e)       // 把给定的对象添加到当前集合中 。 
-public void clear()           // 清空集合中所有的元素。
-public boolean remove(E e)    // 把给定的对象在当前集合中删除。 
-public boolean contains(E e)  // 判断当前集合中是否包含给定的对象。 
-public boolean isEmpty()      // 判断当前集合是否为空。 
-public int size()             // 返回集合中元素的个数。 
-public Object[] toArray()     // 把集合中的元素，存储到数组中。
-```
 
 
 
@@ -421,7 +492,67 @@ Java集合实现类的作用：
 
 
 
-## 1. ArrayList
+## 1. Collection
+
+**Collection的特点: (背会)** 
+
+```java
+// 1, Collection是Collection集合体系的顶级接口
+// 2, Collection定义了一个容器
+// 3, Collection的一些子实现是有序的, Collection的另一些子实现是无序的
+// 4, Collection的一些子实现允许存储重复元素, Collection的另一些子实现不允许存储重复元素
+// 5, Collection的一些子实现允许存储null, Collection的另一些子实现不允许存储null
+
+```
+
+
+
+ **Collection的api: (记住)** 
+
+Collection中定义了单列集合(List和Set)通用的一些方法， 这些方法可用于操作所有的单列集合。方法如下： 
+
+```java
+boolean add(E e)                               // 把给定的对象添加到当前集合中
+boolean addAll(Collection<? extends E> c)      // 添加所有
+boolean contains(Object o)                     // 查找某个元素是否存在
+boolean containsAll(Collection<?> c)           // 判断集合中的元素是否都存在
+boolean remove(Object o)                       // 删除某个内容
+boolean removeAll(Collection<?> c)             // 删除所有匹配元素
+boolean retainAll(Collection<?> c)             // 保留所有匹配元素
+
+void clear()                                   // 数据清空
+boolean equals(Object o)                       // 集合类重写了equals方法, 是按照内容进行比较是否重复
+int hashCode()
+boolean isEmpty()
+int size()
+
+    
+Object[] toArray()                             // 把Collection中所有的数据, 存储到一个数组并返回
+<T> T[] toArray(T[] a)                         // 泛型方法, 返回包含此 collection 中所有元素的数组；
+/* 返回数组的运行时类型与指定数组的运行时类型相同。
+
+注意1: toArray()无参的toArray方法返回 Object[]数组, 因为没有办法根据泛型new对应类型数组
+注意2: 为什么提供一个泛型方法:  <T> T[] toArray(T[] a): 泛型方法, 就是为了弥补注意1的缺陷
+注意3: 这是个泛型方法, 但是并不意味者, 我们可以传任何类型的数组(虽然编译通过, 运行报错)
+注意4: 如果泛型toArray数组给定不够长, 那么返回的数组和参数数组不是同一个
+       如果数组给的足够长,返回的数组和参数数组是同一个数组
+       如果数组给定太长了, 假设集合类存储了n个元素, 
+       数组从0-n-1就是集合元素, 下标为n位置置位null, n之后的数组位置不处理
+*/
+    
+                                  
+Iterator<E> iterator()                          // 返回在此 collection 的元素上进行迭代的迭代器。
+```
+
+
+
+
+
+## 2. List
+
+
+
+### 1. ArrayList
 
 ArrayList 类实现了可变数组的大小，存储在内的数据称为元素。它还提供了快速基于索引访问元素的方式，对尾部成员的增加和删除支持较好。
 
@@ -466,7 +597,9 @@ public class ListDemo {
 
 
 
-## 2. LinkedList
+
+
+### 2. LinkedList
 
 LinkedList 类采用链表结构保存对象，这种结构的优点是便于向集合中插入或者删除元素。需要频繁向集合中插入和删除元素时，使用 LinkedList 类比 ArrayList 类效果高，但是 LinkedList 类随机访问元素的速度则相对较慢。这里的随机访问是指检索集合中特定索引位置的元素。
 
@@ -485,7 +618,7 @@ LinkedList 类除了包含 Collection 接口和 List 接口中的所有方法之
 
 
 
-## 3. Vector
+### 3. Vector
 
 Vector 类实现了一个动态数组。和 ArrayList 很相似，但是两者是不同的：
 
@@ -504,6 +637,8 @@ Vector(Collection c)        // 创建一个包含集合的Vector
 ```
 
 当Vector容量不足以容纳全部元素时，Vector的容量会增加。**若容量增加系数 >0，则将容量的值增加“容量增加系数”；否则，将容量大小增加一倍。**
+
+
 
 
 
@@ -595,18 +730,60 @@ Iterator（迭代器）是一个接口，它的作用就是遍历容器的所有
 - Collection 和 Map 系列集合主要用于盛装其他对象
 - Iterator 则主要用于遍历（即迭代访问）Collection 集合中的元素
 
-Iterator 接口隐藏了各种 Collection 实现类的底层细节，向应用程序提供了遍历 Collection 集合元素的统一编程接口。Iterator 接口里定义了如下 4 个方法：
+Iterator 接口隐藏了各种 Collection 实现类的底层细节，向应用程序提供了遍历 Collection 集合元素的统一编程接口，
+
+Iterator 仅用于遍历集合，必须通过 一个可以被迭代的集合 创建 Iterator 对象
+
+
+
+```java
+// 我们通过Collection的iterator方法获得了一个Iterator对象, 这个对象是用来遍历数据的, 并且这个数据的遍历
+// 是依赖于源数据直接进行的(没有创建新的数据, 获得Iterator对象只是维护了一些指向源数据的标记)
+```
+
+<br/>
+
+Iterator 接口里定义了如下 4 个方法：
 
 ```java
 boolean hasNext()  // 如果被迭代的集合元素还没有被遍历完，则返回 true。
 Object next()      // 返回集合里的下一个元素。
+void forEachRemaining(Consumer action) //Java8为Iterator新增的默认方法，该方法可使用Lambda表达式来遍历集合元素
+
 void remove()      // 删除集合里上一次 next 方法返回的元素。
-void forEachRemaining(Consumer action) //这是Java8为Iterator新增的默认方法，该方法可使用Lambda表达式来遍历集合元素
+//   remove 不能在未遍历之前删除, 也不能做连续的删除, 而且如果要删除, 删除的还是原Collection对象的数据 
+//   (实际上iterator主要不是用来做删除, 主要是用来做遍历的) 
 ```
 
-- Iterator 仅用于遍历集合，必须通过一个可以被迭代的集合创建 Iterator 对象
-- 当使用 Iterator 迭代访问 Collection 集合元素时，Collection 集合里的元素不能被改变，只能通过 Iterator 的 remove() 方法删除上一次 next() 方法返回的集合元素，否则将会引发“java.util.ConcurrentModificationException”异常。
-- Iterator 迭代器采用的是快速失败（fail-fast）机制，一旦在迭代过程中检测到该集合已经被修改（通常是程序中的其他线程修改），程序立即引发 ConcurrentModificationException 异常，而不是显示修改后的结果，这样可以避免共享资源而引发的潜在问题。
+
+
+**Iterator和并发修改异常**: 
+
+```java
+// 在Iterator设计的时候,  担心一种情况出现: 一个线程在通过Iterator遍历源数据, 另一个线程在修改源数据, 
+// 这会导致Iterator遍历的结果没有意义(遍历结果可能不对)
+// 我们又不想在Collection对象加锁以保证同步(因为加锁会导致效率降低)
+// 所以我们给Collection对象持有了一个modCount的参数, 用来记录Collection对象被修改的次数
+// 当我们创建Iterator对象时, Iterator对象也会维护一个expModCount并且在最开始的时候和Collection对象的modCount保持一致.
+// 当别的线程(非Iterator迭代线程)修改了Collection对象, 会导致Collection对象的modCount参数加一, 这样Iterator对象在遍历的时候就会发现自己的expModCount和Collection对象的modCount不一致, 从而知道源数据被别人修改, 并抛出并发修改异常
+```
+
+```java
+// 但是上述情况, 也会导致单线程的情况下有并发修改异常出现:
+//     那就是在Iterator遍历的过程中, 直接调用原集合类的修改方法修改了源集合类(Iterator是没有感知的)
+
+// 所以: Iterator对象在遍历的时候还是会发现自己的expModCount和Collection对象的modCount不一致, 认为遍历的数据已经被别人修改, 并抛出并发修改异常
+```
+
+
+
+- 当使用 Iterator 迭代访问 Collection 集合元素时，Collection 集合里的元素不能被改变，
+
+  只能通过 Iterator 的 remove() 方法删除上一次 next() 方法返回的集合元素，
+
+  否则将会引发 `java.util.ConcurrentModificationException` 异常
+
+- Iterator 迭代器采用的是 **快速失败（fail-fast）机制**，一旦在迭代过程中检测到该集合已经被修改（通常是程序中的其他线程修改），程序立即引发 `ConcurrentModificationException` 异常，而不是显示修改后的结果，这样可以避免共享资源而引发的潜在问题。
 
 ```java
 public class IteratorTest {
@@ -629,6 +806,8 @@ public class IteratorTest {
     }
 }
 ```
+
+
 
 
 
@@ -737,7 +916,9 @@ public class SortDemo {
 
 
 
-## 10. HashMap
+
+
+# 四 HashMap
 
 Map 是一种键-值对（key-value）集合，Map 集合中的每一个元素都包含一个键（key）对象和一个值（value）对象。用于保存具有映射关系的数据。
 

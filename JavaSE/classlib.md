@@ -517,7 +517,115 @@ public boolean cancel()    // 取消定时器
 
 
 
+# 四 Robot类
+
+Robot类用于为测试自动化、自运行演示程序和其他需要控制鼠标和键盘的应用程序生成本机系统输入事件。
+
+Robot 的主要目的是便于 Java 平台实现自动测试。Java中使用Robot类时，需要导入java.awt包
 
 
 
+```java
+package cn.itdrizzle.util;
+
+import java.awt.*;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+
+public class DeletePPTMark {
+    Robot robot;
+
+    public DeletePPTMark() {
+        try {
+            this.robot = new Robot();
+        } catch (AWTException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 移动鼠标会受到屏幕缩放的影响，例如显示比例为 150时，需要除以 1.5
+     * @author itdrizzle
+     * @date 2022/3/5 20:44
+     */
+    public void mouseMove(int x, int y) {
+        x = (int) (x / 1.5);
+        y = (int) (y / 1.5);
+        robot.mouseMove(x, y);
+    }
+
+    /**
+     * 模拟点击鼠标左键
+     * @author itdrizzle
+     * @date 2022/3/5 21:00
+     */
+    public void click() {
+        robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+        robot.delay((int) (Math.random() * 600));
+        robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+    }
+
+    /**
+     * 模拟按下删除键
+     * @author itdrizzle
+     * @date 2022/3/5 21:01
+     */
+    public void delete() {
+        robot.keyPress(KeyEvent.VK_DELETE);
+        robot.delay((int) (Math.random() * 600));
+        robot.keyRelease(KeyEvent.VK_DELETE);
+    }
+
+    public void start() {
+        for (int i = 0; i < 44; i++) {
+            // 处理第一个水印
+            mouseMove(2162, 386);
+            click();
+            mouseMove(2186, 346);
+            click();
+            delete();
+
+            // 处理第二个水印
+            mouseMove(1829, 594);
+            click();
+            mouseMove(1844, 522);
+            click();
+            delete();
+
+            // 处理第三个水印
+            mouseMove(1529, 800);
+            click();
+            mouseMove(1588, 795);
+            click();
+            delete();
+
+            // 处理第四个水印
+            mouseMove(1100, 918);
+            click();
+            mouseMove(1177, 898);
+            click();
+            delete();
+
+            // 处理第五个水印
+            mouseMove(797, 1164);
+            click();
+            mouseMove(886, 1138);
+            click();
+            delete();
+
+            // 点击进入下一页
+            mouseMove(2546, 1449);
+            click();
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        final DeletePPTMark robot = new DeletePPTMark();
+        Thread.sleep(3000);
+        // robot.start();
+    }
+
+}
+
+```
 
