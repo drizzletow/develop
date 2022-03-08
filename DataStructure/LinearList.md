@@ -1,6 +1,4 @@
-#  一 线性表的定义
-
-## 1. 定义和特点
+#  一 线性表
 
 由 `n（n≥0）`个数据特性相同的元素构成的有限序列称为**线性表（Linear List）**，线性表中元素的个数`n（n≥0）`定义为线性表的长度，n=0时称为空表。n 是线性表的元素个数，称为线性表长度（Length）
 
@@ -12,19 +10,7 @@
 
 
 
-## 2. 抽象数据类型
-
-![image-20220217143547833](vx_images/image-20220217143547833.png)
-
-
-
-
-
-
-
-# 二 顺序表示和实现
-
-## 1. 顺序存储表示
+## 1. 顺序表的实现
 
 线性表的顺序表示指的是用一组地址连续的存储单元依次存储线性表的数据元素，这种表示也称作线性表的顺序存储结构或顺序映像。通常，称这种存储结构的线性表为**顺序表（Sequential List）**，其特点是：
 
@@ -38,21 +24,227 @@
 
 
 
+```java
+package cn.itdrizzle.arraylist;
+
+import java.util.Arrays;
+import java.util.Objects;
+
+/**
+ * @Classname SingleArrayList
+ * @Description 基于数组的线性表实现
+ * @Date 2022/3/4 19:13
+ * @Author idrizzle
+ */
+public class SingleArrayList<T> {
+    private static final int MAX_CAPACITY = Integer.MAX_VALUE - 8;
+    private static final int INIT_CAPACITY = 10;
+
+    private int size;
+    private Object[] elementArr;
+
+    public SingleArrayList() {
+        this(INIT_CAPACITY);
+    }
+
+    public SingleArrayList(int capacity) {
+        if (capacity < 0 || capacity > MAX_CAPACITY) {
+            throw new RuntimeException("Illegal capacity!");
+        }
+        elementArr = new Object[capacity];
+    }
+
+    /**
+     * 将元素添加到末尾
+     * @param element 添加的元素
+     * @author itdrizzle
+     * @date 2022/3/4 20:23
+     */
+    public void add(T element) {
+        // 数组已满时需要扩容
+        if (size == elementArr.length) {
+            int len = getLength(size);
+            grow(len);
+        }
+        elementArr[size] = element;
+        size++;
+    }
+
+    /**
+     * 在指定下标处添加元素
+     * @param index 下标
+     * @param element 新的元素
+     * @author itdrizzle
+     * @date 2022/3/4 20:59
+     */
+    public void add(int index, T element) {
+        if (index < 0 || index > size) {
+            throw new IndexOutOfBoundsException("index out of Bounds");
+        }
+        // 数组已满时需要扩容
+        if (size == elementArr.length) {
+            int len = getLength(size);
+            grow(len);
+        }
+
+        // 移动元素并添加
+        for (int i = size; i > index; i--) {
+            elementArr[i] = elementArr[i - 1];
+        }
+        elementArr[index] = element;
+        size++;
+    }
+
+    /**
+     * 数组扩容（将原数组的内容赋值到新数组）
+     * @param len 新数组的长度
+     * @author itdrizzle
+     * @date 2022/3/4 20:20
+     */
+    private void grow(int len) {
+        final Object[] newArr = new Object[len];
+        for (int i = 0; i < size; i++) {
+            newArr[i] = elementArr[i];
+        }
+        elementArr = newArr;
+    }
+
+    /**
+     * @param currentLength 当前数组长度
+     * @author itdrizzle
+     * @date 2022/3/4 20:19
+     * @return {@link int} 扩容后的数组容量
+     */
+    private int getLength(int currentLength) {
+        // 若已经是最大容量，表示无法再扩容，抛出异常
+        if (currentLength == MAX_CAPACITY) {
+            throw new RuntimeException("Out of max capacity!");
+        }
+        // 每次扩容 1.5 倍
+        int newCapacity = currentLength + (currentLength >> 1);
+        // 保证扩容后，不能超过最大容量
+        if (newCapacity > MAX_CAPACITY || newCapacity < 0) {
+            newCapacity = MAX_CAPACITY;
+        }
+
+        return newCapacity;
+    }
+
+    /**
+     * 删除指定下标的元素
+     * @param index 指定下标
+     * @author itdrizzle
+     * @date 2022/3/4 20:26
+     * @return {@link T}
+     */
+    public T remove(int index) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("index out of Bounds");
+        }
+        if (isEmpty()) {
+            return null;
+        }
+
+        T result = (T) elementArr[index];
+        for (int i = index; i < size; i++) {
+            elementArr[i] = elementArr[i + 1];
+        }
+        size--;
+        return result;
+    }
+
+    /**
+     * 删除数组中的第一个目标元素
+     * @param target 目标元素
+     * @author itdrizzle
+     * @date 2022/3/4 20:32
+     * @return {@link T}
+     */
+    public T remove(T target) {
+        int index = indexOf(target);
+
+        // 不存在该元素时
+        if (index == -1) return null;
+
+        return remove(index);
+    }
+
+    /**
+     * 将指定下标的元素修改为新的元素
+     * @param index 下标
+     * @param element 新的元素
+     * @author itdrizzle
+     * @date 2022/3/4 20:31
+     * @return {@link boolean}
+     */
+    public boolean set(int index, T element) {
+        if (index < 0 || index > size) {
+            throw new IndexOutOfBoundsException("index out of Bounds");
+        }
+        if (index == size) {
+            add(element);
+            return true;
+        }
+        elementArr[index] = element;
+        return true;
+    }
+
+    /**
+     * 返回指定下标的值
+     * @param index 下标
+     * @author itdrizzle
+     * @date 2022/3/4 20:54
+     * @return {@link T}
+     */
+    public T get(int index) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("index out of Bounds");
+        }
+        return (T) elementArr[index];
+    }
+
+    /**
+     * 查询目标元素第一次出现的下标
+     * @param target 待查找的元素
+     * @author itdrizzle
+     * @date 2022/3/4 20:42
+     * @return {@link int} 不存在时返回 -1
+     */
+    public int indexOf(T target) {
+        for (int i = 0; i < size; i++) {
+            if (Objects.equals(target, elementArr[i])){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public int size() {
+        return size;
+    }
+
+    public boolean isEmpty(){
+        return size == 0;
+    }
+
+    @Override
+    public String toString() {
+        return "ArrayList{" +
+                "size=" + size +
+                ", Data=" + Arrays.toString(elementArr) +
+                '}';
+    }
+}
+
+```
 
 
-## 2. 顺序表的实现
+
+<br/>
 
 
 
-
-
-
-
-
-
-
-
-# 三 链式表示和实现
+## 2. 链式表示和实现
 
 线性表的链式存储结构是用若干地址分散的存储单元存储数据元素，逻辑上相邻的数据元素在物理位置上不一定相邻，因此，必须采用附加信息表示数据元素之间的顺序关系。存储一个数据元素的存储单元称为结点（Node），一个结点至少包含以下两部分：
 
@@ -70,7 +262,7 @@ node(data, address)
 
 
 
-## 1. 单链表
+### 1) 单链表
 
 每个结点只有一个地址域的线性链表称为**单链表（Singly Linked List）** ，声明单链表结点类 `Node<T>` 如下
 
@@ -367,7 +559,7 @@ public class SingleLinkedList<E> {
 
 
 
-## 2. 双向链表
+### 2) 双向链表
 
 双链表（Doubly Linked List）是每个结点有两个地址域的线性链表，两个地址域分别指向前驱结点和后继结点
 
@@ -808,7 +1000,7 @@ public class SingleDBLinkedList<E> {
 
 
 
-## 3. 循环链表
+### 3) 循环链表
 
 **循环单链表（Circular Singly Linked List）**指，其最后一个结点的next域指向head，成为环形结构，如图所示：
 
@@ -828,11 +1020,46 @@ public class SingleDBLinkedList<E> {
 
 
 
+<br/>
+
+
+
+# 二 栈和队列
+
+## 1. 栈Stack
+
+栈的定义
+
+```java
+// 栈是一种”操作受限”的线性表，体现在只能在一端插入删除数据，符合FILO的特性。
+```
 
 
 
 
-# 四 栈和队列
+
+### 1) 数组实现栈
+
+// 1, 数组初始化
+
+// 2, 数组扩容问题
+
+注意1：数组上线设置为: Integer.MAX_VALUE - 8; 原因
+
+```
+* The maximum size of array to allocate.
+* Some VMs reserve some header words in an array.
+* Attempts to allocate larger arrays may result in
+* OutOfMemoryError: Requested array size exceeds VM limit
+```
+
+
+
+<br/>
+
+
+
+### 2) 单链表实现栈
 
 
 
@@ -841,6 +1068,98 @@ public class SingleDBLinkedList<E> {
 
 
 
+
+### 3) 栈的常见应用
+
+1, 函数调用栈(方法栈)
+
+2, 浏览器的前进后退功能
+
+3, 编译器利用栈实现表达式求值
+
+```java
+// 计算机可以根据一个表达式的前缀和后缀通过栈计算结果
+// 计算机也可以利用栈, 把中缀转化成 前缀和后缀
+中缀表达式:  1 + 2 * 3   给人看
+前缀表达式:   + 1* 23
+后缀表达式:  123 * +
+```
+
+```java
+//    中缀表达式转化为后缀:
+//    遍历中缀表达式
+//    遇到操作数输出
+//    遇到操作符, 出栈, 直到遇到更低优先级的操作符, 操作符入栈
+//    遍历完成, 全部弹栈
+
+//    中缀表达式转化为前缀:
+//    遍历中缀表达式: 逆序遍历
+//    遇到操作数输出: 头插法
+//    遇到操作符, 出栈, 只弹出更高优先级的操作符, 操作符入栈
+//    遍历完成, 全部弹栈
+```
+
+4, 反序字符串，实现 `reNumber(str)` 方法,反转字符串
+
+5,  括号匹配问题 ，实现 `judgeBracket(str)` 方法来判断括号匹配
+
+6, 利用栈实现 `DFS: depth-first-search`  深度优先遍历: 
+
+
+
+<br/>
+
+
+
+## 2. 队列Queue
+
+队列的概念
+
+```java
+// 队列也是一种”操作受限”的线性表，体现在一端插入数据在另一端删除数据，特性是FIFO。
+```
+
+
+
+### 1) 数组实现队列
+
+
+
+
+
+
+
+### 2) 单链表实现队列
+
+
+
+
+
+
+
+### 3) 队列的应用
+
+```java
+1, 普通队列的应用场景是很有限的，一般在代码中用到的是阻塞队列。
+   生产者-消费者
+   线程池:  生产者-消费者   
+
+2, 利用队列实现 BFS:breadth first search 广度优先搜索/ 遍历   
+```
+
+
+
+重点: 阻塞队列: 
+
+```java
+一个队列, 大小有限 (不可以扩容)
+// 当这个队列添加满的时候, 添加动作阻塞
+// 当这个队列空的时候, 删除动作阻塞 
+```
+
+
+
+<br/>
 
 
 
@@ -851,6 +1170,12 @@ public class SingleDBLinkedList<E> {
 ## 1. 数组相关算法
 
 
+
+
+
+
+
+<br/>
 
 
 
@@ -1079,13 +1404,7 @@ public class SingleDBLinkedList<E> {
 
 
 
-### 4) 双向链表
-
-
-
-
-
-### 5) 循环链表
+### 
 
 
 

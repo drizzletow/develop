@@ -785,10 +785,25 @@ public void buildTreeByInAndPreTest() {
 
 
 
+```
+http://520it.com/binarytrees/
+http://btv.melezinek.cz/binary-search-tree.html
+https://www.cs.usfca.edu/~galles/visualization/Algorithms.html
+https://yangez.github.io/btree-js
+https://www.codelike.in
+```
+
+
+
+<br/>
+
+
+
 ## 1. AVL树
 
 
 
+![image-20220308091811788](vx_images/image-20220308091811788.png)
 
 
 
@@ -801,7 +816,8 @@ public void buildTreeByInAndPreTest() {
 
 
 
-## 红黑树
+
+## 2. 红黑树
 
 注意: 有些书上, 说红黑树是一个自平衡的二叉搜索树
 

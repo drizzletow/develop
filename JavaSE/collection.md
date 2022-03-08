@@ -464,7 +464,9 @@ Java 集合类型分为 Collection 和 Map，它们是 Java 集合的根接口�
 ​    Map集合体系: 存储的都是key-value数据 (具有自我描述性 )
 ```
 
-![image-20211014103244479](vx_images/image-20211014103244479.png)
+![image-20220308201600093](vx_images/image-20220308201600093.png)
+
+
 
 Java集合接口的作用：
 
@@ -548,15 +550,92 @@ Iterator<E> iterator()                          // 返回在此 collection 的�
 
 
 
-## 2. List
+## 2. List(线性表)
+
+List特点：
+
+> 1. List时Collection的子接口
+> 2. List在Collection的基础上，定义为一个线性表
+> 3. List的子实现都是有序的
+> 4. List的子实现允许存储重复元素
+> 5. List的子实现允许存储null
 
 
 
-### 1. ArrayList
+api：
 
-ArrayList 类实现了可变数组的大小，存储在内的数据称为元素。它还提供了快速基于索引访问元素的方式，对尾部成员的增加和删除支持较好。
+```java
+//        boolean add(E e): 添加方法
+//        boolean addAll(Collection<? extends E> c): 添加所有
+//        boolean contains(Object o): 查找某个元素是否存在
+//        boolean containsAll(Collection<?> c): 查找某些元素是否都存在
+//        boolean remove(Object o): 根据内容删除
+//        boolean removeAll(Collection<?> c): 删除所有
+//        boolean retainAll(Collection<?> c): 保留所有匹配元素
 
-- ArrayList的默认构造函数会初始化一个空数组，第一次添加元素时才扩容至10（JDK8 中改为这种懒加载模式？）
+//        void clear(): 清空
+//        boolean equals(Object o)
+//        int hashCode()
+//        boolean isEmpty()
+//        int size()
+
+        
+//        void add(int index, E element): 添加到指定下标位置
+//        boolean addAll(int index, Collection<? extends E> c): 把所有元素添加到指定下标位置
+//        E get(int index): 根据下标查找对应下标存储内容:  最最重要
+//        E remove(int index): 删除指定下标的元素
+//        E set(int index, E element): 修改指定位置的数据
+//        int indexOf(Object o): 查找某个元素第一次出现的下标
+//        int lastIndexOf(Object o): 查找某个元素最后一次出现的下标
+
+
+toArray各种特点和Collection一模一样
+//        Object[] toArray()
+//        返回按适当顺序包含列表中的所有元素的数组（从第一个元素到最后一个元素）。
+//        <T> T[]  toArray(T[] a)
+//        返回按适当顺序（从第一个元素到最后一个元素）包含列表中所有元素的数组；返回数组的运行时类型是指定数组的运行时类型。
+
+ListIterator : 重点提供向前遍历的方法
+//        Iterator<E> iterator()          //  返回按适当顺序在列表的元素上进行迭代的迭代器。
+//        ListIterator<E> listIterator()  //  返回此列表元素的列表迭代器（按适当顺序）。
+//        ListIterator<E> listIterator(int index) //返回列表中元素的列表迭代器（按适当顺序），从列表的指定位置开始   
+
+//        List<E> subList(int fromIndex, int toIndex)
+//        返回列表中指定的 fromIndex（包括 ）和 toIndex（不包括）之间的部分'视图'。
+    视图方法:  通过视图方法获得的数据, 并不是真的复制了数据, 而是视图方法返回一个对象, 
+			  这个返回的对象内部维护了一些指向源数据的标记  
+       -->  视图方法获得的数据, 还是源数据
+                  
+	注意: 视图方法使用的过程中, 也可能会抛出并发修改异常
+    怎么避免？ 在使用完通过视图方法获得的对象之前, 不要调用原集合类修改结构的方法修改原集合数据
+   
+```
+
+
+
+<br/>
+
+
+
+### 1) ArrayList
+
+**ArrayList的特点**：
+
+```java
+// 1, ArrayList 是 List接口的子实现
+// 2, ArrayList描述的数据结构是线性表
+// 3, ArrayList的底层结构是数组
+// 4, ArrayList默认的初始容量,  扩容机制
+// 5, 存储元素有序
+// 6, 允许存储重复元素
+// 7, 允许存储null
+// 8, 线程不安全
+
+```
+
+
+
+- ArrayList的默认构造函数会初始化一个空数组，第一次添加元素时才扩容至10（ JDK8 中改为这种懒加载模式？）
 - 建议开发中如果能知道数组大小，预先指定大小避免多次扩容、 复制数据
 
 
@@ -573,24 +652,71 @@ ArrayList类的常用方法：
 | List<E> subList(int fromlndex, int tolndex) | 返回一个新的集合，新集合中包含 fromlndex 和 tolndex 索引之间 的所有元素。包含 fromlndex 处的元素，不包含 tolndex 索引处的 元素 |
 
 ```java
-public class ListDemo {
-    public static void main(String[] args) {
-        List list = new ArrayList();
-        list.add("Java");
-        list.add("c/c++");
-        list.add("swift");
+ArrayList实现了, Collection以及List定义的所有api
+    
+其它:
+//        void ensureCapacity(int minCapacity)
+//        如有必要，增加此 ArrayList 实例的容量，以确保它至少能够容纳最小容量参数所指定的元素数。
 
-        System.out.println(list.size());                   //3
-        System.out.println(list);                          //[Java, c/c++, swift]
-		// 遍历列表
-        for (int i = 0; i < list.size(); i++) {
-            System.out.print(list.get(i)+" ");             //Java c/c++ swift
-        }
-        System.out.println("\n");
+//        void trimToSize()
+//        将此 ArrayList 实例的容量调整为列表的当前大小。
 
-        System.out.println(list.remove(1));                // c/c++  移除并返回其值
-        System.out.println(list.remove("Java"));           // true   返回是否执行成功的布尔值
-        System.out.println(list);                          // [swift]
+
+//        Object clone()
+//        返回此 ArrayList 实例的浅表副本。
+
+```
+
+注意: ArrayList的clone方法, 复制两层, 一个ArrayList对象本身会复制, 另外一层是ArrayList对象的持有的elementData也会复制, 在elementData存储的数据就不会再复制了
+
+![image-20220308202206544](vx_images/image-20220308202206544.png)
+
+<br/>
+
+
+
+**subList() 在ArrayList上的表现**：
+
+subList() 方法实际返回了一个 SubList 的内部类，SubList继承AbstractList抽象类，AbstractList实现了List接口，所以SubList说到底就是一个List的实现类，主要用于返回List的视图，这个视图是原List对象中的一部分，确实是一部分，直接将原List对象引用到新的子视图的List，对子视图进行改变，原List对象也会随之改变
+
+```java
+class ArrayList{
+   Object[] elementData;
+    
+   public List<E> subList(int fromIndex, int toIndex) {
+        subListRangeCheck(fromIndex, toIndex, size);
+        return new SubList(this, 0, fromIndex, toIndex);
+    }
+    
+     private class SubList extends AbstractList<E> implements RandomAccess {
+        private final AbstractList<E> parent; // 表示外层对象
+        private final int parentOffset; // 起始下标
+        private final int offset;
+        int size; // 标记的数据个数
+        
+        // ......
+     }
+    
+    // ......
+ }
+```
+
+在List中使用subList要小心，因为本身SubList这个类就是原List的一个视图，改变 SubList 必定会改变原List
+
+
+
+<br/>
+
+补充: 可选操作
+
+比如Collection定义了一些api,  子实现有些api可以选择不实现(在实现的方法体内直接抛出`UnsupportedOperationException` )
+
+```java
+public class MyCollection implements Collection<String> {
+
+    @Override
+    public boolean add(String s) {
+       throw new UnsupportedOperationException();
     }
 }
 ```
@@ -599,31 +725,29 @@ public class ListDemo {
 
 
 
-### 2. LinkedList
-
-LinkedList 类采用链表结构保存对象，这种结构的优点是便于向集合中插入或者删除元素。需要频繁向集合中插入和删除元素时，使用 LinkedList 类比 ArrayList 类效果高，但是 LinkedList 类随机访问元素的速度则相对较慢。这里的随机访问是指检索集合中特定索引位置的元素。
-
-
-
-LinkedList 类除了包含 Collection 接口和 List 接口中的所有方法之外，还特别提供了下面的方法：
-
-| 方法名称           | 说明                         |
-| ------------------ | ---------------------------- |
-| void addFirst(E e) | 将指定元素添加到此集合的开头 |
-| void addLast(E e)  | 将指定元素添加到此集合的末尾 |
-| E getFirst()       | 返回此集合的第一个元素       |
-| E getLast()        | 返回此集合的最后一个元素     |
-| E removeFirst()    | 删除此集合中的第一个元素     |
-| E removeLast()     | 删除此集合中的最后一个元素   |
-
-
-
-### 3. Vector
+### 2) Vector
 
 Vector 类实现了一个动态数组。和 ArrayList 很相似，但是两者是不同的：
 
 - Vector 是同步访问的（线程安全的）
 - Vector 还包含了许多传统的方法，这些方法不属于集合框架。
+
+
+
+```java
+// 1, 它是List的一个子实现
+// 2, 描述的数据结构是一个线性表
+// 3, 底层结构是一个数组
+// 4, 默认初始容量 10,  扩容机制: 如果存在一个大于零的增量扩大增量个, 如果增量小于等于0, 扩为原来的2倍
+// 5, 有序
+// 6, 允许重复
+// 7, 允许存储null
+// 8, 线程安全
+// 9, Vector是jdk1.0时候出现的
+
+
+// 构造方法和api不需要记(有兴趣可以去研究)
+```
 
 
 
@@ -642,7 +766,99 @@ Vector(Collection c)        // 创建一个包含集合的Vector
 
 
 
-## 4. HashSet
+
+
+### 3) LinkedList
+
+```java
+// 1, LinkedList不仅仅是List接口的一个子实现, 还是Deque接口的一个子实现
+// 2, LinkedList首先可以作为一个普通的线性表, 还可以作为队列/双端队列/栈使用
+// 3, 底层是一个双向链表
+// 4, 有序
+// 5, 允许存储重复元素
+// 6, 允许存储null元素
+// 7, 线程不安全
+```
+
+
+
+**构造方法** ：
+
+```java
+LinkedList()   // 构造一个空列表。 
+LinkedList(Collection<? extends E> c) 
+               // 构造一个包含指定 collection 中的元素的列表，这些元素按其 collection 的迭代器返回的顺序排列
+```
+
+
+
+LinkedList 类除了包含 Collection 接口和 List 接口中的所有方法之外，还特别提供了下面的方法：
+
+| 方法名称           | 说明                         |
+| ------------------ | ---------------------------- |
+| void addFirst(E e) | 将指定元素添加到此集合的开头 |
+| void addLast(E e)  | 将指定元素添加到此集合的末尾 |
+| E getFirst()       | 返回此集合的第一个元素       |
+| E getLast()        | 返回此集合的最后一个元素     |
+| E removeFirst()    | 删除此集合中的第一个元素     |
+| E removeLast()     | 删除此集合中的最后一个元素   |
+
+
+
+
+
+<br/>
+
+ 
+
+## 3. 栈和队列
+
+### 1) Stack
+
+```java
+// 1, Stack是vector一个子类
+// 2, 数据结构是一个栈
+// 3, 底层结构是一个数组
+// 4, 默认的初始长度10, 默认扩容机制:2倍
+// 5, 有序
+// 6, 允许重复
+// 7, 允许存储null
+// 8, 线程安全
+```
+
+注意1:  Stack是Vector子类, 也就是可以从语法上使用Vector实现的 api(add, addAll....),  但是习惯上还是不要用, 因为我们创建一个Stack还是希望它作为一个栈存在(使用 push, pop, peek方法)
+
+注意2: 文档上推荐, 如果我们需要使用栈的时候, 用Deque接口下的子实现, 而非使用Stack 
+
+
+
+
+
+### 2) Queue
+
+
+
+
+
+### 3) Deque
+
+
+
+
+
+### 4) BlockingQueue
+
+
+
+
+
+<br/>
+
+
+
+## 4. Set(集合)
+
+### 1) HashSet
 
 Set 集合类似于一个罐子，程序可以依次把多个对象“丢进”Set 集合，而 Set 集合通常不能记住元素的添加顺序。也就是说 
 
@@ -683,7 +899,7 @@ public class SetDemo {
 
 
 
-## 5. TreeSet
+### 2) TreeSet
 
 TreeSet 类同时实现了 Set 接口和 SortedSet 接口。SortedSet 接口是 Set 接口的子接口，可以实现对集合进行自然排序，因此使用 TreeSet 类实现的 Set 接口默认情况下是自然排序的，这里的自然排序指的是升序排序。
 
@@ -723,7 +939,11 @@ TreeSet 类除了实现 Collection 接口的所有方法之外，还提供了下
 
 
 
-## 6. Iterator
+
+
+## 5. 遍历集合
+
+### 1) Iterator
 
 Iterator（迭代器）是一个接口，它的作用就是遍历容器的所有元素，也是Java 集合框架的成员
 
@@ -783,6 +1003,14 @@ void remove()      // 删除集合里上一次 next 方法返回的元素。
 
   否则将会引发 `java.util.ConcurrentModificationException` 异常
 
+<br/>
+
+
+
+### 2) fail-fast
+
+
+
 - Iterator 迭代器采用的是 **快速失败（fail-fast）机制**，一旦在迭代过程中检测到该集合已经被修改（通常是程序中的其他线程修改），程序立即引发 `ConcurrentModificationException` 异常，而不是显示修改后的结果，这样可以避免共享资源而引发的潜在问题。
 
 ```java
@@ -809,29 +1037,85 @@ public class IteratorTest {
 
 
 
+**Java集合-快速失败** 总结：
+
+**现象**：在用迭代器遍历一个集合对象时，如果遍历过程中对集合对象的内容进行了增加、删除、修改操作，则会抛出ConcurrentModificationException。
+
+**原理**：迭代器在遍历时直接访问集合中的内容，并且在遍历过程中使用一个 modCount 变量。集合在被遍历期间如果内容发生变化，就会改变modCount的值。每当迭代器使用hashNext()/next()遍历下一个元素之前，都会检测modCount变量是否为expectedmodCount值，是的话就返回遍历；否则抛出ConcurrentModificationException异常，终止遍历。
+
+**注意**：这里异常的抛出条件是检测到 modCount！=expectedmodCount 这个条件。如果集合发生变化时修改modCount值刚好又设置为了expectedmodCount值，则异常不会抛出。因此，不能依赖于这个异常是否抛出而进行并发操作的编程，这个异常只建议用于检测并发修改的bug 
 
 
-## 7. foreach
+
+<br/>
+
+
+
+【拓展】Java集合-失败安全
+
+**现象**：采用失败安全机制的集合容器，在遍历时不是直接在集合内容上访问的，而是先复制原有集合内容，在拷贝的集合上进行遍历。
+
+**原理**：由于迭代时是对原集合的拷贝进行遍历，所以在遍历过程中对原集合所作的修改并不能被迭代器检测到，所以不会触发ConcurrentModificationException。
+
+**缺点**：基于拷贝内容的优点是避免了ConcurrentModificationException，但同样地，迭代器并不能访问到修改后的内容，即：迭代器遍历的是开始遍历那一刻拿到的集合拷贝，在遍历期间原集合发生的修改迭代器是不知道的。这也就是他的缺点，同时，由于是需要拷贝的，所以比较吃内存。
+
+**场景**：java.util.concurrent包下的容器都是安全失败，可以在多线程下并发使用，并发修改。
+
+
+
+<br/>
+
+
+
+### 3) foreach
 
 除了使用 Iterator 接口迭代访问 Collection 集合里的元素，jdk1.5 还提供的 foreach 循环迭代访问集合元素，而且更加便捷。
 
 - 与使用 Iterator 接口迭代访问集合元素类似的是，foreach 循环中的迭代变量也不是集合元素本身，系统只是依次把集合元素的值赋给迭代变量，因此在 foreach 循环中修改迭代变量的值也没有任何实际意义。
 - 它的内部原理其实也是Iterator迭代器，所以在遍历的过程中，不能对集合中的元素进行增删操作，否则将引发异常。
 
-```java
-public class ForeachTest {
-    public static void main(String[] args) {
-        Set<String> hashSet = new HashSet<>();
-        hashSet.add("hello");
-        hashSet.add("hashSet");
-        hashSet.add("Set");
 
-        for (String str : hashSet) {
-            System.out.println(str);
-        }
-    }
+
+![image-20220308142823957](vx_images/image-20220308142823957.png)
+
+
+
+注意：
+
+> 我们可以使用foreach循环, 对Collection对象进行遍历,  foreach循环遍历Collection对象,  在编译的时候本质还是Iterator遍历
+>  -->  推论1: 必须具有Iterator方法才可以使用foreach循环 (数组例外)
+>  ---> 推论2: 不要在使用foreach循环的时候通过源数据的修改结构的方法修改源数据, 会抛出并发修改异常
+>
+> ​        (因为foreach循环底层会编译成Iterator迭代 )
+>
+> 注意：虽然数组可以使用foreach循环, 但是在真正编译的时候, 数组的增强的for循环会编译成fori循环
+
+<br/> 
+
+### 4) ListIterator 
+
+ List提供了ListIterator方法, 是在Iterator的基础上增强---> 可以向前遍历 （注意这个类型是Iterator类型的子类型）
+
+```java
+public interface ListIterator<E> extends Iterator<E> {
+    boolean hasNext();          // hashNext: 判断后面还有没有数据可遍历
+    E next();                   // next : 向后遍历
+    
+    boolean hasPrevious();      // hasPrevious : 判断向前还有没有数据可遍历
+    E previous();               // previous : 向前遍历
+    
+    int nextIndex();            // nextIndex : 如果向后遍历, 后面元素的下标
+    int previousIndex();        // previousIndex : 如果向前遍历, 前面元素的下标
+    
+    void remove();              // remove : 删除刚刚遍历过的元素
+    void set(E e);              // set : 修改刚刚遍历过的元素位置
+    void add(E e);              // add : 添加到当前标记位置
 }
 ```
+
+
+
+<br/>
 
 
 
