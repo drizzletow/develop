@@ -1,250 +1,6 @@
-# 一 字符串
 
-## 1. String类
 
- String类位于 java.lang 包中，在 Java 中每个双引号定义的字符串都是一个 String 类的对象。
-
-**String对象不可变**：对象一旦被创建后，对象所有的状态及属性在其生命周期内不会发生任何变化，不可变的原因与本质：
-
-![image-20220216190454092](vx_images/image-20220216190454092.png)
-
-
-
-
-
-1. String 类的构造方法：
-
-   ```java
-   String()                        // 初始化一个新创建的 String对象，表示一个空字符序列   
-   String(String original)         // 初始化一个新创建的 String对象，新创建的字符串是该参数字符串的副本
-   String(char[] value)            // 分配一个新的字符串，将参数中的字符数组元素全部复制变为字符串
-   String(char[] value,int offset,int count)  //offset是数组第一个字符的索引，count指定子数组的长度
-   ```
-
-2. String和int的相互转换
-
-   ```java
-   // String 字符串转整型 int 有以下两种方式：
-   Integer.parseInt(str)
-   Integer.valueOf(str).intValue()
-       
-   // int转换为String
-   String s = String.valueOf(i);
-   String s = Integer.toString(i);
-   String s = "" + i;
-   ```
-
-3. String常用方法
-
-   - length() ：获取字符串的长度
-
-   - toLowerCase() ：将字符串中的所有字符全部转换成小写，而非字母的字符不受影响
-
-   - toUpperCase() ：将字符串中的所有字符全部转换成大写，而非字母的字符不受影响
-
-   - trim() ：去掉字符串中的首尾空格
-
-   - substring(int beginIndex) ：提取从索引位置开始至结尾处的字符串部分
-
-   - substring(int beginIndex，int endIndex) ：截取  [beginIndex，endIndex) 索引的字符串
-
-     
-
-4. String分割字符串
-
-   ```java
-   str.split(String sign)
-   str.split(String sign,int limit)
-   ```
-
-   - sign 为指定的分割符，可以是任意字符串。
-
-   - limit 表示分割后生成的字符串的限制个数，如果不指定，则表示不限制，直到将整个目标字符串完全分割为止。
-
-   - 如果用“.”作为分隔的话，必须写成`String.split("\\.")`，这样才能正确的分隔开，不能用`String.split(".")`。
-
-   - 如果用“|”作为分隔的话，必须写成`String.split("\\|")`，这样才能正确的分隔开，不能用`String.split("|")`。
-
-   - 如果在一个字符串中有多个分隔符，可以用 `|` 作为连字符，比如：`"acount=? and uu =? or n=?"`，需要把三个都分隔出来，可以用`String.split("and|or")`。
-
-     
-
-5. 字符串查找
-
-   - `indexOf() `方法用于返回字符（串）在指定字符串中首次出现的索引位置，如果能找到，则返回索引值，否则返回 -1
-   - `lastIndexOf() `方法用于返回字符（串）在指定字符串中最后一次出现的索引位置，如果能找到则返回索引值，否则返回 -1
-   - `charAt() `方法可以在字符串内根据指定的索引查找字符（字符串本质上是字符数组，因此它也有索引，索引从零开始）
-
-
-
-6. 字符串的替换
-
-   ```java
-   replace(String oldChar, String newChar)         // 将目标字符串中的指定字符（串）替换成新的字符（串）
-   replaceFirst(String regex, String replacement)  // 将目标字符串中匹配某正则表达式的第一个子字符串替换成新的字符串
-   replaceAll(String regex, String replacement)    // 将目标字符串中匹配某正则表达式的所有子字符串替换成新的字符串
-   ```
-
-   
-
-7. 字符串比较
-
-   - `equals()` 方法将逐个地比较两个字符串的每个字符是否相同
-
-     如果两个字符串具有相同的字符和长度，它返回 true，否则返回 false。( 区分大小写 )
-
-   - `equalsIgnoreCase()` 方法的作用和语法与 equals() 方法完全相同，但是**不区分大小写**
-
-   - `equals()` 方法和 `==` 运算符：
-
-     - `==`运算符比较两个对象引用看它们是否引用相同的实例
-     - equals() 原本也是比较引用是否相同，但String类重写了该方法，故而直接比较字符串对象中的字符
-
-   - `compareTo() `方法用于按字典顺序比较两个字符串的大小，该比较是基于字符串各个字符的 Unicode 值
-
-   ```java
-   String str1 = new String("hello");
-   String str2 = new String("hello");
-   
-   System.out.println(str1.equals(str2));    // true
-   System.out.println(str1 == str2);         // false
-   
-   System.out.println("a".compareTo("A"));   // 32 ( 表示a在A之后32个字符序列 )
-   ```
-
-   
-
-8. 字符串拼接
-
-   String 字符串虽然是不可变字符串，但也可以进行拼接只是会产生一个新的对象。String 字符串拼接可以使用“+”运算符或 String 的 concat(String str) 方法。“+”运算符优势是可以连接任何类型数据拼接成为字符串，而 concat 方法只能拼接 String 类型字符串。
-
-   ```java
-   String str = "hello ";
-   System.out.println(str + 99);                // hello 99
-   System.out.println(str.concat("world"));     // hello world
-   ```
-
-   String被声明为 final class，是不可变字符串。因为它的不可变性，所以拼接字符串时候会产生很多无用的中间对象，如果频繁的进行这样的操作对性能有所影响。用+的方式效率最差，concat由于是内部机制实现，比+的方式好了不少（每次调用contact()方法就是一次数组的拷贝）虽然在内存中是处理都是原子性操作，速度非常快，但是，最后的return语句会创建一个**新String对象**，限制了concat方法的速度。
-
-   
-
-   **需要进行大量字符串拼接时，一定要使用StringBuffer或StringBuilder的append方法**：
-
-   StringBuffer和StringBuilder的append方法都继承自AbstractStringBuilder，整个逻辑都只做**字符数组**的加长，拷贝，到最后也不会创建新的String对象，所以速度很快，完成拼接处理后在程序中用strBuffer.toString()来得到最终的字符串
-
-
-
-## 2. StringBuilder
-
-Java 提供了 String 类来创建和操作字符串。String 类是不可变类，即一旦一个 String 对象被创建以后，包含在这个对象中的字符序列是不可改变的，直至这个对象被销毁。因此Java 提供了两个可变字符串类 StringBuffer 和 StringBuilder，中文翻译为“字符串缓冲区”。StringBuilder 类是 JDK 1.5 新增的类，它也代表可变字符串对象。
-
-
-
-实际上，StringBuilder 和 StringBuffer 功能基本相似，方法也差不多。不同的是，StringBuffer 是线程安全的，而 StringBuilder 则没有实现线程安全功能，所以性能略高。因此在通常情况下，如果需要创建一个内容可变的字符串对象，则应该优先考虑使用 StringBuilder 类。
-
-![image-20211012010548734](vx_images/image-20211012010548734.png)
-
-- 操作少量的数据使用 String
-- 单线程操作大量数据使用 StringBuilder
-- 多线程操作大量数据使用 StringBuffer
-
-```java
-// 使用 StringBuilder 拼接字符串, 反转字符串
-StringBuilder stringBuilder = new StringBuilder();
-stringBuilder.append("hello");
-stringBuilder.append(" world");
-System.out.println(stringBuilder.toString());            // hello world
-System.out.println(stringBuilder.reverse().toString());  // dlrow olleh
-```
-
-
-
-
-
-## 3. 字符串常量池
-
-由于String类型描述的字符串内容是常量不可改变，因此Java虚拟机将首次出现的字符串放入常量池中，若后续代码中出现了相同字符串内容则直接使用池中已有的字符串对象而无需申请内存及创建对象，从而提高了性能。
-
-**String直接赋值和使用new的区别**：
-
-- 直接赋值： 可能创建一个或者不创建对象
-- 使用new： 可能创建一个或者两个对象，但一定会在heap（堆）中创建一个String对象
-
-```java
-public static void main(String[] args) {
-    String name1 = "tom";
-    String name2 = "tom";
-
-    String str1 = new String("hello");
-    String str2 = new String("hello");
-
-    System.out.println(str1.equals(str2));   // true
-    System.out.println(str1 == str2);        // false （String中"=="比较引用地址，equals比较具体值）
-
-    String str3 = "hello";
-    String str4 = str1.intern();
-    System.out.println(str3 == str4);        // true
-}
-```
-
-<img src="vx_images/image-20211013001617925.png" alt="image-20211013001617925" style="zoom: 67%;" />
-
-上例中的对象创建解释：
-
-- name1：先检查` “tom”`在常量池中是否存在，不存在 → 创建 `“tom”`对象放入常量池，并将name1指向该地址
-- name2：由于`“tom”`已存在于常量池中，name2直接指向该地址
-
-
-
-- str1：new关键字一定会在heap中创建`"hello"`，同时会检查常量池中是否存在该对象，不存在 → 则在常量池中创建该对象
-
-- str2：同样会在heap中创建`"hello"`，检查到常量池中是已存在该对象后结束
-
-- str3：由于`"hello"`已存在于常量池中，str3直接指向该地址
-
-- str4：检查常量池已存在这个对象，直接返回其引用
-
-  
-
-`intern()`：如果常量池中已经包含了这个String对象，那么直接返回这个对象。否则，就向常量中添加这个对象，并返回对它的引用
-
-（注意这里从jdk1.7起，**复制的是该对象的引用**，参照）如下示例：
-
-```java
-public class Demo {
-    public static void main(String[] args) {
-        String s = new String("aaa");
-        String s1 = s.intern();
-        System.out.println(s == s1);   // false
-
-        String str1 = new String("abc");
-        String str2 = new String("ddd");
-        String str3 = str1 + str2;
-        System.out.println(str3 == str3.intern()); // jdk1.7起为true，之前为false
-    }
-}
-```
-
-![image-20220216140357748](vx_images/image-20220216140357748.png)
-
-注：通过new创建一个String对象时，会在创建的同时检查字符串常量池中是否存在该对象，不存在则加入该对象，此处没什么疑问，
-
-关键在于：
-
-- 该例中的字符串进行拼接时，并不会像new一个对象那样进行上述操作（即不会将‘abcddd’加入到常量池），此时 `str3` 指向一个堆中的对象，而当一个堆中的对象调用 `intern()` 方法时，从jdk1.7起由于方法区实现的改变，常量池转移到了堆中，成为了堆的一部分，而此处也不再是将该对象再加入常量池然后返回其引用，而是在常量池中加入其在堆中的引用， `intern()` 返回的也是该引用
-
-
-
-**==与equals方法有什么区别**：
-
-- == ,对于基本数据类型而言,比较的是内容,对于引用数据类型而言,比较的是引用变量,即所指向的地址
-- equals方法是Object的方法,默认是比较2个对象的地址,若要比较内容,应当重写父类方法
-
-
-
-
-
-# 二 Java泛型
+# 一 Java泛型
 
 泛型，即“参数化类型”。顾名思义，就是将类型由原来的具体的类型'参数化'，此时类型也定义成参数形式，然后在使用/调用时传入具体的类型。事先不确定类型, 先写一个东西代指, 在使用的时候具体指定
 
@@ -452,7 +208,7 @@ public static <T> List find(Class<T> cs,int userId){
 
 
 
-# 三 Java集合
+# 二 Java集合
 
 为了保存数量不确定的数据，以及保存具有映射关系的数据（也被称为关联数组），Java提供了集合类。集合类主要负责保存、盛装其他数据，因此集合类也被称为容器类。
 
@@ -1073,6 +829,8 @@ ArrayDeque和LinkedList都实现了Deque接口，应该用哪一个呢？
 
 
 
+![image-20220310192241606](vx_images/image-20220310192241606.png)
+
 
 
 <br/>
@@ -1350,13 +1108,15 @@ public class SortDemo {
 
 
 
-# 四 Set和Map
+# 三 Set和Map
 
-
-
-## 1. Map
+## 1. Map接口
 
 Map 是一种键-值对（key-value）集合，Map 集合中的每一个元素都包含一个键（key）对象和一个值（value）对象。用于保存具有映射关系的数据。
+
+![image-20220310192804444](vx_images/image-20220310192804444.png)
+
+
 
 ```java
 // 1, Map是Map集合体系的顶级接口
@@ -1366,27 +1126,47 @@ Map 是一种键-值对（key-value）集合，Map 集合中的每一个元素�
 // 5, Map的一些子实现允许存储null, 另一些子实现不允许存储null
 
 (这些有序/重复/null问题指的都是map数据中的key,  value不在讨论范畴之内)
+
+注意: 如果我们又给map存储了一份重复key-value数据 (重复指key重复), 那么会新的value会覆盖已经存储的key-value的value
+
+注意: 因为map没有定义Iterator方法, 所以我们没有办法直接使用foreach循环来遍历map
 ```
 
 
 
 Map接口的常用方法：
 
-| 方法名称                                 | 说明                                                         |
-| ---------------------------------------- | ------------------------------------------------------------ |
-| void clear()                             | 删除该 Map 对象中的所有 key-value 对。                       |
-| boolean containsKey(Object key)          | 查询 Map 中是否包含指定的 key，如果包含则返回 true。         |
-| boolean containsValue(Object value)      | 查询 Map 中是否包含一个或多个 value，如果包含则返回 true。   |
-| V get(Object key)                        | 返回 Map 集合中指定键对象所对应的值。V 表示值的数据类型      |
-| V put(K key, V value)                    | 向 Map 集合中添加键-值对，如果当前 Map 中已有一个与该 key 相等的 key-value 对，则新的 key-value 对会覆盖原来的 key-value 对。 |
-| void putAll(Map m)                       | 将指定 Map 中的 key-value 对复制到本 Map 中。                |
-| V remove(Object key)                     | 从 Map 集合中删除 key 对应的键-值对，返回 key 对应的 value，如果该 key 不存在，则返回 null |
-| boolean remove(Object key, Object value) | 这是 Java8 新增的方法，删除指定 key、value 所对应的 key-value 对。如果从该 Map 中成功地删除该 key-value 对，该方法返回 true，否则返回 false。 |
-| Set entrySet()                           | 返回 Map 集合中所有键-值对的 Set 集合，此 Set 集合中元素的数据类型为 Map.Entry |
-| Set keySet()                             | 返回 Map 集合中所有键对象的 Set 集合                         |
-| boolean isEmpty()                        | 查询该 Map 是否为空（即不包含任何 key-value 对），如果为空则返回 true。 |
-| int size()                               | 返回该 Map 里 key-value 对的个数                             |
-| Collection values()                      | 返回该 Map 里所有 value 组成的 Collection                    |
+```java
+V put(K key, V value)                       // 添加或替换（可选操作）
+void putAll(Map<? extends K,? extends V> m) // 批量添加或替换（可选操作）
+    
+V remove(Object key)                        // 如果存在一个键的映射关系，则将其从此映射中移除（可选操作）
+    
+boolean containsKey(Object key)             // 如果此映射包含指定键的映射关系，则返回 true
+boolean containsValue(Object value)         // 如果此映射将一个或多个键映射到指定值，则返回 true     
+V get(Object key)                           // 返回指定键所映射的值；如果此映射不包含该键的映射关系，则返回null             
+
+void clear()                                // 从此映射中移除所有映射关系（可选操作）。
+boolean equals(Object o)                    // 比较指定的对象与此映射是否相等。
+int hashCode()                              // 返回此映射的哈希码值。
+boolean isEmpty()                           // 如果此映射未包含键-值映射关系，则返回 true。       
+int size()                                  // 返回此映射中的键-值映射关系数。       
+
+
+Set<K> keySet()                             // 返回此映射中包含的键的 Set 视图
+Collection<V> values()                      // 返回此映射中包含的值的 Collection 视图   
+Set<Map.Entry<K,V>> entrySet()              // 返回此映射中包含的映射关系的 Set 视图
+```
+
+注意: 为什么Map要提供三个视图方法（keySet、values、entrySet） 
+
+- 因为map没有定义Iterator方法, 所以我们没有办法直接使用foreach循环来遍历map
+
+  所以提供了是哪个视图方法, 把数据变成Collection类型, 就可以使用foreach循环来遍历map数据了
+
+
+
+三个视图方法的简单使用示例代码如下：
 
 ```java
 public class MapDemo {
@@ -1425,7 +1205,266 @@ public class MapDemo {
 }
 ```
 
+
+
 <br/>
+
+
+
+### 1) HashMap
+
+![image-20220310200725691](vx_images/image-20220310200725691.png)
+
+
+
+注意: HashMap的底层结构: 数组+链表+红黑树，jdk1.8之前: 只有单纯的: 数组+链表
+
+
+
+```java
+// 1, HashMap是Map接口的一个子实现
+// 2, HashMap底层是: 数组 +链表+红黑树
+// 3, HashMap的底层数组默认初始长度 16,   默认的扩容机制: 扩为原来2倍 , 默认的加载因子是0.75
+// 4, HashMap存储元素是无序
+// 5, HashMap不允许存储重复的key
+// 6, HashMap允许存储null作为key
+// 7, HashMap线程不安全
+// 8, 如果我们在构造方法里给定长度: 底层长度会变成大于等于我们给定值的最小的2的幂值
+       16 -> 16;   20 -> 32;  60 -> 64;  64 -> 64
+// 9, 
+```
+
+
+
+加载因子: 
+
+```java
+// 加载因子是用来限定阈值的 , 如果在爱HashMap存储的数据(key-value份数)超过阈值, 就要底层数组扩容
+ 阈值(12) = 加载因子(0.75) * 数组长度(16)
+
+// 注意: 虽然我们可以做在构造方法里修改加载因子: 但是建议不要修改, 实在要修改(建议保证在0.5-1之间)
+     
+```
+
+对于HashMap讲什么是重复的key:
+
+```java
+HashMap对key的重复的定义: key的hash值相等, 并且 key直接相等或者相equals
+
+//  if (p.hash == hash &&  ((k = p.key) == key || (key != null && key.equals(k))))
+```
+
+
+
+key是怎么计算出一个int类型的值, 以及怎么进一步用这个int值取下标
+
+```java
+int类型的值(hash值)怎么得到的
+// (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
+// 为什么要先移位又做异或运算, 就是希望一个key的hashCode()低位能够充分混合(和高位), 再参数取模, 取模的结果就更随机
+
+注意了解: hashCode值不一样 一定意味着hash值不一样 : 结论 
+    
+取下标
+//     (n - 1) & hash  : hash值和数组长度取模
+```
+
+
+
+链表多长算长(多长才会转化为红黑树): 非常重要
+
+```java
+当我们在HashMap添加的过程中, 某一个下标位置添加结点(key-value数据的份数)算上刚刚添加的超过8达到9的时候, 就会由链表转化为红黑树 
+    
+```
+
+
+
+当HashMap添加数据的时候, 链表长度超过8,达到9的时候, 一定会由链表转化为红黑树吗?
+
+```java
+不一定, 当底层数组长度小于64的时候, 如果链表长度超过8,达到9的时候优先扩容, 而非转化为红黑树
+    
+```
+
+
+
+如果红黑树上数据量变少, 有可能转化回链表(什么时候/怎么转化)
+
+```java
+什么时候红黑树转化为链表:
+1, 删除结点在红黑树上 :  如果删除的时候, 这个红黑树上根节点/根节点的左右结点/根节点的左结点的左节点,这四个结点有一个是null, 就要由红黑树转化为链表
+   
+  // root就是树的根节点
+if (root == null || root.right == null ||(rl = root.left) == null || rl.left == null) 
+         // 红黑树转化为链表
+        tab[index] = first.untreeify(map);  // too small
+
+
+2, 扩容的时候(扩容会把原下标位置存储的元素拆成两部分) : 6
+       扩容的时候, 红黑树会拆成低位和高位两部分,  任一部分的拆的数据个数小于等于6的话, 就要由红黑树转化为链表
+    
+```
+
+
+
+HashMap底层数组是个Node类型的数组: 用来存储Node类型的对象, 这个对象里面包含key-value数据
+
+```java
+class Node<K,V> implements Map.Entry<K,V> {
+        final int hash;
+        final K key;
+        V value;
+        Node<K,V> next;
+}
+```
+
+
+
+注意事项: 
+
+红黑树出现的概率高吗? 很低
+
+如果HashMap中已经存储的key-value数据, 建议不要直接通过key的引用修改key的内容, 有可能删不掉
+
+
+
+HashMap重写了toString遍历方式是按照下标从前向后遍历, 遇到链表或者树, 对链表或者树按照next遍历完成之后, 接着随着数组下标向后遍历
+
+
+
+
+
+构造方法:
+
+```java
+HashMap()                                      // 构造一个具有默认初始容量 (16) 和默认加载因子 (0.75) 的空HashMap
+HashMap(int initialCapacity)                   // 构造一个带指定初始容量和默认加载因子 (0.75) 的空 HashMap
+HashMap(int initialCapacity, float loadFactor) // 构造一个带指定初始容量和加载因子的空 HashMap 
+HashMap(Map<? extends K,? extends V> m)        // 构造一个映射关系与指定 Map 相同的新 HashMap 
+```
+
+
+
+
+
+一份key-value数据的添加流程
+
+```java
+// 1, 要存储一份key-value数据
+// 2, 把key拿出, 计算hash值:   通过key的hashCode 异或上hashCode向right移动16位
+//                             异或的原因:  希望hash值的高位也参与到取模运算, 充分散列
+// 3, hash和数组长度取模, 的到一个下标(就是key-value数据要存储的位置)
+// 4, 判断这个下标位置有没有内容, 没有直接存储, 存储一个Node类型(key, value, hash, next)
+// 5, 如果这个位置已经存储了别的key-value数据 --> 先判断重复
+//       重复的依据: key的hash值是否相等 以及, key是否直接相等或者相equals
+// 6, 重复, 新value覆盖旧value
+// 7, 不重复,  接着判断这个位置存储的是树还是单链表
+//      7.1 如果是个单链表, 按照next方向比较, 重复, 新value覆盖旧value
+//                    不重复, 最终添加到这个链表尾部
+//            如果添加之后导致这个链表过长(超过8达到9)转化为红黑树(如果数组长度小于64, 优先扩容)
+//      7.2 如果是个树, 按照hash值比较大小, 确定比较方向
+//          最终是否重复: key的hash值是否相等 以及, key是否直接相等或者相equals
+//                     重复: 替换
+//                      不重复: 添加到红黑树上
+// 8, 添加完成, 有可能超出阈值 --> 扩容
+// 9, 原本在x位置元素, 扩容之后, 要么还在x位置, 要么在旧长度+x位置  (取决于高位)
+// 10, 如果是个树在扩容之后, 可能被拆开, 被拆开的任何一部分数据量小于等于6的时候, 由红黑树转化为链表
+
+
+```
+
+
+
+删除一个结点: 了解
+
+```java
+// 1, 根据一个key删除一份key-value数据
+// 2, 通过key计算hash值: 通过key的hashCode 异或上hashCode向right移动16位
+// 3, 取模, 的下标, 
+// 4, 找到对应下标, 判断是否重复: 
+//       重复的依据: key的hash值是否相等 以及, key是否直接相等或者相equals
+// 5, 不重复, 判断是树还是链表
+// 6, 如果是链表, 遍历链表判断重复, 找到了删除, 没找到不删除
+// 7, 如果是个树, 在树上查找(hash确定左右方向), 找到了删除, 删除之后判断根节点/根节点的左右结点/根节点的左节点的左节点是否是null, 如果是null, 红黑树转化为链表
+
+```
+
+
+
+<br/>
+
+
+
+### 2) LinkedHashMap
+
+```java
+// 1, LinkedHashMap 是HashMap的一个子类
+// 2, LinkedHashMap 底层结构基本上完全复用了HashMap的结构
+// 3, LinkedHashMap 在HashMap的基础上, 额外的维护了一个双向链表, 用以保证迭代顺序
+// 4, LinkedHashMap 表现是有序的
+// 5, LinkedHashMap 不允许存储重复元素: 重复的定义和HashMap一样
+// 6, LinkedHashMap 允许存储null作为key
+// 7, LinkedHashMap 线程不安全
+```
+
+
+
+构造方法：
+
+```java
+// 构造一个带默认初始容量 (16) 和加载因子 (0.75) 的空插入顺序 LinkedHashMap 实例
+LinkedHashMap() 
+    
+//构造一个带指定初始容量和默认加载因子 (0.75) 的空插入顺序 LinkedHashMap 实例
+LinkedHashMap(int initialCapacity)  
+
+//构造一个带指定初始容量和加载因子的空插入顺序 LinkedHashMap 实例
+LinkedHashMap(int initialCapacity, float loadFactor) 
+    
+// 构造一个带指定初始容量、加载因子和排序模式的空 LinkedHashMap 实例
+LinkedHashMap(int initialCapacity, float loadFactor, boolean accessOrder) 
+    
+// 构造一个映射关系与指定映射相同的插入顺序 LinkedHashMap 实例
+LinkedHashMap(Map<? extends K,? extends V> m) 
+```
+
+
+
+<br/>
+
+
+
+### 3) TreeMap
+
+
+
+
+
+
+
+
+
+### 4) Hashtable
+
+Hashtable工作已经不使用, jdk1.0时候出现;      面试常用来和HashMap做对比
+
+```java
+// 1, Hashtable是数组+链表   (没有红黑树;  jdk1.8之前的HashMap一样)
+// 2, Hashtbale数组的初始长度11 ,    扩容机制: 扩为原来的2倍+1
+// 3, Hashtable不允许存储null 作为key和value
+// 4, Hashtable线程安全
+
+
+```
+
+
+
+
+
+<br/>
+
+
 
 ## 2. Set(集合)
 

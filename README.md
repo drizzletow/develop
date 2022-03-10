@@ -8,9 +8,9 @@ GitHub：https://github.com/itdrizzle/develop
 
 ## Java基础
 
-* [开发环境](JavaSE/detail/history.md) &nbsp;&nbsp; [Java基础语法](JavaSE/base.md)  &nbsp;&nbsp;  [面向对象](JavaSE/oop.md)&nbsp;&nbsp;  [常用类库](JavaSE/classlib.md) &nbsp;&nbsp; [字符串和集合](JavaSE/collection.md) &nbsp;&nbsp; 
+* [开发环境](JavaSE/detail/history.md) &nbsp;&nbsp; [Java基础语法](JavaSE/base.md)  &nbsp;&nbsp;  [面向对象](JavaSE/oop.md)&nbsp;&nbsp;  [常用类库](JavaSE/classlib.md) &nbsp;&nbsp; [数组和字符串](JavaSE/array.md) &nbsp;&nbsp; 
 
-* [Java IO流](JavaSE/javaIO.md) &nbsp;&nbsp;  [Java多线程](JavaSE/thread.md) &nbsp;&nbsp;   [Java网络编程](JavaSE/network.md) &nbsp;&nbsp;  [枚举、反射、注解](JavaSE/senior.md) &nbsp;&nbsp; 
+* [Java IO流](JavaSE/javaIO.md) &nbsp;&nbsp;  [多线程](JavaSE/thread.md) &nbsp;&nbsp;   [网络编程](JavaSE/network.md) &nbsp;&nbsp;  [枚举、反射、注解](JavaSE/senior.md) &nbsp;&nbsp;  [泛型与集合](JavaSE/collection.md) &nbsp;&nbsp; 
 
 *  [正则表达式](JavaSE/regex.md) &nbsp;&nbsp; [Lambda表达式和Stream流](JavaSE/lambda.md) &nbsp;&nbsp; [Java SE API & 文档](https://www.oracle.com/cn/java/technologies/java-se-api-doc.html)&nbsp;&nbsp; 
 
@@ -69,7 +69,7 @@ GitHub：https://github.com/itdrizzle/develop
 
 ## 常用开发工具
 
-* [IDEA和Eclipse](Tools/idea.md) 
+* [IDEA和Eclipse](Tools/idea.md)    &nbsp;&nbsp;   [常见单词发音](Tools/word.md)    &nbsp;&nbsp; 
 
 
 <br/> <br/>
