@@ -260,6 +260,12 @@ public class Demo {
 
 ## 1. 注意事项
 
+Java开发手册推荐使用：
+
+![image-20220309091239190](vx_images/image-20220309091239190.png)
+
+
+
 ```java
 // 泛型的写法: 一般常用T E K V (语法上可以使用别的字符都可以, 但是习惯上用这些)
 // T : type
@@ -315,6 +321,8 @@ a. 提高了程序的安全性
 b. 将运行期遇到的问题转移到了编译期
 c. 省去了类型强转的麻烦
 ````
+
+
 
 
 
@@ -554,7 +562,7 @@ Iterator<E> iterator()                          // 返回在此 collection 的�
 
 List特点：
 
-> 1. List时Collection的子接口
+> 1. List是Collection的子接口
 > 2. List在Collection的基础上，定义为一个线性表
 > 3. List的子实现都是有序的
 > 4. List的子实现允许存储重复元素
@@ -578,38 +586,57 @@ api：
 //        int hashCode()
 //        boolean isEmpty()
 //        int size()
-
-        
-//        void add(int index, E element): 添加到指定下标位置
-//        boolean addAll(int index, Collection<? extends E> c): 把所有元素添加到指定下标位置
-//        E get(int index): 根据下标查找对应下标存储内容:  最最重要
-//        E remove(int index): 删除指定下标的元素
-//        E set(int index, E element): 修改指定位置的数据
-//        int indexOf(Object o): 查找某个元素第一次出现的下标
-//        int lastIndexOf(Object o): 查找某个元素最后一次出现的下标
-
-
-toArray各种特点和Collection一模一样
-//        Object[] toArray()
-//        返回按适当顺序包含列表中的所有元素的数组（从第一个元素到最后一个元素）。
-//        <T> T[]  toArray(T[] a)
-//        返回按适当顺序（从第一个元素到最后一个元素）包含列表中所有元素的数组；返回数组的运行时类型是指定数组的运行时类型。
-
-ListIterator : 重点提供向前遍历的方法
-//        Iterator<E> iterator()          //  返回按适当顺序在列表的元素上进行迭代的迭代器。
-//        ListIterator<E> listIterator()  //  返回此列表元素的列表迭代器（按适当顺序）。
-//        ListIterator<E> listIterator(int index) //返回列表中元素的列表迭代器（按适当顺序），从列表的指定位置开始   
-
-//        List<E> subList(int fromIndex, int toIndex)
-//        返回列表中指定的 fromIndex（包括 ）和 toIndex（不包括）之间的部分'视图'。
-    视图方法:  通过视图方法获得的数据, 并不是真的复制了数据, 而是视图方法返回一个对象, 
-			  这个返回的对象内部维护了一些指向源数据的标记  
-       -->  视图方法获得的数据, 还是源数据
-                  
-	注意: 视图方法使用的过程中, 也可能会抛出并发修改异常
-    怎么避免？ 在使用完通过视图方法获得的对象之前, 不要调用原集合类修改结构的方法修改原集合数据
-   
 ```
+
+
+
+```java
+void add(int index, E element)                        // 添加到指定下标位置
+boolean addAll(int index, Collection<? extends E> c)  // 把所有元素添加到指定下标位置
+E get(int index)                                      // 根据下标查找对应下标存储内容:  最最重要
+E remove(int index)                                   // 删除指定下标的元素
+E set(int index, E element)                           // 修改指定位置的数据
+int indexOf(Object o)                                 // 查找某个元素第一次出现的下标
+int lastIndexOf(Object o)                             // 查找某个元素最后一次出现的下标
+```
+
+
+
+```Java
+// toArray各种特点和Collection一模一样
+
+Object[] toArray()       // 返回按适当顺序包含列表中的所有元素的数组（从第一个元素到最后一个元素）
+                  
+<T> T[]  toArray(T[] a)  // 返回按适当顺序（从第一个元素到最后一个元素）包含列表中所有元素的数组；
+                         // 返回数组的运行时类型是指定数组的运行时类型
+```
+
+
+
+**ListIterator** : 重点提供向前遍历的方法
+
+```Java
+Iterator<E> iterator()                   // 返回按适当顺序在列表的元素上进行迭代的迭代器。
+ListIterator<E> listIterator()           // 返回此列表元素的列表迭代器（按适当顺序）。
+ListIterator<E> listIterator(int index)  // 返回列表中元素的列表迭代器（按适当顺序），从列表的指定位置开始   
+```
+
+<br/>
+
+**视图方法**：
+
+```java
+List<E> subList(int fromIndex, int toIndex) // 返回 fromIndex（包括 ）和 toIndex（不包括）之间的部分'视图'
+```
+
+> 视图方法:   通过视图方法获得的数据, 并不是真的复制了数据, 而是视图方法返回一个对象, 
+>                    这个返回的对象内部维护了一些指向源数据的标记  
+>
+>    -->           视图方法获得的数据, 还是源数据
+>               
+> 注意: 视图方法使用的过程中, 也可能会抛出并发修改异常
+>
+> 怎么避免？ 在使用完通过视图方法获得的对象之前, 不要调用原集合类修改结构的方法修改原集合数据
 
 
 
@@ -625,7 +652,7 @@ ListIterator : 重点提供向前遍历的方法
 // 1, ArrayList 是 List接口的子实现
 // 2, ArrayList描述的数据结构是线性表
 // 3, ArrayList的底层结构是数组
-// 4, ArrayList默认的初始容量,  扩容机制
+// 4, ArrayList默认的初始容量：10,  扩容机制：原来的1.5倍
 // 5, 存储元素有序
 // 6, 允许存储重复元素
 // 7, 允许存储null
@@ -677,7 +704,7 @@ ArrayList实现了, Collection以及List定义的所有api
 
 **subList() 在ArrayList上的表现**：
 
-subList() 方法实际返回了一个 SubList 的内部类，SubList继承AbstractList抽象类，AbstractList实现了List接口，所以SubList说到底就是一个List的实现类，主要用于返回List的视图，这个视图是原List对象中的一部分，确实是一部分，直接将原List对象引用到新的子视图的List，对子视图进行改变，原List对象也会随之改变
+subList() 方法实际返回了一个 SubList 的内部类，SubList继承AbstractList抽象类，AbstractList实现了List接口，所以SubList说到底就是一个List的实现类，主要用于返回List的 **视图**（来源于数据库、 在口语化上又叫"虚表"  ），这个视图是原List对象中的一部分，确实是一部分，直接将原List对象引用到新的子视图的List，对子视图进行改变，原List对象也会随之改变
 
 ```java
 class ArrayList{
@@ -702,6 +729,12 @@ class ArrayList{
 ```
 
 在List中使用subList要小心，因为本身SubList这个类就是原List的一个视图，改变 SubList 必定会改变原List
+
+
+
+Java开发手册强制规定：
+
+![image-20220309100045946](vx_images/image-20220309100045946.png)
 
 
 
@@ -792,18 +825,84 @@ LinkedList(Collection<? extends E> c)
 
 
 
+api：
+
+```Java
+//        boolean add(E e)                                           // 添加方法
+//        void add(int index, E element)                             // 根据下标的添加
+//        boolean addAll(Collection<? extends E> c)                  // 添加所有
+//        boolean addAll(int index, Collection<? extends E> c)       // 根据下标添加所有
+
+//        boolean contains(Object o)    // 如果此列表包含指定元素，则返回 true。
+//        E get(int index)              // 返回此列表中指定位置处的元素。
+//        int indexOf(Object o)         // 返回此列表中首次出现的指定元素的索引，如果此列表中不包含该元素，则返回 -1
+//        int lastIndexOf(Object o)     // 返回此列表中最后出现的指定元素的索引，如果此列表中不包含该元素，则返回 -1
+
+//        E remove(int index)           // 移除此列表中指定位置处的元素。
+//        boolean remove(Object o)      // 从此列表中移除首次出现的指定元素（如果存在）。
+//        E set(int index, E element)   // 将此列表中指定位置的元素替换为指定的元素
+
+//        int size()                    // 返回此列表的元素数。
+//        void clear()                  // 从此列表中移除所有元素。
+//        Object clone()                // 返回此 LinkedList 的浅表副本。
+
+//        Object[] toArray()            // 返回以适当顺序（从第一个元素到最后一个元素）包含此列表中所有元素的数组
+//        <T> T[] toArray(T[] a)        // 返回以适当顺序（从第一个元素到最后一个元素）包含此列表中所有元素的数组；
+                                        // 返回数组的运行时类型为指定数组的类型。
+```
+
+
+
 LinkedList 类除了包含 Collection 接口和 List 接口中的所有方法之外，还特别提供了下面的方法：
 
-| 方法名称           | 说明                         |
-| ------------------ | ---------------------------- |
-| void addFirst(E e) | 将指定元素添加到此集合的开头 |
-| void addLast(E e)  | 将指定元素添加到此集合的末尾 |
-| E getFirst()       | 返回此集合的第一个元素       |
-| E getLast()        | 返回此集合的最后一个元素     |
-| E removeFirst()    | 删除此集合中的第一个元素     |
-| E removeLast()     | 删除此集合中的最后一个元素   |
+| 方法名称                                | 说明                                                         |
+| --------------------------------------- | ------------------------------------------------------------ |
+| void addFirst(E e)                      | 将指定元素添加到此集合的开头                                 |
+| void addLast(E e)                       | 将指定元素添加到此集合的末尾                                 |
+| E getFirst()                            | 返回此集合的第一个元素                                       |
+| E getLast()                             | 返回此集合的最后一个元素                                     |
+| E element()                             | 获取但不移除此列表的头（第一个元素）                         |
+| E remove()                              | 获取并移除此列表的头（第一个元素）                           |
+| E removeFirst()                         | 删除此集合中的第一个元素                                     |
+| E removeLast()                          | 删除此集合中的最后一个元素                                   |
+| boolean removeFirstOccurrence(Object o) | 从此列表中移除第一次出现的指定元素（从头部到尾部遍历列表时） |
+| boolean removeLastOccurrence(Object o)  | 从此列表中移除最后一次出现的指定元素（从头部到尾部遍历列表时） |
 
+<br/>
 
+```java
+ListIterator<E> listIterator(int index)  // 返回列表迭代器（按适当顺序），从列表中指定位置开始
+Iterator<E> descendingIterator()         // 返回以逆向顺序进行迭代的迭代器
+```
+
+<br/>
+
+```java
+//------------------------------ 作为队列的api
+boolean offer(E e) // 将指定元素添加到此列表的末尾（最后一个元素）
+E poll()           // 获取并移除此列表的头（第一个元素）
+E peek()           // 获取但不移除此列表的头（第一个元素）
+```
+
+<br/>
+
+```Java
+//------------------------------ 作为双端队列的api
+boolean offerFirst(E e)    // 在此列表的开头插入指定的元素。
+boolean offerLast(E e)     // 在此列表末尾插入指定的元素。
+E peekFirst()              // 获取但不移除此列表的第一个元素；如果此列表为空，则返回 null。
+E peekLast()               // 获取但不移除此列表的最后一个元素；如果此列表为空，则返回 null。
+E pollFirst()              // 获取并移除此列表的第一个元素；如果此列表为空，则返回 null。
+E pollLast()               // 获取并移除此列表的最后一个元素；如果此列表为空，则返回 null。
+```
+
+<br/>
+
+```java
+//------------------------------ 作为栈的api
+E pop()             // 从此列表所表示的堆栈处弹出一个元素。
+void push(E e)      // 将元素推入此列表所表示的堆栈。
+```
 
 
 
@@ -832,21 +931,145 @@ LinkedList 类除了包含 Collection 接口和 List 接口中的所有方法之
 
 
 
-
+<br/>
 
 ### 2) Queue
 
+```Java
+1. Queue 是collection 的一个子接口
+2. QUeue 定义为一个队列
+3. 允许存储元素有序
+4. 允许存储重复元素
+5. Queue的子实现不允许存储 null （LinkedList除外）
+  // 因为Queue提供了一个poll方法, 当队列没有元素可以出队列的时候, poll方法返回一个null标记队列没有存储元素, 
+  // 所以如果Queue允许存储null, 在删除的时候, 就没办法分辨到底是存储的null, 还是没有元素了
+```
+
+<br/>
+
+```java
+boolean offer(E e)     // 将指定的元素插入此队列（如果立即可行且不会违反容量限制）
+                       // 当使用有容量限制的队列时，此方法通常要优于 add(E)，后者可能无法插入元素，而只是抛出一个异常
+
+E peek()               // 获取但不移除此队列的头；如果此队列为空，则返回 null
+E poll()               // 获取并移除此队列的头，如果此队列为空，则返回 null
+
+E element()            // 获取，但是不移除此队列的头
+E remove()             // 获取并移除此队列的头
+```
 
 
 
+
+
+<br/>
 
 ### 3) Deque
 
+```Java
+// 1, Deque是Queue 接口的一个子接口
+// 2, 在队列基础上, 定义了双端队列/栈(Deque从数据结构可以描述: 队列/双端队列/栈)
+// 3, 存储元素有序
+// 4, 允许存储重复元素
+// 5, Deque的子实现不允许存储null  (LinkedList除外)
+```
+
+<br/>
+
+```java
+ boolean add(E e)    // 如果成功，则返回 true，如果当前没有可用空间，则抛出 IllegalStateException。 
+ void addFirst(E e)  // 将指定元素插入此双端队列的开头（如果可以直接这样做而不违反容量限制）。 
+ void addLast(E e)   // 将指定元素插入此双端队列的末尾（如果可以直接这样做而不违反容量限制）。 
+     
+ boolean contains(Object o)   // 如果此双端队列包含指定元素，则返回 true。 
+ E element()                  // 获取，但不移除此双端队列所表示的队列的头部（此双端队列的第一个元素）
+ E getFirst()                 // 获取，但不移除此双端队列的第一个元素。 
+ E getLast()                  // 获取，但不移除此双端队列的最后一个元素。 
+     
+ int size()                   //  返回此双端队列的元素数。
+     
+ E remove()                   // 获取并移除此双端队列所表示的队列的头部（换句话说，此双端队列的第一个元素）。 
+ boolean remove(Object o)     // 从此双端队列中移除第一次出现的指定元素。 
+ E removeFirst()              // 获取并移除此双端队列第一个元素。 
+ E removeLast()               // 获取并移除此双端队列的最后一个元素。 
+
+ boolean removeFirstOccurrence(Object o)  // 从此双端队列移除第一次出现的指定元素。 
+ boolean removeLastOccurrence(Object o)   // 从此双端队列移除最后一次出现的指定元素。 
+     
+
+ boolean offer(E e)                 // 将指定元素插入此双端队列所表示的队列（此双端队列的尾部）
+ boolean offerFirst(E e)            // 在不违反容量限制的情况下，将指定的元素插入此双端队列的开头。 
+ boolean offerLast(E e)             // 在不违反容量限制的情况下，将指定的元素插入此双端队列的末尾。 
+     
+ E peek()               // 获取但不移除此双端队列所表示的队列的头部, 如果此双端队列为空，则返回 null 
+ E peekFirst()          // 获取，但不移除此双端队列的第一个元素；如果此双端队列为空，则返回 null。 
+ E peekLast()           // 获取，但不移除此双端队列的最后一个元素；如果此双端队列为空，则返回 null。 
+     
+ E poll()               // 获取并移除此双端队列所表示的队列的头部；如果此双端队列为空，则返回 null。 
+ E pollFirst()          // 获取并移除此双端队列的第一个元素；如果此双端队列为空，则返回 null。 
+ E pollLast()           // 获取并移除此双端队列的最后一个元素；如果此双端队列为空，则返回 null。 
+     
+  
+ Iterator<E> descendingIterator()   // 返回以逆向顺序在此双端队列的元素上进行迭代的迭代器。 
+ Iterator<E> iterator()             // 返回以恰当顺序在此双端队列的元素上进行迭代的迭代器。 
+     
+     
+     
+ E pop()        // 从此双端队列所表示的堆栈中弹出一个元素。 
+ void push(E e) // 将一个元素推入此双端队列所表示的堆栈（换句话说，此双端队列的头部），
+                // 如果可以直接这样做而不违反容量限制的话；如果成功，则返回 true，
+                // 如果当前没有可用空间，则抛出 IllegalStateException。 
+     
+```
+
+<br/>
 
 
 
+### 4) ArrayDeque
 
-### 4) BlockingQueue
+```java
+// 1, ArrayDeque是Deque接口的子实现
+// 2, ArrayDeque描述的数据结构: 队列/双端队列/栈
+// 3, 底层结构是数组(循环数组)
+// 4, 初始容量 16,  扩容机制: 扩为原来的2倍
+// 5, 有序
+// 6, 允许重复元素
+// 7, 不允许存储null
+// 8, 线程不安全
+// 9, 如果我们在构造方法里指定了数组长度: 实际上底层会产生一个大于给定值最小的2的幂值作为底层数组长度
+      --> ArrayDeque底层数组长度永远是2的幂值
+```
+
+
+
+ArrayDeque和LinkedList都实现了Deque接口，应该用哪一个呢？
+
+如果只需要Deque接口，从两端进行操作，一般而言，ArrayDeque效率更高一些，应该被优先使用；
+
+如果同时需要根据索引位置进行操作，或者经常需要在中间进行插入和删除，则应该选LinkedList。
+
+
+
+<br/>
+
+### 5) BlockingQueue
+
+```Java
+// 1, BlockingQueue是一个阻塞队列(是个接口)
+// 2, BlockingQueue 方法(四类方法)
+//    重点注意: put和take方法
+```
+
+<img src="vx_images/image-20220309145819951.png" alt="image-20220309145819951" style="zoom: 67%;" />
+
+
+
+```vb
+// 什么是阻塞队列? 大小有限的队列
+//   当队列添加满的时候, 添加线程等待/阻塞
+//   当队列为空的时候, 删除线程等待/阻塞
+```
 
 
 
@@ -856,92 +1079,9 @@ LinkedList 类除了包含 Collection 接口和 List 接口中的所有方法之
 
 
 
-## 4. Set(集合)
-
-### 1) HashSet
-
-Set 集合类似于一个罐子，程序可以依次把多个对象“丢进”Set 集合，而 Set 集合通常不能记住元素的添加顺序。也就是说 
-
-- Set 集合中的对象不按特定的方式排序，只是简单地把对象加入集合。
-
-- Set 集合中不能包含重复的对象，并且最多只允许包含一个 null 元素。
-
-Set 实现了 Collection 接口，它主要有两个常用的实现类：HashSet 类和 TreeSet类。
-
-- HashSet 是 Set 接口的典型实现，大多数时候使用 Set 集合时就是使用这个实现类。
-- HashSet 是按照 Hash 算法来存储集合中的元素。因此具有很好的**存取和查找**性能。
-
-```java
-public class SetDemo {
-    public static void main(String[] args) {
-        Set set = new HashSet();
-		// 向集合添加元素,（集合元素是无序且唯一的，插入等同于add）
-        set.add("yellow");
-        set.add("red");
-        set.add("black");
-        set.add("white");
-
-        System.out.println(set);               //[red, white, yellow, black]
-		// 使用迭代器遍历
-        Iterator it = set.iterator();
-        while (it.hasNext()){
-            System.out.print(it.next()+" ");   //red white yellow black
-        }
-    }
-}
-```
-
-当向 HashSet 集合中存入一个元素时：
-
-- HashSet 会调用该对象的 hashCode() 方法来得到该对象的 hashCode 值
-- 然后根据该 hashCode 值决定该对象在 HashSet 中的存储位置
-- 如果有两个元素通过 equals() 方法比较返回的结果为 true，但它们的 hashCode 不相等，HashSet 将会把它们存储在不同的位置，依然可以添加成功。
 
 
-
-### 2) TreeSet
-
-TreeSet 类同时实现了 Set 接口和 SortedSet 接口。SortedSet 接口是 Set 接口的子接口，可以实现对集合进行自然排序，因此使用 TreeSet 类实现的 Set 接口默认情况下是自然排序的，这里的自然排序指的是升序排序。
-
-- **TreeSet 只能对实现了 Comparable 接口的类对象进行排序**，因为 Comparable 接口中有一个 `compareTo(Object o)` 方法用于比较两个对象的大小。例如 `a.compareTo(b)`：
-
-  - 如果 a 和 b 相等，则该方法返回 0；
-
-  - 如果 a 大于 b，则该方法返回大于 0 的值；
-
-  - 如果 a 小于 b，则该方法返回小于 0 的值。
-
-- 在使用自然排序时只能向 TreeSet 集合中添加相同数据类型的对象，否则会抛出 ClassCastException 异常。
-
-  
-
-Comparable接口类对象的比较方式：
-
-| 类                                                           | 比较方式                                  |
-| ------------------------------------------------------------ | ----------------------------------------- |
-| BigDecimal、Biglnteger、 Byte、Double、Float、Integer、Long 及 Short | 按数字大小比较                            |
-| Character                                                    | 按字符的 Unicode 值的数字大小比较         |
-| String                                                       | 按字符串中字符的 Unicode 值的数字大小比较 |
-
-
-
-TreeSet 类除了实现 Collection 接口的所有方法之外，还提供了下列方法：
-
-| 方法名称                                       | 说明                                                         |
-| ---------------------------------------------- | ------------------------------------------------------------ |
-| E first()                                      | 返回此集合中的第一个元素。其中，E 表示集合中元素的数据类型   |
-| E last()                                       | 返回此集合中的最后一个元素                                   |
-| E poolFirst()                                  | 获取并移除此集合中的第一个元素                               |
-| E poolLast()                                   | 获取并移除此集合中的最后一个元素                             |
-| SortedSet<E> subSet(E fromElement,E toElement) | 返回一个新的集合，新集合包含原集合中 fromElement 对象与 toElement 对象之间的所有对象。包含 fromElement 对象，不包含 toElement 对象 |
-| SortedSet<E> headSet<E toElement〉             | 返回一个新的集合，新集合包含原集合中 toElement 对象之前的所有对象。 不包含 toElement 对象 |
-| SortedSet<E> tailSet(E fromElement)            | 返回一个新的集合，新集合包含原集合中 fromElement 对象之后的所有对 象。包含 fromElement 对象 |
-
-
-
-
-
-## 5. 遍历集合
+## 4. 遍历集合
 
 ### 1) Iterator
 
@@ -1090,6 +1230,12 @@ public class IteratorTest {
 >
 > 注意：虽然数组可以使用foreach循环, 但是在真正编译的时候, 数组的增强的for循环会编译成fori循环
 
+
+
+Java开发手册强制规定：
+
+![image-20220309090951234](vx_images/image-20220309090951234.png)
+
 <br/> 
 
 ### 4) ListIterator 
@@ -1119,7 +1265,9 @@ public interface ListIterator<E> extends Iterator<E> {
 
 
 
-## 8. Comparable
+## 5. 集合的排序
+
+**Comparable**：
 
 实现此接口的`compareTo()`方法的对象列表（和数组）可以通过Collections.sort（和Arrays.sort）进行自动排序
 
@@ -1150,11 +1298,9 @@ public class Student implements Comparable<Student> {
 }
 ```
 
+<br/>
 
-
-
-
-## 9. Comparator
+**Comparator**：
 
 可以将Comparator 传递给sort方法（如Collections.sort 或 Arrays.sort），从而允许在排序顺序上实现精确控制
 
@@ -1200,14 +1346,29 @@ public class SortDemo {
 
 
 
+<br/>
 
 
-# 四 HashMap
+
+# 四 Set和Map
+
+
+
+## 1. Map
 
 Map 是一种键-值对（key-value）集合，Map 集合中的每一个元素都包含一个键（key）对象和一个值（value）对象。用于保存具有映射关系的数据。
 
-- key 和 value 都可以是任何引用类型的数据
-- Map 接口主要有两个实现类：HashMap 类和 TreeMap 类。其中，HashMap 类按哈希算法来存取键对象，而 TreeMap 类可以对键对象进行排序。
+```java
+// 1, Map是Map集合体系的顶级接口
+// 2, Map存储的是key-value数据(键值对)  (key-value具有自我描述性)
+// 3, Map的一些子实现存储元素是有序的, 另一些子实现存储元素无序
+// 4, Map都不允许存储重复元素 (什么叫重复元素)
+// 5, Map的一些子实现允许存储null, 另一些子实现不允许存储null
+
+(这些有序/重复/null问题指的都是map数据中的key,  value不在讨论范畴之内)
+```
+
+
 
 Map接口的常用方法：
 
@@ -1263,4 +1424,89 @@ public class MapDemo {
     }
 }
 ```
+
+<br/>
+
+## 2. Set(集合)
+
+### 1) HashSet
+
+Set 集合类似于一个罐子，程序可以依次把多个对象“丢进”Set 集合，而 Set 集合通常不能记住元素的添加顺序。也就是说 
+
+- Set 集合中的对象不按特定的方式排序，只是简单地把对象加入集合。
+
+- Set 集合中不能包含重复的对象，并且最多只允许包含一个 null 元素。
+
+Set 实现了 Collection 接口，它主要有两个常用的实现类：HashSet 类和 TreeSet类。
+
+- HashSet 是 Set 接口的典型实现，大多数时候使用 Set 集合时就是使用这个实现类。
+- HashSet 是按照 Hash 算法来存储集合中的元素。因此具有很好的**存取和查找**性能。
+
+```java
+public class SetDemo {
+    public static void main(String[] args) {
+        Set set = new HashSet();
+		// 向集合添加元素,（集合元素是无序且唯一的，插入等同于add）
+        set.add("yellow");
+        set.add("red");
+        set.add("black");
+        set.add("white");
+
+        System.out.println(set);               //[red, white, yellow, black]
+		// 使用迭代器遍历
+        Iterator it = set.iterator();
+        while (it.hasNext()){
+            System.out.print(it.next()+" ");   //red white yellow black
+        }
+    }
+}
+```
+
+当向 HashSet 集合中存入一个元素时：
+
+- HashSet 会调用该对象的 hashCode() 方法来得到该对象的 hashCode 值
+- 然后根据该 hashCode 值决定该对象在 HashSet 中的存储位置
+- 如果有两个元素通过 equals() 方法比较返回的结果为 true，但它们的 hashCode 不相等，HashSet 将会把它们存储在不同的位置，依然可以添加成功。
+
+
+
+### 2) TreeSet
+
+TreeSet 类同时实现了 Set 接口和 SortedSet 接口。SortedSet 接口是 Set 接口的子接口，可以实现对集合进行自然排序，因此使用 TreeSet 类实现的 Set 接口默认情况下是自然排序的，这里的自然排序指的是升序排序。
+
+- **TreeSet 只能对实现了 Comparable 接口的类对象进行排序**，因为 Comparable 接口中有一个 `compareTo(Object o)` 方法用于比较两个对象的大小。例如 `a.compareTo(b)`：
+
+  - 如果 a 和 b 相等，则该方法返回 0；
+
+  - 如果 a 大于 b，则该方法返回大于 0 的值；
+
+  - 如果 a 小于 b，则该方法返回小于 0 的值。
+
+- 在使用自然排序时只能向 TreeSet 集合中添加相同数据类型的对象，否则会抛出 ClassCastException 异常。
+
+  
+
+Comparable接口类对象的比较方式：
+
+| 类                                                           | 比较方式                                  |
+| ------------------------------------------------------------ | ----------------------------------------- |
+| BigDecimal、Biglnteger、 Byte、Double、Float、Integer、Long 及 Short | 按数字大小比较                            |
+| Character                                                    | 按字符的 Unicode 值的数字大小比较         |
+| String                                                       | 按字符串中字符的 Unicode 值的数字大小比较 |
+
+
+
+TreeSet 类除了实现 Collection 接口的所有方法之外，还提供了下列方法：
+
+| 方法名称                                       | 说明                                                         |
+| ---------------------------------------------- | ------------------------------------------------------------ |
+| E first()                                      | 返回此集合中的第一个元素。其中，E 表示集合中元素的数据类型   |
+| E last()                                       | 返回此集合中的最后一个元素                                   |
+| E poolFirst()                                  | 获取并移除此集合中的第一个元素                               |
+| E poolLast()                                   | 获取并移除此集合中的最后一个元素                             |
+| SortedSet<E> subSet(E fromElement,E toElement) | 返回一个新的集合，新集合包含原集合中 fromElement 对象与 toElement 对象之间的所有对象。包含 fromElement 对象，不包含 toElement 对象 |
+| SortedSet<E> headSet<E toElement〉             | 返回一个新的集合，新集合包含原集合中 toElement 对象之前的所有对象。 不包含 toElement 对象 |
+| SortedSet<E> tailSet(E fromElement)            | 返回一个新的集合，新集合包含原集合中 fromElement 对象之后的所有对 象。包含 fromElement 对象 |
+
+
 
