@@ -1222,12 +1222,12 @@ public class MapDemo {
 
 
 ```java
-// 1, HashMap是Map接口的一个子实现
+// 1, HashMap是Map接口的一个子实现 (没有toString方法，使用了其父类AbstractMap的toString方法)
 // 2, HashMap底层是: 数组 +链表+红黑树
 // 3, HashMap的底层数组默认初始长度 16,   默认的扩容机制: 扩为原来2倍 , 默认的加载因子是0.75
 // 4, HashMap存储元素是无序
 // 5, HashMap不允许存储重复的key
-// 6, HashMap允许存储null作为key
+// 6, HashMap允许存储null作为key （key为null的时候必定存储再数组下标为0的位置）
 // 7, HashMap线程不安全
 // 8, 如果我们在构造方法里给定长度: 底层长度会变成大于等于我们给定值的最小的2的幂值
        16 -> 16;   20 -> 32;  60 -> 64;  64 -> 64
@@ -1435,17 +1435,7 @@ LinkedHashMap(Map<? extends K,? extends V> m)
 
 
 
-### 3) TreeMap
-
-
-
-
-
-
-
-
-
-### 4) Hashtable
+### 3) Hashtable
 
 Hashtable工作已经不使用, jdk1.0时候出现;      面试常用来和HashMap做对比
 
@@ -1455,10 +1445,114 @@ Hashtable工作已经不使用, jdk1.0时候出现;      面试常用来和HashM
 // 3, Hashtable不允许存储null 作为key和value
 // 4, Hashtable线程安全
 
+```
+
+
+
+<br/>
+
+
+
+### 4) TreeMap
+
+
+
+```java
+// 1, TreeMap是Map接口的子实现
+// 2, TreeMap数据结构是红黑树
+// 3, TreeMap底层是链表
+// 5, TreeMap大小有序
+// 6, TreeMap不允许存储重复元素: 大小重复    (和Hash一点关系都没有)
+// 7, TreeMap不允许存储null 作为key
+// 8, Treemap线程不安全
+
+
+注意: 因为TreeMap是一个红黑树(是一个特殊的二叉搜素树), 需要比较大小, 那么也就意味着 , 我们存储的到TreeMap中的数据要能比较大小(implements Comparable<User>)
+     也可以让存储的key 不实现Comparable,  给TreeMap提供一个比较器Comparator, 让存储的key通过Comparator作比较
+```
+
+
+
+```java
+构造方法摘要 
+TreeMap()  // 使用键的自然顺序构造一个新的、空的树映射。 
+TreeMap(Comparator<? super K> comparator) // 构造一个新的、空的树映射，该映射根据给定比较器进行排序。 
+TreeMap(Map<? extends K,? extends V> m) // 构造一个与给定映射具有相同映射关系的新的树映射，根据其键的自然顺序进行排序 
+TreeMap(SortedMap<K,? extends V> m)     // 构造一个与指定有序映射具有相同映射关系和相同排序顺序的新的树映射。 
 
 ```
 
 
+
+```java
+boolean containsKey(Object key)                // 如果此映射包含指定键的映射关系，则返回 true
+boolean containsValue(Object value)            // 如果此映射为指定值映射一个或多个键，则返回 true
+V get(Object key)                              // 返回指定键所映射的值，没有则返回 null
+V put(K key, V value)                          // 将指定值与此映射中的指定键进行关联
+void putAll(Map<? extends K,? extends V> map)  // 将指定映射中的所有映射关系复制到此映射中
+V remove(Object key)                           // 如果此 TreeMap 中存在该键的映射关系，则将其删除
+
+
+// 通常集合类都具有的方法
+void clear()               // 从此映射中移除所有映射关系
+Object clone()             // 返回此 TreeMap 实例的浅表副本
+int size()                 // 返回此映射中的键-值映射关系数
+
+// 视图: 键值, 值集, 键值对结合
+Collection<V> values()           // 返回此映射包含的值的 Collection 视图
+Set<K> keySet()                  // 返回此映射包含的键的 Set 视图
+Set<Map.Entry<K,V>> entrySet()   // 返回此映射中包含的映射关系的 Set 视图
+
+    
+// 根据大小相关的 
+Map.Entry<K,V> ceilingEntry(K key)   // 获得大于等于给定key的最小键值对
+K ceilingKey(K key)                  // 获得大于等于给定key的最小key
+    
+Map.Entry<K,V> floorEntry(K key)     // 获得小于等于给定key的最大键值对
+K floorKey(K key)                    // 获得小于等于给定key的最大key
+    
+Map.Entry<K,V> firstEntry()          // 获取第一个键值对
+K firstKey()                         // 获取第一个键值对的key
+Map.Entry<K,V> lastEntry()           // 获取最后一个键值对
+K lastKey()                          // 获取最后一个键值对的key
+
+Map.Entry<K,V> higherEntry(K key)    // 获得大于给定key的最小键值对
+K higherKey(K key)                   // 获得大于给定key的最小key
+Map.Entry<K,V> lowerEntry(K key)     // 获得小于给定key的最大键值对
+K lowerKey(K key)                    // 获得小于给定key的最大key
+    
+Map.Entry<K,V> pollFirstEntry()      // 删除第一个键值对
+Map.Entry<K,V> pollLastEntry()       // 删除最后一个键值对
+        
+
+// 截取相关的视图方法
+    
+// 返回此映射的部分视图，其键值严格小于 toKey
+SortedMap<K,V> headMap(K toKey)
+    
+// 返回此映射的部分视图，其键小于（或等于，如果 inclusive 为 true）toKey
+NavigableMap<K,V> headMap(K toKey, boolean inclusive)
+    
+// 返回此映射的部分视图，其键大于等于 fromKey
+SortedMap<K,V> tailMap(K fromKey)
+    
+// 返回此映射的部分视图，其键大于（或等于，如果 inclusive 为 true）fromKey
+NavigableMap<K,V> tailMap(K fromKey, boolean inclusive)
+    
+// 返回此映射的部分视图，其键的范围从 fromKey 到 toKey。
+NavigableMap<K,V> subMap(K fromKey, boolean fromInclusive, K toKey, boolean toInclusive)
+
+// 返回此映射的部分视图，其键值的范围从 fromKey（包括）到 toKey（不包括）
+SortedMap<K,V> subMap(K fromKey, K toKey)
+
+
+
+
+NavigableSet<K> descendingKeySet() // 返回此映射中所包含键的逆序 NavigableSet 视图
+Set<K> navigableKeySet()           // 返回此映射中所包含键的 NavigableSet 视图
+Map<K,V> descendingMap()           // 返回此映射中所包含映射关系的逆序视图
+Comparator<? super K> comparator() // 返回对此映射中的键进行排序的比较器；如果此映射使用键的自然顺序，则返回 null
+```
 
 
 
@@ -1468,48 +1562,115 @@ Hashtable工作已经不使用, jdk1.0时候出现;      面试常用来和HashM
 
 ## 2. Set(集合)
 
-### 1) HashSet
-
-Set 集合类似于一个罐子，程序可以依次把多个对象“丢进”Set 集合，而 Set 集合通常不能记住元素的添加顺序。也就是说 
-
-- Set 集合中的对象不按特定的方式排序，只是简单地把对象加入集合。
-
-- Set 集合中不能包含重复的对象，并且最多只允许包含一个 null 元素。
-
-Set 实现了 Collection 接口，它主要有两个常用的实现类：HashSet 类和 TreeSet类。
-
-- HashSet 是 Set 接口的典型实现，大多数时候使用 Set 集合时就是使用这个实现类。
-- HashSet 是按照 Hash 算法来存储集合中的元素。因此具有很好的**存取和查找**性能。
+![image-20220311145652990](vx_images/image-20220311145652990.png)
 
 ```java
-public class SetDemo {
-    public static void main(String[] args) {
-        Set set = new HashSet();
-		// 向集合添加元素,（集合元素是无序且唯一的，插入等同于add）
-        set.add("yellow");
-        set.add("red");
-        set.add("black");
-        set.add("white");
-
-        System.out.println(set);               //[red, white, yellow, black]
-		// 使用迭代器遍历
-        Iterator it = set.iterator();
-        while (it.hasNext()){
-            System.out.print(it.next()+" ");   //red white yellow black
-        }
-    }
-}
+// 1, Set是Collection子接口
+// 2, Set所描述的数据结构: 集合
+// 3, Set存储元素有些子实现有序(TreeSet, LinkedHashSet),  有些子实现无序 (HashSet)
+// 4, Set不允许存储重复数据
+// 5, 有些子实现允许存储null (HashSet, LinkedHashSet), 有些子实现不允许存储null(TreeSet)
 ```
 
-当向 HashSet 集合中存入一个元素时：
 
-- HashSet 会调用该对象的 hashCode() 方法来得到该对象的 hashCode 值
-- 然后根据该 hashCode 值决定该对象在 HashSet 中的存储位置
-- 如果有两个元素通过 equals() 方法比较返回的结果为 true，但它们的 hashCode 不相等，HashSet 将会把它们存储在不同的位置，依然可以添加成功。
+
+Set接口并没有在Collection基础上增加什么api, 基本上沿用Collection的定义
+
+```java
+ boolean add(E e)  
+ boolean addAll(Collection<? extends E> c) 
+
+ boolean contains(Object o) 
+ boolean containsAll(Collection<?> c)  
+ boolean equals(Object o)  
+  
+ int size() 
+ void clear() 
+ int hashCode() 
+ boolean isEmpty() 
+
+ Iterator<E> iterator() 
+
+ boolean remove(Object o) 
+ boolean removeAll(Collection<?> c) 
+ boolean retainAll(Collection<?> c) 
+
+ Object[] toArray() 
+<T> T[]  toArray(T[] a) 
+
+```
+
+
+
+<br/>
+
+
+
+### 1) HashSet
+
+```java
+// 1, HashSet是Set接口的子实现
+// 2, HashSet底层持有一个HashMap对象 --> 我们添加到HashSet上的元素, 实际上都添加到底层HashMap上并且作为底层HashMap的key存在
+// 3, Hashset的特点基本上和HashMap的key一样
+// 4, HashSet存储元素无序
+// 5, HashSet不允许存储重复元素: 
+// 6, HashSet允许存储null
+// 7, HashSet线程不安全
+
+```
+
+```java
+// HashSet的构造方法:
+
+// 构造一个新的空set，其底层HashMap实例的默认初始容量是 16，加载因子是 0.75
+HashSet()                          
+    
+// 构造一个包含指定 collection 中的元素的新 set。 
+HashSet(Collection<? extends E> c) 
+    
+ // 构造一个新的空set，其底层HashMap实例具有指定的初始容量和默认的加载因子（0.75）
+HashSet(int initialCapacity)       
+
+// 构造一个新的空 set，其底层 HashMap 实例具有指定的初始容量和指定的加载因子。 
+HashSet(int initialCapacity, float loadFactor)  
+```
+
+HashSet的api 和 Set接口定义的一样, Set接口api和Collection一样
+
+
+
+<br/>
 
 
 
 ### 2) TreeSet
+
+```java
+// 1, TreeSet是Set接口的子实现
+// 2, TreeSet底层是一个TreeMap (红黑树)
+// 3, TreeSet的特点和TreeMap的key保持一致
+// 4, TreeSet存储元素大小有序
+// 5, TreeSet不存储重复元素 (大小重复)
+// 6, TreeSet不存储null  (null没有办法比较大小)
+// 7, TreeSet线程不安全
+
+```
+
+
+
+```java
+构造方法摘要 
+TreeSet() 
+          构造一个新的空 set，该 set 根据其元素的自然顺序进行排序。 
+TreeSet(Collection<? extends E> c) 
+          构造一个包含指定 collection 元素的新 TreeSet，它按照其元素的自然顺序进行排序。 
+TreeSet(Comparator<? super E> comparator) 
+          构造一个新的空 TreeSet，它根据指定比较器进行排序。 
+TreeSet(SortedSet<E> s) 
+          构造一个与指定有序 set 具有相同映射关系和相同排序的新 TreeSet。 
+```
+
+
 
 TreeSet 类同时实现了 Set 接口和 SortedSet 接口。SortedSet 接口是 Set 接口的子接口，可以实现对集合进行自然排序，因此使用 TreeSet 类实现的 Set 接口默认情况下是自然排序的，这里的自然排序指的是升序排序。
 
@@ -1533,19 +1694,133 @@ Comparable接口类对象的比较方式：
 | Character                                                    | 按字符的 Unicode 值的数字大小比较         |
 | String                                                       | 按字符串中字符的 Unicode 值的数字大小比较 |
 
+<br/>
+
+TreeSet的api
+
+```java
+ boolean add(E e)  
+ boolean addAll(Collection<? extends E> c)  
+ boolean remove(Object o) 
+ int size() 
+ void clear() 
+ Object clone() 
+     
+
+ boolean isEmpty() 
+ boolean contains(Object o) 
+
+ Comparator<? super E> comparator() 
+     
+ Iterator<E> iterator() 
+ Iterator<E> descendingIterator() 
+
+ SortedSet<E> headSet(E toElement) // 返回此 set 的部分视图，其元素严格小于 toElement。
+ NavigableSet<E> descendingSet()  // 返回此 set 中所包含元素的逆序视图。 
+     
+ // 返回此 set 的部分视图，其元素小于（或等于，如果 inclusive 为 true）toElement。
+ NavigableSet<E> headSet(E toElement, boolean inclusive)
+     
+
+     
+ E first() // 返回此 set 中当前第一个（最低）元素。 
+ E last()  // 返回此 set 中当前最后一个（最高）元素。
+     
+ E ceiling(E e) 
+ E floor(E e)  // 返回此 set 中小于等于给定元素的最大元素；如果不存在这样的元素，则返回 null。 
+  
+ E lower(E e) // 返回此 set 中严格小于给定元素的最大元素；如果不存在这样的元素，则返回 null。           
+ E higher(E e) // 返回此 set 中严格大于给定元素的最小元素；如果不存在这样的元素，则返回 null。 
+
+ E pollFirst() // 获取并移除第一个（最低）元素；如果此 set 为空，则返回 null。 
+ E pollLast() // 获取并移除最后一个（最高）元素；如果此 set 为空，则返回 null。 
 
 
-TreeSet 类除了实现 Collection 接口的所有方法之外，还提供了下列方法：
+ // 返回此 set 的部分视图，其元素范围从 fromElement 到 toElement。 
+ NavigableSet<E> subSet(E fromElement, boolean fromInclusive, E toElement, boolean toInclusive) 
+ 
+ // 返回此 set 的部分视图，其元素从 fromElement（包括）到 toElement（不包括）。 
+ SortedSet<E> subSet(E fromElement, E toElement) 
+          
+ // 返回此 set 的部分视图，其元素大于等于 fromElement。 
+ SortedSet<E> tailSet(E fromElement) 
+          
+ //  返回此 set 的部分视图，其元素大于（或等于，如果 inclusive 为 true）fromElement。 
+ NavigableSet<E> tailSet(E fromElement, boolean inclusive) 
+         
+```
 
-| 方法名称                                       | 说明                                                         |
-| ---------------------------------------------- | ------------------------------------------------------------ |
-| E first()                                      | 返回此集合中的第一个元素。其中，E 表示集合中元素的数据类型   |
-| E last()                                       | 返回此集合中的最后一个元素                                   |
-| E poolFirst()                                  | 获取并移除此集合中的第一个元素                               |
-| E poolLast()                                   | 获取并移除此集合中的最后一个元素                             |
-| SortedSet<E> subSet(E fromElement,E toElement) | 返回一个新的集合，新集合包含原集合中 fromElement 对象与 toElement 对象之间的所有对象。包含 fromElement 对象，不包含 toElement 对象 |
-| SortedSet<E> headSet<E toElement〉             | 返回一个新的集合，新集合包含原集合中 toElement 对象之前的所有对象。 不包含 toElement 对象 |
-| SortedSet<E> tailSet(E fromElement)            | 返回一个新的集合，新集合包含原集合中 fromElement 对象之后的所有对 象。包含 fromElement 对象 |
+
+
+<br/>
+
+### 3) LinkedHashSet
+
+```java
+// 1, LinkedHashSet是HashSet的子类
+// 2, LinkedHashSet 底层是LinkedHashMap (双向链表区别)
+// 3, LinkedHashSet 有序
+// 4, LinkedHashSet 不允许存储重复元素
+// 5, LinkedHashSet 允许存储null
+// 6, 线程不安全
+
+```
 
 
 
+```java
+LinkedHashSet() 
+          构造一个带默认初始容量 (16) 和加载因子 (0.75) 的新空链接哈希 set。 
+LinkedHashSet(Collection<? extends E> c) 
+          构造一个与指定 collection 中的元素相同的新链接哈希 set。 
+LinkedHashSet(int initialCapacity) 
+          构造一个带指定初始容量和默认加载因子 (0.75) 的新空链接哈希 set。 
+LinkedHashSet(int initialCapacity, float loadFactor) 
+          构造一个带有指定初始容量和加载因子的新空链接哈希 set。 
+```
+
+LinkedHashSet 的 api 和 HashSet的api 和 Set接口定义的都一样,  Set接口api和Collection一样
+
+
+
+
+
+<br/>
+
+
+
+**总结**: api 特点(增删改查) 记住. 
+
+```java
+Collection: 
+       List: 线性表
+            ArrayList;
+			LinkedList;
+            Vector(之后Stack):
+           
+       Queue: 队列
+           Deque接口双端队列/栈
+                ArrayDeque
+           BlockingQueue: 接口阻塞队列
+           
+       Set: 集合
+           HashSet (LinkedHashSet)
+           TreeSet
+```
+
+```java
+Map:
+         HashMap (LinkedHashMap)
+         TreeMap
+         Hashtable
+```
+
+
+
+重点级别1: HashMap; ArrayList
+
+重点级别2:  LinkedList; HashSet;
+
+重点级别3: LinkedHashMap/ TreeMap/ LinkedHashSet /  TreeSet
+
+重点级别4: 剩余

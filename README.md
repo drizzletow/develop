@@ -69,7 +69,7 @@ GitHub：https://github.com/itdrizzle/develop
 
 ## 常用开发工具
 
-* [IDEA和Eclipse](Tools/idea.md)    &nbsp;&nbsp;   [常见单词发音](Tools/word.md)    &nbsp;&nbsp; 
+* [IDEA和Eclipse](Tools/idea.md)    &nbsp;&nbsp;  
 
 
 <br/> <br/>
