@@ -159,9 +159,17 @@ cat /proc/meminfo  # 查看详细内存信息
 
 ## 2. 文件和目录
 
+
+
+<span style="font:normal bold 25px '宋体',sans-serif; color:blue"> ls：显示目录下的内容及相关属性信息</span>：
+
 ls 命令是Linux下最常用的指令之一。
 
-ls命令为英文单词 list 的缩写，正如英文单词 list 的意思，其功能是列出指定目录下的内容及其相关属性信息
+ls命令可以理解为英文单词list的缩写，其功能是列出目录的内容及其内容属性信息（list directory contents）。
+
+该命令有点类似于DOS系统下的dir命令，有趣的是，Linux下其实也有dir命令，但我们更习惯于使用ls。
+
+<br/>
 
 **常用参数：**
 
@@ -211,8 +219,6 @@ cd ~                 # 进入当前用户的家目录
 
 <span style="font:normal bold 25px '宋体',sans-serif; color:blue">mkdir：创建目录</span>：
 
-<font size=5 color=blue>mkdir：创建目录</font>：
-
 ```shell
 # mkdir命令是“make directories”中每个单词的粗体字母组合而成，其功能是创建目录，
 # 默认情况下，如果要创建的目录已存在，则会提示此文件已存在；而不会继续创建目录。
@@ -230,9 +236,9 @@ mkdir -pv dir/test
 <br/>
 
 ```shell
-# 同时创建多个目录及多级子目录
+# 同时创建多个目录及多级子目录 (注意大括号内不能有空格)
 
-mkdir -pv dir/{dir_1, dir_2}/{dir_a, dir_b}
+mkdir -pv dir/{dir_1,dir_2}/{dir_a,dir_b}
 
 ```
 
@@ -242,7 +248,91 @@ mkdir -pv dir/{dir_1, dir_2}/{dir_a, dir_b}
 
 
 
-<font color=blue size=4>
+<span style="font:normal bold 25px '宋体',sans-serif; color:blue">touch：创建空文件或改变文件的时间戳属性</span>：
+
+touch命令有两个功能：一是创建新的空文件；二是改变已有文件的时间戳属性。
+
+特别说明：
+
+1）注意区分touch和mkdir命令的功能，mkdir命令是创建空目录，而touch是创建空文件。
+
+2）在Linux中，一切皆文件。虽然touch命令不能创建目录，但是可以修改目录的时间戳。
+
+![image-20220314220906574](vx_images/image-20220314220906574.png)
+
+
+
+```shell
+touch a.txt b.txt          # 创建多个文件
+touch log{01..05}          # log01  log02  log03  log04  log05 
+```
+
+
+
+<br/>
+
+
+
+<span style="font:normal bold 25px '宋体',sans-serif; color:blue">cp：复制文件或目录</span>:
+
+cp命令可以理解为英文单词copy的缩写，其功能为复制文件或目录。
+
+![image-20220314221359831](vx_images/image-20220314221359831.png)
+
+
+
+```shell
+cp /etc/ssh/sshd_config /etc/ssh/sshd_config.ori
+```
+
+
+
+<br/>
+
+<span style="font:normal bold 25px '宋体',sans-serif; color:blue">mv：移动或重命名文件</span>:
+
+mv命令可以理解为英文单词move的缩写，其功能是移动或重命名文件（move/rename files）
+
+```shell
+mv a.txt b.txt             # 若b.txt 不存在，则将 a.txt 重命名为 b.txt
+
+```
+
+
+
+<br/>
+
+<span style="font:normal bold 25px '宋体',sans-serif; color:blue"> rm：删除文件或目录</span>:
+
+rm命令可以理解为英文单词remove的缩写，其功能是删除一个或多个文件或目录（remove files or directories）。
+
+这是Linux系统里最危险的命令之一，请慎重使用。
+
+![image-20220314222403039](vx_images/image-20220314222403039.png)
+
+
+
+```shell
+rm -rf dir                   # 递归强制删除dir目录
+```
+
+
+
+<br/>
+
+<span style="font:normal bold 25px '宋体',sans-serif; color:blue">rmdir：删除空目录</span>:
+
+rmdir命令用于删除空目录（remove empty directories），当目录不为空时，命令不起作用
+
+rmdir命令在实际工作中使用的极少
+
+
+
+
+
+<br/>
+
+<span style="font:normal bold 25px '宋体',sans-serif; color:blue">
 
 
 

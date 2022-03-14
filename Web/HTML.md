@@ -179,8 +179,12 @@ div和span标签 是没有语义的， 但确是网页布局主要使用的2个�
 ```html
 <body>
     <!-- src:本地文件一般使用相对路径 , 绝对路径用（如：`D:\web\img\logo.gif`）的较少，
-				但要注意，它的写法 特别是符号 \ 并不是 相对路径的 /
-		 title：鼠标放在图片上的提示信息 -->
+				但要注意，它的写法 特别是符号 \ , 并不是 相对路径的 /, 
+		而且这里包含盘符的绝对路径的html文件只在本地能加载这张图片，一旦将网页部署到服务器，再访问时就不能加载这张图片了，
+		详细过程见下面的说明
+	-->
+
+	<!--  title：鼠标放在图片上的提示信息 -->
     <img src="../img/cat.jpg" title="小猫" width="300px" height="200px"/>
     <hr />
     
@@ -199,6 +203,57 @@ div和span标签 是没有语义的， 但确是网页布局主要使用的2个�
 - href	指定链接目标的url地址，（必须属性）当为标签应用href属性时，它就具有了超链接的功能
 - target	指定链接页面的打开方式，其取值有 `_self` 和` _blank`两种，其中`_self`为默认值，`_blank`为在新窗口中打开方式
 - 当没有确定链接目标时，通常将链接标签的href属性值定义为`#`(即`href="#"`)，表示该链接暂时为一个空链接
+
+<br/>
+
+
+
+**【路径问题说明】**: 
+
+```java
+/*
+java中的路径:
+       相对路径: 相对于文件的位置 (./   ../   ../../  )
+       绝对路径: 以盘符开头(C:\index.html)
+           
+前端的路径:
+       相对路径:  相对于文件的位置 (./   ../   ../../  )
+       绝对路径:  是一个url （带盘符的那种意味着要加载客户端文件，这是极不安全的行为，浏览器不会允许）
+       	并且, 即使我们写的是相对路径, 这个相对路径的代码被浏览器解析的时候(前端代码都是给用户的浏览器解析的), 
+       	也会拼接变成一个url(变成绝对路径)
+```
+
+<br/>
+
+从 IDEA 打开下列html文件，到浏览器查看效果，模拟将网页部署到服务器的情形：
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>imageDemo</title>
+</head>
+    <body>
+        <img src="./image/a.jpg" width="250" height="250">
+        <img src="E:\WorkPlace\frontend\html\pages\image\a.jpg" width="250" height="250">
+    </body>
+</html>
+```
+
+<br/>
+
+![image-20220314213335123](vx_images/image-20220314213335123.png)
+
+<br/>
+
+看看两个文件的请求：
+
+![image-20220314213753226](vx_images/image-20220314213753226.png)
+
+
+
+
 
 <br/>
 
@@ -347,6 +402,27 @@ div和span标签 是没有语义的， 但确是网页布局主要使用的2个�
 
 ## 6. 表单标签
 
+```java
+< form >: 用来向后端发起请求提交数据
+      
+form属性:
+   action:  用来标记要生成的url除了参数那一部分
+        	form表单可以根据用户输入点击提交产生一个url交给浏览器, 发起一个请求
+  
+   method: 请求方式: get  post 区别
+       1, get请求, 一般把参数拼接到url之后
+          post请求, 一般把参数放到'请求正文'里
+       2, get请求不安全
+          post请求相对更安全
+       3, 语义化区别
+             get: 请求一般用来获取数据 （分享链接时，别人可以直接访问到那个页面，post请求的方式则不能）
+             post: 一般用来提交数据
+       4, url之后参数最多1kb（意味着get请求所能传输的数据是有限的，虽然这种情形几乎不可能发生）
+                 
+```
+
+<br/>
+
 表单用于采集用户输入的数据、并和服务器进行交互，主要有 form、input、label 等
 
 | form标签的属性 | 属性值   | 作用                                             |
@@ -369,11 +445,13 @@ div和span标签 是没有语义的， 但确是网页布局主要使用的2个�
 | checked         | 默认选中 | 表示某个单选或者复选按钮一开始就被选中了               |
 | placeholder     | 提示文字 | 文本框中显示的文字，用户输入时消失                     |
 
+<br/>
+
 **label 标签**： 为 input 定义标注（标签）、用于绑定一个表单元素, 当点击label标签的时候, 被绑定的表单元素就会获得输入焦点
 
 ```html
 <!-- 第一种用法就是用label直接包括input表单 -->
-<label> 用户名： <input type="text" name="usename" value="root">   </label>
+<label> 用户名： <input type="text" name="usename" value="root"> </label>
 
 <!-- 第二种用法 for 属性规定 label 与哪个表单元素绑定 -->
 <label for="sex">男</label>
@@ -381,6 +459,8 @@ div和span标签 是没有语义的， 但确是网页布局主要使用的2个�
 ```
 
 <br/>
+
+
 
 表单示例：
 
@@ -455,6 +535,8 @@ div和span标签 是没有语义的， 但确是网页布局主要使用的2个�
 
 <br/>
 
+
+
 **按钮**： `<input type="按钮类型" value="按钮上的文字" /> `    
 
 - `type="submit"`: 提交按钮，提交到form的action的指定路径
@@ -472,7 +554,7 @@ div和span标签 是没有语义的， 但确是网页布局主要使用的2个�
 
 ![image-20211026013024697](vx_images/image-20211026013024697.png)
 
-
+<br/>
 
 按钮除了指定 input 标签的type外，还有一个专用的标签 button ：
 
@@ -483,6 +565,8 @@ div和span标签 是没有语义的， 但确是网页布局主要使用的2个�
 ```
 
 <br/>
+
+
 
 **文本域： textarea**： 
 
@@ -506,9 +590,86 @@ div和span标签 是没有语义的， 但确是网页布局主要使用的2个�
 <iframe name="content" src="../index.html" width="500" height="600"></iframe>
 ```
 
+<br/>
+
+例：使用 a 标签的 target 属性和 iframe 的name属性实现下图效果：
+
+![image-20220314205530046](vx_images/image-20220314205530046.png)
+
+<br/>
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>page3</title>
+    <style>
+        .container {
+            width: 1200px;
+            height: 700px;
+            /*background: blueviolet;*/
+            margin: 0 auto;
+            padding-top: 30px;
+        }
+        .left {
+            float: left;
+            margin-top: 1px;
+            width: 200px;
+            background-color: #f2f2f2;
+        }
+        .right {
+            float: right;
+            width: 998px;
+            height: 700px;
+            padding-left: 2px;
+            /*background-color: blue;*/
+        }
+
+        a {
+            text-decoration: none;
+            display: block;
+            border-bottom: 1px solid gray;
+            margin-left: 50px;
+            padding: 25px 10px;
+            color: black;
+        }
+
+        a:hover {
+            color: blueviolet;
+        }
+
+        iframe {
+            border: 1px solid #f2f2f2;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="left">
+        <a href="page1.html" target="homepage">首页</a>
+        <a href="https:www.baidu.com" target="homepage" >百度</a>
+        <a href="https:www.taobao.com" target="homepage">淘宝</a>
+        <a href="https:www.jd.com" target="homepage">京东</a>
+    </div>
+
+    <div class="right">
+        <iframe height="700px" width="1000px" name="homepage" frameborder="0"></iframe>
+    </div>
+
+</div>
+
+</body>
+</html>
+```
+
 
 
 <br/>
+
+
 
 ## 8. 转义字符
 
