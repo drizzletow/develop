@@ -1,4 +1,3 @@
-
 # 一 数组(array)
 
 数组是相同数据类型的多个数据的容器，这些元素按线性顺序排列。
@@ -10,49 +9,76 @@ int[] arr1;       // java数组
 int arr2[];       // C/C++风格
 ```
 
-## 1. 一维数组
+**数组下标**：对于长度为 n 的数组，下标的范围是 0 ~ n-1
+
+<br/>
+
+## 1. 数组初始化
+
+Java语言是典型的静态语言，因此Java数组是静态的，即当数组被初始化之后，该数组所占的内存空间、数组长度都是不可变的。
+
+Java程序中的数组必须经过初始化才可使用。
+
+所谓初始化，即创建实际的数组对象，也就是在内存中为数组对象分配内存空间，并为每个数组元素指定初始值。
+
+<br/>
+
+
+
+**数组的初始化有以下两种方式**：
+
+ <font color=red size=5>➢ 静态初始化</font>：初始化时由程序员显式指定每个数组元素的初始值，由系统决定数组长度。
+
+ <font color=red size=5>➢ 动态初始化</font>：初始化时程序员只指定数组长度，由系统为数组元素分配初始值。
+
+不管采用哪种方式初始化数组，一旦初始化完成，该数组的长度就不可改变，Java语言允许通过数组的length属性来访问数组的长度。
+
+
 
 ```java
 // 数组的创建和初始化：
-int[] arr1 = {1,2,3,4,5};
-int[] arr2 = new int[100];            //初始值全为0, boolean 则为false , 对象为 null
-arr2 = new int[]{12,33,21,43,22,45};  // 初始化一个匿名数组并赋值给 arr2
+int[] arr1 = {1,2,3,4,5};         // 静态初始化
+int[] arr2 = new int[100];        // 动态初始化 初始值全为0（boolean 则为false , 对象为 null ......）
 
-// 数组的拷贝
-int[] nums = arr2;  // nums 和 arr2 指向同一个数组
-int[] copiedNums = Arrays.copyOf(arr2, arr2.length);  // 真正的数组拷贝
-
-//  数组的排序
-Array.sort(arr2);
-
-// 数组的输出
-for (int i = 0; i < nums.length; i++) {
-    System.out.print(nums[i] + " ");
-}
-System.out.println(Arrays.toString(arr2));
+arr2 = new int[]{12,33,21,43,22,45};   // 初始化一个匿名数组并赋值给 arr2
 ```
 
-**数组下标**：对于长度为 n 的数组，下标的范围是 0 ~ n-1
+始终记住：Java的数组变量只是引用类型的变量，它并不是数组对象本身，只要让数组变量指向有效的数组对象，程序中即可使用该数组变量。当数组引用变量指向一个有效的数组对象之后，程序就可以通过该数组引用变量来访问数组对象。
 
 
 
-## 2. 二维数组
+<br/>
 
 ```java
-double[][] balances;
-balances = new double[3][4];   // 将 balances 初始化为 0
-
-int[][] magicSquare ={
-    	{34, 44, 21, 44}, 
-    	{22, 32, 11, 99}, 
-    	{54, 33, 29, 84}}; 
-
-System.out.println (Arrays.deepToString(magicSquare));   // 快速打印二维数组
+/*注意：
+在使用Java数组之前必须先进行初始化！但注意不要把数组变量和数组对象搞混了，数组变量只是一个引用变量（有点类似于C语言里的指针）；
+而数组对象就是保存在堆内存中的连续内存空间。
+对数组执行初始化，其实并不是对数组变量执行初始化，而是在堆内存中创建数组对象——也就是为该数组对象分配一块连续的内存空间，这块连续的内存空间的长度就是数组的长度。
 ```
 
+```java
+/**提示：
+Java程序中的引用变量并不需要经过所谓的初始化操作，需要进行初始化的是引用变量所引用的对象。
+比如，数组变量不需要进行初始化操作，而数组对象本身需要进行初始化；对象的引用变量也不需要进行初始化，而对象本身才需要进行初始化。
+
+需要指出的是，Java的局部变量必须由程序员提供初始值，因此如果定义了局部变量的数组变量，程序必须对局部的数据变量进行赋值，即使将它赋值为null也行。
+```
+
+<br/>
+
+注意：有些书中总是不断地重复：基本类型变量的值被存储在栈内存中，其实这句话是完全错误的。
+
+例如数组中的基本数组类型，它们都是基本类型的值，但实际上它们却被存储在堆内存中。
+
+实际上应该说：所有局部变量都是放在栈内存里保存的，不管其是基本类型的变量，还是引用类型的变量，都是存储在各自的方法栈内存中的；但引用类型的变量所引用的对象（包括数组、普通的Java对象）则总是存储在堆内存中。
 
 
-## 3. 数组常用算法
+
+<br/>
+
+
+
+## 2. 排序和查找
 
 **冒泡排序（Bubble Sort）**：
 
@@ -67,12 +93,16 @@ System.out.println (Arrays.deepToString(magicSquare));   // 快速打印二维�
 
 
 
+<br/>
+
 **二分查找（Binary Search）：**
 
-二分查找也称折半查找，它是一种效率较高的查找方法。但是，二分查找要求数组数据必须采用顺 序存储结构有序排列
+二分查找也称折半查找，它是一种效率较高的查找方法。但是，二分查找要求数组数据必须采用顺序存储结构有序排列
 
 - 首先，假设数组中元素是按升序排列，将数组中间位置的数据与查找数据比较，如果两者相等，则查找成功；否则利用 中间位置记录将数组分成前、后两个子数组，如果中间位置数据大于查找数据，则进一步查找前子数组，否则进一步查 找后子数组
 - 重复以上过程，直到找到满足条件的数据，则表示查找成功， 直到子数组不存在为止，表示查找不成功
+
+<br/>
 
 
 
@@ -126,7 +156,290 @@ public class ArrayDemo {
 
 
 
-# 二 字符串
+## 3. 关于多维数组
+
+ <font color=red size=5>所谓多维数组，其实就是数组元素依然是数组的一维数组</font>，
+
+二维数组是数组元素是一维数组的数组，三维数组是数组元素是二维数组的数组……N维数组是数组元素是N-1维数组的数组。
+
+即**多维数组的本质依然是一维数组**。
+
+```java
+/* 没有多维数组!!!
+
+只要在已有数据类型之后增加方括号，就会产生一个新的数组类型。
+如果已有的类型是int，增加方括号后是int［］类型，这是一个数组类型；
+如果再以int［］类型为已有类型，增加方括号后就得到int［］［］类型，这依然是数组类型；
+如果再以int［］［］类型为已有类型，增加方括号后就得到int［］［］［］类型，这依然是数组类型。
+
+反过来，将数组类型最后的一组方括号去掉就得到了数组元素的类型。
+对于int［］［］［］类型的数组，其数组元素就相当于int［］［］类型的变量；
+对于int［］［］类型的数组，其数组元素就相当于int［］类型的变量；
+对于int［］类型的数组，其数组元素就相当于int类型的变量。
+```
+
+Java允许将多维数组当成一维数组处理。初始化多维数组时可以先只初始化最左边的维数，此时该数组的每个元素都相当于一个数组引用变量（但此时都是null），这些数组元素还需要进一步初始化。
+
+<br/>
+
+```java
+// 使用示例
+double[][] balances;
+balances = new double[3][4];   // 将 balances 初始化为 0
+
+int[][] magicSquare ={
+    	{34, 44, 21, 44}, 
+    	{22, 32, 11, 99}, 
+    	{54, 33, 29, 84}}; 
+
+System.out.println (Arrays.deepToString(magicSquare));   // 快速打印二维数组
+```
+
+
+
+<br/>
+
+
+
+# 二 Arrays类
+
+Java中有一个Arrays类，包含一些对数组操作的静态方法
+
+## 1. toString
+
+Arrays的toString()方法可以方便地输出一个数组的字符串形式，以便查看。
+
+它有9个重载的方法，包括8个基本类型数组和1个对象类型数组
+
+```java
+    public static String toString(int[] a)
+    public static String toString(long[] a)
+    public static String toString(short[] a) 
+    public static String toString(char[] a)
+    public static String toString(byte[] a)
+    public static String toString(boolean[] a)
+    public static String toString(float[] a)
+    public static String toString(double[] a)
+```
+
+```java
+    public static String toString(Object[] a) {
+        if (a == null)
+            return "null";
+
+        int iMax = a.length - 1;
+        if (iMax == -1)
+            return "[]";
+
+        StringBuilder b = new StringBuilder();
+        b.append('[');
+        for (int i = 0; ; i++) {
+            b.append(String.valueOf(a[i]));
+            if (i == iMax)
+                return b.append(']').toString();
+            b.append(", ");
+        }
+    }
+```
+
+
+
+```java
+public static String deepToString(Object[] a) {
+    if (a == null)
+        return "null";
+
+    int bufLen = 20 * a.length;
+    if (a.length != 0 && bufLen <= 0)
+        bufLen = Integer.MAX_VALUE;
+    StringBuilder buf = new StringBuilder(bufLen);
+    deepToString(a, buf, new HashSet<Object[]>());
+    return buf.toString();
+}
+```
+
+
+
+<br/>
+
+## 2. 排序和查找
+
+是一种非常常见的操作。同toString一样，对每种基本类型的数组，Arrays都有sort方法（boolean除外）
+
+```java
+public static void sort(int[] a) {
+    DualPivotQuicksort.sort(a, 0, a.length - 1, null, 0, 0);
+}
+```
+
+
+
+除了基本类型，sort还可以直接接受对象类型，但对象需要实现Comparable接口。
+
+```java
+// 对象需要实现Comparable接口
+public static void sort(Object[] a) {
+    if (LegacyMergeSort.userRequested)
+        legacyMergeSort(a);
+    else
+        ComparableTimSort.sort(a, 0, a.length, null, 0, 0);
+}
+
+// 使用Comparator作为排序的比较规则
+public static <T> void sort(T[] a, Comparator<? super T> c) {
+    if (c == null) {
+        sort(a);
+    } else {
+        if (LegacyMergeSort.userRequested)
+            legacyMergeSort(a, c);
+        else
+            TimSort.sort(a, 0, a.length, c, null, 0, 0);
+    }
+}
+```
+
+
+
+<font color=blue size=5>传递比较器Comparator给sort方法，体现了程序设计中一种重要的思维方式。将不变和变化相分离，排序的基本步骤和算法是不变的，但按什么排序是变化的，sort方法将不变的算法设计为主体逻辑，而将变化的排序方式设计为参数，允许调用者动态指定，这也是一种常见的设计模式，称为策略模式，不同的排序方式就是不同的策略。</font>
+
+<br/>
+
+Arrays包含很多与sort对应的查找方法，可以在已排序的数组中进行二分查找。
+
+所谓二分查找就是从中间开始查找，如果小于中间元素，则在前半部分查找，否则在后半部分查找，每比较一次，要么找到，要么将查找范围缩小一半，所以查找效率非常高。
+
+```
+public static int binarySearch(int[] a, int key) {
+    return binarySearch0(a, 0, a.length, key);
+}
+```
+
+
+
+二分查找既可以针对基本类型数组，也可以针对对象数组，对对象数组，也可以传递Comparator，也可以指定查找范围。
+
+```
+public static int binarySearch(Object[] a, Object key) {
+    return binarySearch0(a, 0, a.length, key);
+}
+```
+
+```java
+public static <T> int binarySearch(T[] a, int fromIndex, int toIndex, T key, Comparator<? super T> c) {
+    rangeCheck(a.length, fromIndex, toIndex);
+    return binarySearch0(a, fromIndex, toIndex, key, c);
+}
+```
+
+
+
+<br/>
+
+## 3. 更多方法
+
+除了常用的toString、排序和查找，Arrays中还有复制、比较、批量设置值和计算哈希值等方法。
+
+```java
+// 基于原数组，复制一个新数组，与toString一样，也有多种重载形式
+public static byte[] copyOf(byte[] original, int newLength) {
+    byte[] copy = new byte[newLength];
+    System.arraycopy(original, 0, copy, 0, Math.min(original.length, newLength));
+    return copy;
+}
+```
+
+<br/>
+
+```java
+// 判断两个数组是否相同，支持基本类型和对象类型
+public static boolean equals(int[] a, int[] a2) {
+    if (a==a2)
+        return true;
+    if (a==null || a2==null)
+        return false;
+
+    int length = a.length;
+    if (a2.length != length)
+        return false;
+
+    for (int i=0; i<length; i++)
+        if (a[i] != a2[i])
+            return false;
+
+    return true;
+}
+
+public static boolean equals(Object[] a, Object[] a2) {
+    if (a==a2)
+        return true;
+    if (a==null || a2==null)
+        return false;
+
+    int length = a.length;
+    if (a2.length != length)
+        return false;
+
+    for (int i=0; i<length; i++) {
+        Object o1 = a[i];
+        Object o2 = a2[i];
+        if (!(o1==null ? o2==null : o1.equals(o2)))
+            return false;
+    }
+
+    return true;
+}
+```
+
+<br/>
+
+```java
+// 针对数组，计算一个数组的哈希值：
+public static int hashCode(int a[]) {
+    if (a == null)
+        return 0;
+
+    int result = 1;
+    for (int element : a)
+        result = 31 * result + element;
+
+    return result;
+}
+
+public static int hashCode(Object a[]) {
+    if (a == null)
+        return 0;
+
+    int result = 1;
+
+    for (Object element : a)
+        result = 31 * result + (element == null ? 0 : element.hashCode());
+
+    return result;
+}
+```
+
+
+
+
+
+<br/>
+
+
+
+# 三 字符串(String)
+
+字符串操作是计算机程序中最常见的操作之一。Java中处理字符串的主要类是String、StringBuilder和StringBuffer
+
+字符串可以通过常量定义String变量，也可以通过new创建String变量。String可以直接使用 + 和 += 运算符，如：
+
+```java
+String name = "java";
+String str = new String("java program");
+
+name += "desc";
+```
+
+<br/>
 
 ## 1. String类
 
@@ -134,11 +447,16 @@ public class ArrayDemo {
 
 **String对象不可变**：对象一旦被创建后，对象所有的状态及属性在其生命周期内不会发生任何变化，不可变的原因与本质：
 
-![image-20220216190454092](vx_images/image-20220216190454092.png)
+```java
+public final class String implements java.io.Serializable, Comparable<String>, CharSequence {
+    /** The value is used for character storage. */
+    private final char value[];
+}
+```
 
+<font color=red size=5>String的真实面目就是一个 final 修饰的 char 数组（即初始化后就不能再变了）</font> 
 
-
-
+<br/>
 
 1. String 类的构造方法：
 
@@ -148,6 +466,14 @@ public class ArrayDemo {
    String(char[] value)            // 分配一个新的字符串，将参数中的字符数组元素全部复制变为字符串
    String(char[] value,int offset,int count)  //offset是数组第一个字符的索引，count指定子数组的长度
    ```
+
+   需要说明的是，String会根据参数新创建一个数组，并复制内容，而不会直接用参数中的字符数组。
+
+   String中的大部分方法内部也都是操作的这个字符数组。
+
+   
+
+   <br/>
 
 2. String和int的相互转换
 
@@ -161,6 +487,8 @@ public class ArrayDemo {
    String s = Integer.toString(i);
    String s = "" + i;
    ```
+
+   <br/>
 
 3. String常用方法
 
@@ -176,7 +504,7 @@ public class ArrayDemo {
 
    - substring(int beginIndex，int endIndex) ：截取  [beginIndex，endIndex) 索引的字符串
 
-     
+     <br/>
 
 4. String分割字符串
 
@@ -195,7 +523,7 @@ public class ArrayDemo {
 
    - 如果在一个字符串中有多个分隔符，可以用 `|` 作为连字符，比如：`"acount=? and uu =? or n=?"`，需要把三个都分隔出来，可以用`String.split("and|or")`。
 
-     
+     <br/>
 
 5. 字符串查找
 
@@ -203,7 +531,7 @@ public class ArrayDemo {
    - `lastIndexOf() `方法用于返回字符（串）在指定字符串中最后一次出现的索引位置，如果能找到则返回索引值，否则返回 -1
    - `charAt() `方法可以在字符串内根据指定的索引查找字符（字符串本质上是字符数组，因此它也有索引，索引从零开始）
 
-
+​		<br/>
 
 6. 字符串的替换
 
@@ -213,7 +541,7 @@ public class ArrayDemo {
    replaceAll(String regex, String replacement)    // 将目标字符串中匹配某正则表达式的所有子字符串替换成新的字符串
    ```
 
-   
+   <br/>
 
 7. 字符串比较
 
@@ -240,52 +568,77 @@ public class ArrayDemo {
    System.out.println("a".compareTo("A"));   // 32 ( 表示a在A之后32个字符序列 )
    ```
 
-   
-
-8. 字符串拼接
-
-   String 字符串虽然是不可变字符串，但也可以进行拼接只是会产生一个新的对象。String 字符串拼接可以使用“+”运算符或 String 的 concat(String str) 方法。“+”运算符优势是可以连接任何类型数据拼接成为字符串，而 concat 方法只能拼接 String 类型字符串。
-
-   ```java
-   String str = "hello ";
-   System.out.println(str + 99);                // hello 99
-   System.out.println(str.concat("world"));     // hello world
-   ```
-
-   String被声明为 final class，是不可变字符串。因为它的不可变性，所以拼接字符串时候会产生很多无用的中间对象，如果频繁的进行这样的操作对性能有所影响。用+的方式效率最差，concat由于是内部机制实现，比+的方式好了不少（每次调用contact()方法就是一次数组的拷贝）虽然在内存中是处理都是原子性操作，速度非常快，但是，最后的return语句会创建一个**新String对象**，限制了concat方法的速度。
+   <br/>
 
    
 
-   **需要进行大量字符串拼接时，一定要使用StringBuffer或StringBuilder的append方法**：
+## 2. 字符串拼接
 
-   StringBuffer和StringBuilder的append方法都继承自AbstractStringBuilder，整个逻辑都只做**字符数组**的加长，拷贝，到最后也不会创建新的String对象，所以速度很快，完成拼接处理后在程序中用strBuffer.toString()来得到最终的字符串
+String 字符串虽然是不可变字符串，但也可以进行拼接只是会产生一个新的对象。
 
+String 字符串拼接可以使用“+”运算符或 String 的 concat(String str) 方法。
 
-
-## 2. StringBuilder
-
-Java 提供了 String 类来创建和操作字符串。String 类是不可变类，即一旦一个 String 对象被创建以后，包含在这个对象中的字符序列是不可改变的，直至这个对象被销毁。因此Java 提供了两个可变字符串类 StringBuffer 和 StringBuilder，中文翻译为“字符串缓冲区”。StringBuilder 类是 JDK 1.5 新增的类，它也代表可变字符串对象。
-
-
-
-实际上，StringBuilder 和 StringBuffer 功能基本相似，方法也差不多。不同的是，StringBuffer 是线程安全的，而 StringBuilder 则没有实现线程安全功能，所以性能略高。因此在通常情况下，如果需要创建一个内容可变的字符串对象，则应该优先考虑使用 StringBuilder 类。
-
-![image-20211012010548734](vx_images/image-20211012010548734.png)
-
-- 操作少量的数据使用 String
-- 单线程操作大量数据使用 StringBuilder
-- 多线程操作大量数据使用 StringBuffer
+“+” 运算符优势是可以连接任何类型数据拼接成为字符串，而 concat 方法只能拼接 String 类型字符串。
 
 ```java
-// 使用 StringBuilder 拼接字符串, 反转字符串
-StringBuilder stringBuilder = new StringBuilder();
-stringBuilder.append("hello");
-stringBuilder.append(" world");
-System.out.println(stringBuilder.toString());            // hello world
-System.out.println(stringBuilder.reverse().toString());  // dlrow olleh
+String str = "hello ";
+System.out.println(str + 99);                // hello 99
+System.out.println(str.concat("world"));     // hello world
+```
+
+<br/>
+
+concat由于是内部机制实现，比+的方式好了不少（每次调用contact()方法就是一次数组的拷贝）虽然在内存中是处理都是原子性操作，速度非常快，但是，最后的return语句会创建一个**新String对象**，限制了concat方法的速度。
+
+<br/>
+
+```
+String可以直接使用+和+=运算符，这是Java编译器提供的支持，背后，Java编译器一般会生成StringBuilder, +和+=操作会转换为append
+
+既然直接使用 +和+=就相当于使用StringBuilder和append，那还有什么必要直接使用StringBuilder呢？
+在简单的情况下，确实没必要。
+不过，在稍微复杂的情况下，Java编译器可能没有那么智能，它可能会生成过多的StringBuilder，尤其是在有循环的情况下，
 ```
 
 
+
+```java
+public class Demo {
+    public static void main(String[] args) {
+
+        final long start = System.currentTimeMillis();
+        String str = "hello";
+        for (int i = 0; i < 1000000; i++) {
+            str += ", java";
+        }
+        final long end = System.currentTimeMillis();
+        System.out.println(end - start);
+
+        final long start1 = System.currentTimeMillis();
+        final StringBuilder sb = new StringBuilder("hello");
+        for (int i = 0; i < 1000000; i++) {
+            sb.append(", java");
+        }
+        final long end1 = System.currentTimeMillis();
+        System.out.println(end1-start1);
+    }
+}
+// 看看运行结果，差距极大
+```
+
+![image-20220312203616197](vx_images/image-20220312203616197.png)
+
+
+
+<br/>
+
+**需要进行大量字符串拼接时，一定要使用StringBuffer或StringBuilder的append方法**：
+
+StringBuffer和StringBuilder的append方法都继承自AbstractStringBuilder，整个逻辑都只做**字符数组**的加长，拷贝，到最后也不会创建新的String对象，所以速度很快，完成拼接处理后在程序中用strBuffer.toString()来得到最终的字符串
+
+
+
+<br/>
 
 
 
@@ -353,7 +706,7 @@ public class Demo {
 }
 ```
 
-![image-20220216140357748](vx_images/image-20220216140357748.png)
+<br/>
 
 注：通过new创建一个String对象时，会在创建的同时检查字符串常量池中是否存在该对象，不存在则加入该对象，此处没什么疑问，
 
@@ -361,7 +714,7 @@ public class Demo {
 
 - 该例中的字符串进行拼接时，并不会像new一个对象那样进行上述操作（即不会将‘abcddd’加入到常量池），此时 `str3` 指向一个堆中的对象，而当一个堆中的对象调用 `intern()` 方法时，从jdk1.7起由于方法区实现的改变，常量池转移到了堆中，成为了堆的一部分，而此处也不再是将该对象再加入常量池然后返回其引用，而是在常量池中加入其在堆中的引用， `intern()` 返回的也是该引用
 
-
+<br/>
 
 **==与equals方法有什么区别**：
 
@@ -370,3 +723,355 @@ public class Demo {
 
 
 
+<br/>
+
+## 4. 可变字符串
+
+String 类是不可变类，即一旦一个 String 对象被创建以后，包含在这个对象中的字符序列是不可改变的，直至这个对象被销毁。
+
+因此Java 提供了两个可变字符串类 StringBuffer 和 StringBuilder，中文翻译为“字符串缓冲区”。
+
+StringBuilder 类是 JDK 1.5 新增的类，它也代表可变字符串对象。
+
+<br/>
+
+实际上，StringBuilder 和 StringBuffer 功能基本相似，方法也差不多。
+
+不同的是，StringBuffer 是线程安全的，而 StringBuilder 则没有实现线程安全功能，所以性能略高。
+
+因此在通常情况下，如果需要创建一个内容可变的字符串对象，则应该优先考虑使用 StringBuilder 类。
+
+- 操作少量的数据使用 String
+- 单线程操作大量数据使用 StringBuilder
+- 多线程操作大量数据使用 StringBuffer
+
+```java
+// 使用 StringBuilder 拼接字符串, 反转字符串
+StringBuilder stringBuilder = new StringBuilder();
+stringBuilder.append("hello");
+stringBuilder.append(" world");
+System.out.println(stringBuilder.toString());            // hello world
+System.out.println(stringBuilder.reverse().toString());  // dlrow olleh
+```
+
+
+
+<br/>
+
+## 5. StringBuilder
+
+与String类得底层final修饰的char数组不同，StringBuilder类继承了 AbstractStringBuilder ，其中有一个 char 类型的数组，但它与String不同，它不是final的，可以修改。
+
+```java
+abstract class AbstractStringBuilder implements Appendable, CharSequence {
+    /**
+     * The value is used for character storage.
+     */
+    char[] value;
+    
+    /**
+     * The count is the number of characters used.
+     */
+    int count;
+}
+
+public final class StringBuilder extends AbstractStringBuilder 
+    implements java.io.Serializable, CharSequence {
+    
+    //
+}
+```
+
+另外，与String不同，字符数组中不一定所有位置都已经被使用，它有一个实例变量，表示数组中已经使用的字符个数.
+
+
+
+<br/>
+
+StringBuilder继承自AbstractStringBuilder，它的默认构造方法是：
+
+```java
+/**
+     * Constructs a string builder with no characters in it and an
+     * initial capacity of 16 characters.
+     */
+public StringBuilder() {
+    super(16);
+}
+```
+
+StringBuilder继承自AbstractStringBuilder，它的默认构造方法调用父类的构造方法。也就是说，new StringBuilder()代码内部会创建一个长度为16的字符数组，count的默认值为0。
+
+
+
+<br/>
+
+AbstractStringBuilder类的 append 方法：
+
+```java
+public AbstractStringBuilder append(String str) {
+    if (str == null)
+        return appendNull();
+    int len = str.length();
+    ensureCapacityInternal(count + len);
+    str.getChars(0, len, value, count);
+    count += len;
+    return this;
+}
+
+private void ensureCapacityInternal(int minimumCapacity) {
+    // overflow-conscious code   
+    // minimumCapacity (所需的最小数组长度) 表示加上新插入的字符串后的大小
+    if (minimumCapacity - value.length > 0) {
+        value = Arrays.copyOf(value, newCapacity(minimumCapacity));
+    }
+}
+
+private int newCapacity(int minCapacity) {
+    // overflow-conscious code
+    int newCapacity = (value.length << 1) + 2;
+    if (newCapacity - minCapacity < 0) {
+        newCapacity = minCapacity;
+    }
+    return (newCapacity <= 0 || MAX_ARRAY_SIZE - newCapacity < 0)
+        ? hugeCapacity(minCapacity) : newCapacity;
+}
+```
+
+append会直接复制字符到内部的字符数组中，如果字符数组长度不够，会进行扩展，实际使用的长度用count体现
+
+- ` ensureCapacityInternal(count+len)` 会确保数组的长度足以容纳新添加的字符，
+- `str.getChars` 会复制新添加的字符到字符数组中，
+- `count += len` 会增加实际使用的长度。
+
+<br/>
+
+这里的扩展策略是跟当前长度相关的，当前长度左移一位（乘以2），再加上2，如果这个长度不够最小需要的长度，才用minimumCapacity。
+
+> 比如，默认长度为16，长度不够时，会先扩展到16*2+2即34，然后扩展到34*2+2即70，然后是70*2+2即142，这是一种指数扩展策略。为什么要加2？这样，在原长度为0时也可以一样工作。
+
+<br/>
+
+**为什么要这么扩展呢**？
+
+这是一种折中策略，一方面要减少内存分配的次数，另一方面要避免空间浪费。
+
+<font color=red size=5> 在不知道最终需要多长的情况下，指数扩展是一种常见的策略，广泛应用于各种内存分配相关的计算机程序中</font>。
+
+
+
+不过，如果预先就知道需要多长，那么可以调用StringBuilder的另外一个构造方法：
+
+```java
+public StringBuilder(int capacity) {
+    super(capacity);
+}
+```
+
+<br/>
+
+
+
+字符串构建完后，通常需要调用toString方法的代码，返回一个String类型的字符串：
+
+```java
+public String toString() {
+    // Create a copy, don't share the array
+    return new String(value, 0, count);
+}
+```
+
+这里新建了一个String。注意，这个String构造方法不会直接用这个可变的value数组，而会创建String对象，以保证String的不可变性。
+
+
+
+<br/>
+
+## 6. StringBuffer
+
+
+
+
+
+
+
+<br/>
+
+
+
+# 四 正则表达式
+
+正则表达式是一串字符，它描述了一个文本模式，利用它可以方便地处理文本，包括文本的查找、替换、验证、切分等。
+
+正则表达式中的字符有两类：
+
+- 一类是普通字符，就是匹配字符本身；
+
+- 另一类是元字符，这些字符有特殊含义，这些元字符及其特殊含义构成了正则表达式的语法。
+
+<br/>
+
+正则表达式（Regular Expression）又称正规表示法、常规表示法，在代码中常简写为 regex、regexp 或 RE
+
+String 类里提供了如下几个特殊的方法：
+
+- `boolean matches(String regex)`：判断该字符串是否匹配指定的正则表达式
+- `String replaceAll(String regex, String replacement)`：将该字符串中所有匹配 regex 的子串替换成 replacement
+- `String replaceFirst(String regex, String replacement)`：将该字符串中第一个匹配 regex 的子串替换成 replacement
+- `String[] split(String regex)`：以 regex 作为分隔符，把该字符串分割成多个子串
+
+
+
+<br/>
+
+
+
+1. 正则表达式所支持的合法字符
+
+   | 字符   | 解释                                                         |
+   | ------ | ------------------------------------------------------------ |
+   | X      | 字符x（x 可代表任何合法的字符)                               |
+   | \0mnn  | 八进制数 0mnn 所表示的字符                                   |
+   | \xhh   | 十六进制值 0xhh 所表示的字符                                 |
+   | \uhhhh | 十六进制值 0xhhhh 所表示的 Unicode  字符                     |
+   | \t     | 制表符（“\u0009”）                                           |
+   | \n     | 新行（换行）符（‘\u000A’）                                   |
+   | \r     | 回车符（‘\u000D’)                                            |
+   | \f     | 换页符（‘\u000C’）                                           |
+   | \a     | 报警（bell）符（‘\u0007’）                                   |
+   | \e     | Escape 符（‘\u001B’）                                        |
+   | \cx    | x 对应的的控制符。例如，\cM匹配 Ctrl-M。x 值必须为 A~Z 或 a~z 之一。 |
+
+<br/>
+
+2. 正则表达式中的特殊字符
+
+   | 特殊字符 | 说明                                                         |
+   | -------- | ------------------------------------------------------------ |
+   | $        | 匹配一行的结尾。要匹配 `$`  字符本身，请使用`\$`             |
+   | ^        | 匹配一行的开头。要匹配 ^ 字符本身，请使用`\^`                |
+   | ()       | 标记子表达式的开始和结束位置。要匹配这些字符，请使用`\(`和`\)` |
+   | []       | 用于确定中括号表达式的开始和结束位置。要匹配这些字符，请使用`\[` 和 `\]` |
+   | {}       | 用于标记前面子表达式的出现频度。要匹配这些字符，请使用`\{`和`\}` |
+   | *        | 指定前面子表达式可以出现零次或多次。要匹配 *  字符本身，请使用`\*` |
+   | +        | 指定前面子表达式可以出现一次或多次。要匹配 + 字符本身，请使用`\+` |
+   | ?        | 指定前面子表达式可以出现零次或一次。要匹配  ？字符本身，请使用`\?` |
+   | .        | 匹配除换行符`\n`之外的任何单字符。要匹配 . 字符本身，请使用`\.` |
+   | \        | 用于转义下一个字符，或指定八进制、十六进制字符。如果需匹配`\`字符，请用`\\` |
+   | \|       | 指定两项之间任选一项。如果要匹配`丨`字符本身，请使用`\|`     |
+
+<br/>
+
+3. 预定义字符
+
+   | 预定义字符 | 说明                                                         |
+   | ---------- | ------------------------------------------------------------ |
+   | .          | 可以匹配任何字符                                             |
+   | \d         | 匹配 0~9 的所有数字 (d 是 digit 的意思，代表数字)            |
+   | \D         | 匹配非数字                                                   |
+   | \s         | 匹配所有的空白字符，包括空格、制表符、回车符、换页符、换行符等 (s 是 space 的意思，代表空白) |
+   | \S         | 匹配所有的非空白字符                                         |
+   | \w         | 匹配所有的单词字符，包括 0~9 所有数字、26  个英文字母和下画线_ (w 是 word 的意思，代表单词) |
+   | \W         | 匹配所有的非单词字符                                         |
+
+<br/>
+
+4. 方括号表达式
+
+   | 方括号表达式 | 说明                                                         |
+   | ------------ | ------------------------------------------------------------ |
+   | 枚举         | 例如`[abc]`表示` a、b、c` 其中任意一个字符；`[gz]`表示` g、z `其中任意一个字符 |
+   | 范围         | 例如`[a-f]`表示` a~f `范围内的任意字符；`[\\u0041-\\u0056]`表示十六进制字符 `\u0041 到 \u0056`  范围的字符。范围可以和枚举结合使用，如`[a-cx-z]`，表示 `a~c、x~z`范围内的任意字符 |
+   | 求否         | 例如`[^abc]`表示`非 a、b、c` 的任意字符；`[^a-f]`表示`不是 a~f` 范围内的任意字符 |
+   | 与运算       | 例如` [a-z&&[def]]`是  `a~z 和 [def] `的交集，表示 `d、e、f[a-z&&^bc]]`是` a~z `范围内的所有字符，除` b 和 c `之外               `[ad-z] [a-z&&[m-p]]`是` a~z `范围内的所有字符，除 `m~p` 范围之外的字符 |
+   | 并运算       | 并运算与前面的枚举类似。例如`[a-d[m-p]]`表示` [a-dm-p]`      |
+
+<br/>
+
+5. 边界匹配符
+
+   | 边界匹配符 | 说明                           |
+   | ---------- | ------------------------------ |
+   | ^          | 行的开头                       |
+   | $          | 行的结尾                       |
+   | \b         | 单词的边界                     |
+   | \B         | 非单词的边界                   |
+   | \A         | 输入的开头                     |
+   | \G         | 前一个匹配的结尾               |
+   | \Z         | 输入的结尾，仅用于最后的结束符 |
+   | \z         | 输入的结尾                     |
+
+<br/>
+
+6. 三种模式的数量表示符
+
+   - Greedy（贪婪模式）：数量表示符默认采用贪婪模式，除非另有表示。贪婪模式的表达式会一直匹配下去，直到无法匹配为止。如果你发现表达式匹配的结果与预期的不符，很有可能是因为你以为表达式只会匹配前面几个字符，而实际上它是贪婪模式，所以会一直匹配下去。
+   - Reluctant（勉强模式）：用问号后缀（?）表示，它只会匹配最少的字符。也称为最小匹配模式。
+   - Possessive（占有模式）：用加号后缀（+）表示，目前只有 Java 支持占有模式，通常比较少用。
+
+   | 贪婪模式 | 勉强模式 | 占用模式 | 说明                                |
+   | -------- | -------- | -------- | ----------------------------------- |
+   | X?       | X??      | X?+      | X表达式出现零次或一次               |
+   | X*       | X*?      | X*+      | X表达式出现零次或多次               |
+   | X+       | X+?      | X++      | X表达式出现一次或多次               |
+   | X{n}     | X{n}?    | X{n}+    | X表达式出现 n 次                    |
+   | X{n,}    | X{n,}?   | X{n,}+   | X表达式最少出现 n 次                |
+   | X{n,m}   | X{n,m}?  | X{n,m}+  | X表达式最少出现 n 次，最多出现 m 次 |
+
+
+
+<br/>
+
+## 1. 单个字符
+
+大部分的单个字符就是用字符本身表示的，比如字符'0'、'3'、'a'、'马'等，但有一些单个字符使用多个字符表示，这些字符都以斜杠'\'开头，比如：
+
+1）特殊字符，比如tab字符'\t'、换行符'\n'、回车符'\r'等。
+
+2）八进制表示的字符，以\0开头，后跟1～3位数字，比如\0141，对应的是ASCII编码为97的字符，即字符'a'。
+
+3）十六进制表示的字符，以\x开头，后跟两位字符，比如\x6A，对应的是ASCII编码为106的字符，即字符'j'。
+
+4）Unicode编号表示的字符，以\u开头，后跟4位字符，比如\u9A6C，表示的是中文字符'马'，这只能表示编号在0xFFFF以下的字符，如果超出0ⅩFFFF，使用\x{...}形式，比如\x{1f48e}。
+
+5）斜杠\本身，斜杠\是一个元字符，如果要匹配它自身，使用两个斜杠表示，即'\\'。
+
+6）元字符本身，除了'\'，正则表达式中还有很多元字符，比如．、*、? 、+等，要匹配这些元字符自身，需要在前面加转义字符'\'，比如'\.'。
+
+
+
+
+
+
+
+<br/>
+
+## 2. 字符组
+
+字符组有多种，包括任意字符、多个指定字符之一、字符区间、排除型字符组、预定义的字符组等。
+
+点号字符'.'是一个元字符，默认模式下，它匹配除了换行符以外的任意字符，
+
+比如正则表达式：a.f既匹配字符串"abf"，也匹配"acf"。
+
+可以指定另外一种匹配模式，一般称为单行匹配模式或者点号匹配模式，在此模式下，'.'匹配任意字符，包括换行符。
+
+可以有两种方式指定匹配模式：一种是在正则表达式中，以(? s)开头，s表示single line，即单行匹配模式。
+
+比如：(? s)a.f另外一种是在程序中指定，在Java中，对应的模式常量是Pattern.DOTALL。
+
+在单个字符和任意字符之间，有一个字符组的概念，匹配组中的任意一个字符，用中括号[]表示，比如：
+
+
+
+
+
+
+
+<br/>
+
+
+
+
+
+<br/>

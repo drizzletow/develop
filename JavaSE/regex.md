@@ -4,10 +4,10 @@
 
 String 类里提供了如下几个特殊的方法：
 
-- boolean matches(String regex)：判断该字符串是否匹配指定的正则表达式。
-- String replaceAll(String regex, String replacement)：将该字符串中所有匹配 regex 的子串替换成 replacement。
-- String replaceFirst(String regex, String replacement)：将该字符串中第一个匹配 regex 的子串替换成 replacement。
-- String[] split(String regex)：以 regex 作为分隔符，把该字符串分割成多个子串。
+- `boolean matches(String regex)`：判断该字符串是否匹配指定的正则表达式。
+- `String replaceAll(String regex, String replacement)`：将该字符串中所有匹配 regex 的子串替换成 replacement。
+- `String replaceFirst(String regex, String replacement)`：将该字符串中第一个匹配 regex 的子串替换成 replacement。
+- `String[] split(String regex)`：以 regex 作为分隔符，把该字符串分割成多个子串。
 
 
 

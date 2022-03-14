@@ -8,15 +8,15 @@ GitHub：https://github.com/itdrizzle/develop
 
 ## Java基础
 
-* [开发环境](JavaSE/detail/history.md) &nbsp;&nbsp; [Java基础语法](JavaSE/base.md)  &nbsp;&nbsp;  [面向对象](JavaSE/oop.md)&nbsp;&nbsp;  [常用类库](JavaSE/classlib.md) &nbsp;&nbsp; [数组和字符串](JavaSE/array.md) &nbsp;&nbsp; 
+* [开发环境](JavaSE/detail/history.md) &nbsp;&nbsp; [基础语法](JavaSE/base.md)  &nbsp;&nbsp; &nbsp;  [面向对象](JavaSE/oop.md)&nbsp;&nbsp; &nbsp; [常用类库](JavaSE/classlib.md) &nbsp;&nbsp; [数组和字符串](JavaSE/array.md) &nbsp;&nbsp; 
 
-* [Java IO流](JavaSE/javaIO.md) &nbsp;&nbsp;  [多线程](JavaSE/thread.md) &nbsp;&nbsp;   [网络编程](JavaSE/network.md) &nbsp;&nbsp;  [枚举、反射、注解](JavaSE/senior.md) &nbsp;&nbsp;  [泛型与集合](JavaSE/collection.md) &nbsp;&nbsp; 
+* [Java IO流](JavaSE/javaIO.md) &nbsp;&nbsp; &nbsp;  [Java多线程](JavaSE/thread.md) &nbsp;&nbsp; &nbsp;  [Java网络编程](JavaSE/network.md) &nbsp;&nbsp;  [枚举、反射和注解](JavaSE/senior.md) &nbsp;&nbsp;  
 
-*  [正则表达式](JavaSE/regex.md) &nbsp;&nbsp; [Lambda表达式和Stream流](JavaSE/lambda.md) &nbsp;&nbsp; [Java SE API & 文档](https://www.oracle.com/cn/java/technologies/java-se-api-doc.html)&nbsp;&nbsp; 
+* [泛型与集合类](JavaSE/collection.md) &nbsp;&nbsp;  [Lambda表达式和Stream流](JavaSE/lambda.md) &nbsp;&nbsp; [JavaSEAPI及文档](https://www.oracle.com/cn/java/technologies/java-se-api-doc.html)&nbsp;&nbsp; 
 
 * [JVM内存管理](Jvm/Jvm内存管理.md)  &nbsp;&nbsp;  [JVM类加载机制](Jvm/Jvm类加载.md)  &nbsp;&nbsp;   [垃圾回收](Jvm/gc.md)  &nbsp;&nbsp;  
 
-
+ [正则表达式](JavaSE/regex.md) &nbsp;&nbsp;
 
 ## Java高并发
 * [IO底层原理]()  &nbsp;&nbsp;  [Java NIO]()  &nbsp;&nbsp; [Reactor模式]()  &nbsp;&nbsp;  [Netty核心原理]()  &nbsp;&nbsp; 
