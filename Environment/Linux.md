@@ -211,6 +211,8 @@ cd ~                 # 进入当前用户的家目录
 
 <span style="font:normal bold 25px '宋体',sans-serif; color:blue">mkdir：创建目录</span>：
 
+<font size=5 color=blue>mkdir：创建目录</font>：
+
 ```shell
 # mkdir命令是“make directories”中每个单词的粗体字母组合而成，其功能是创建目录，
 # 默认情况下，如果要创建的目录已存在，则会提示此文件已存在；而不会继续创建目录。
