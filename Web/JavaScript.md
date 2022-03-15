@@ -13,6 +13,8 @@ var z=x+y;
 var lastname="Doe", age=30, job="carpenter";   //一次声明多个变量
 ```
 
+<br/>
+
 **2. 常量** 
 
 - 关键字为  const  (es6)
@@ -20,7 +22,7 @@ var lastname="Doe", age=30, job="carpenter";   //一次声明多个变量
 const PI = 3.14;  //不可以修改值     
 ```
 
-
+<br/>
 
 ## 2. 输入和输出
 
@@ -32,7 +34,10 @@ const PI = 3.14;  //不可以修改值
 </script>
 ```
 
+<br/>
+
 - **输出：** JavaScript 可以通过不同的方式来输出数据：
+
 > 使用 window.alert() 弹出警告框。
 > 使用 document.write() 方法将内容写到 HTML 文档中。
 > 使用 innerHTML 写入到 HTML 元素。
@@ -59,6 +64,8 @@ function myFunction() {
 console.log(6);
 ```
 
+<br/>
+
 
 
 
@@ -80,7 +87,7 @@ var cars= new Array;
 var person= new Object;
 ```
 
-
+<br/>
 
 **基本数据类型**： 
 
@@ -135,7 +142,10 @@ var a=123;
 b=a.toPrecision(2); // b="1.2e+2"  返回一个指定精度的数字。
 ```
 
+<br/>
+
 **（2）布尔(Boolean)**
+
 - 布尔（逻辑）只能有两个值：true 或 false。布尔常用在条件测试中。
 - 如果布尔对象无初始值或者其值为: 0、-0、null、""、false、undefined、NaN 那么对象的值为 false。否则，其值为 true（即使当变量值为字符串 "false" 时）！
 
@@ -144,8 +154,13 @@ var x=true;
 var y=false;
 ```
 
+<br/>
+
 **（3）对空（Null）、未定义（Undefined）、Symbol**
+
 - Undefined 这个值表示变量不含有值。可以通过将变量的值设置为 null 来清空变量。
+
+<br/>
 
 
 
@@ -172,7 +187,10 @@ typeof x // 返回 String
 typeof y // 返回 Object
 (x === y) // 结果为 false，因为 x 是字符串，y 是对象
 ```
+<br/>
+
 **字符串方法:**
+
 ```javascript
 charAt()	        //返回指定索引位置的字符
 charCodeAt()	    //返回指定索引位置字符的 Unicode 值
@@ -196,6 +214,8 @@ toUpperCase()	    //把字符串转换为大写
 trim()	            //移除字符串首尾空白
 valueOf()	        //返回某个字符串对象的原始值
 ```
+
+<br/>
 
 
 
@@ -226,6 +246,8 @@ valueOf()	        //返回某个字符串对象的原始值
 //如果变量 age 中的值小于 18，则向变量 voteable 赋值 "年龄太小"，否则赋值 "年龄已达到"。
 voteable=(age<18)?"年龄太小":"年龄已达到"; 
 ```
+
+<br/>
 
 
 
@@ -259,6 +281,10 @@ switch (d)
 }
 document.getElementById("demo").innerHTML=x;
 ```
+
+<br/>
+
+
 
 2. 循环语句
 
@@ -295,6 +321,8 @@ for (i=0;i<=10;i++)
 }
 ```
 
+<br/>
+
 
 
 ## 7. 函数定义与参数
@@ -315,7 +343,10 @@ let sum = function(a, b) {
 }
 
 ```
+<br/>
+
 **（2）参数传递与全局变量**
+
 - JavaScript 参数通过值来传递：函数仅仅只是获取值。如果函数修改参数的值，不会修改参数的初始值（在函数外定义）。
 在JavaScript中，可以引用对象的值。因此我们在函数内部修改对象的属性就会修改其初始的值。
 - 变量声明时如果不使用 var 关键字，那么它就是一个全局变量，即便它在函数内定义。
@@ -369,6 +400,8 @@ function findMax() {
 **函数内部的this指向：**
 ![](_v_images/20201113091606221_29752.png)
 
+<br/>
+
 
 
 ## 8. JavaScript闭包
@@ -420,6 +453,8 @@ console.log(obj instanceof Array); // false
 console.log(Array.isArray(arr));   // true  
 console.log(Array.isArray(obj));   // false
 ```
+
+<br/>
 
 **数组方法：**
 
@@ -474,6 +509,8 @@ var fruits = ["Banana", "Orange", "Lemon", "Apple", "Mango"];
 var citrus = fruits.slice(1, 3);  //Orange,Lemon
 var citrus = fruits.slice(2);     //Lemon,Apple,Mango
 ```
+
+<br/>
 
 **数组排序：**
 
@@ -531,6 +568,8 @@ cars.sort(function(a, b){
 	  return 0;
 });
 ```
+
+<br/>
 
 **数组迭代：**
 
@@ -609,7 +648,7 @@ function myFunction(value, index, array) {
 }
 ```
 
-
+<br/>
 
 
 
@@ -620,7 +659,10 @@ var d = new Date();
 document.getElementById("demo").innerHTML = d;  //Sat Jun 27 2020 18:31:04 GMT+0800 (中国标准时间)
 ```
 
+<br/>
+
 **（1）创建 Date 对象**
+
 > new Date()
 > new Date(year, month, day, hours, minutes, seconds, milliseconds)
 > new Date(milliseconds)
@@ -634,7 +676,10 @@ var d = new Date("October 13, 2014 11:13:00"); //从日期字符串创建一个�
 var d = new Date(0);                           //创建一个零时加毫秒的新日期对象：Thu Jan 01 1970 08:00:00 GMT+0800 (中国标准时间)
 ```
 
+<br/>
+
 **（2）日期格式化**
+
 - ISO 日期：	"2018-02-19" （国际标准）
 - 短日期：	"02/19/2018" 或者 "2018/02/19"
 - 长日期：	"Feb 19 2018" 或者 "19 Feb 2019"
@@ -650,6 +695,8 @@ var d = new Date("Feb 19 2018"); //长日期通常以 "MMM DD YYYY" 这样的语
                                  //月和天能够以任意顺序出现,月能够以全称 (January) 或缩写 (Jan) 来写
 var d = new Date("FEBRUARY, 25, 2015");      //逗号会被忽略，且对大小写不敏感
 ```
+
+<br/>
 
 **（3）获取日期方法**
 
@@ -668,11 +715,16 @@ var d = new Date();
 document.getElementById("demo").innerHTML = d.getTime();
 document.getElementById("demo").innerHTML = d.getFullYear();
 ```
+<br/>
+
 **（4）将Date对象转换成时间戳**
+
 ```javascript
 var newDay = new Date();  
 console.log(Number(newDay)); 
 ```
+
+<br/>
 
 
 
@@ -699,7 +751,10 @@ function getRndInteger(min, max) {
 }
 ```
 
+<br/>
+
 **（2）Math 属性（常量）** ：JavaScript 提供了可由 Math 对象访问的 8 个数学常量：
+
 ```javascript
 Math.E          // 返回欧拉指数（Euler's number）
 Math.PI         // 返回圆周率（PI）
@@ -710,7 +765,10 @@ Math.LN10       // 返回 10 的自然对数
 Math.LOG2E      // 返回以 2 为底的 e 的对数（约等于 1.414）
 Math.LOG10E     // 返回以 10 为底的 e 的对数（约等于0.434）
 ```
+<br/>
+
 **（3）Math 对象方法** ：（Math对象方法和属性是静态的。）
+
 ```javascript
 random()	//返回 0 ~ 1 之间的随机数
 abs(x)	    //返回 x 的绝对值
@@ -736,6 +794,8 @@ atan(x)	   //以介于 -PI/2 与 PI/2 弧度之间的数值来返回 x 的反正
 atan2(y,x) //返回从 x 轴到点 (x,y) 的角度
 ```
 
+<br/>
+
 
 
 # 三 JavaScript进阶
@@ -749,6 +809,8 @@ atan2(y,x) //返回从 x 轴到点 (x,y) 的角度
 - 代码执行： 从上到下执行JS语句。
 
   **预解析会把变量和函数的声明在代码执行之前执行完成。**
+  
+  <br/>
 
 **2.1 变量预解析**
 
@@ -763,6 +825,8 @@ var num = 10;      // ？
 	结果：undefined
 	
 	注意：**变量提升只提升声明，不提升赋值**
+
+<br/>
 
 **2.2 函数预解析**
 
@@ -779,6 +843,8 @@ function fn() {
 	
 	注意：函数声明代表函数整体，所以函数提升后，函数名代表整个函数，但是函数并没有被调用！	
 
+<br/>
+
 **2.3 函数表达式声明函数问题**
 
 	函数表达式创建函数，会执行变量提升，此时接收函数的变量名无法正确的调用：
@@ -793,6 +859,8 @@ var  fn = function() {
 	结果：报错提示 ”fn is not a function"
 	
 	解释：该段代码执行之前，会做变量声明提升，fn在提升之后的值是undefined；而fn调用是在fn被赋值为函数体之前，此时fn的值是undefined，所以无法正确调用
+
+<br/>
 
 
 
@@ -812,6 +880,8 @@ JavaScript 除了提供正常模式外，还提供了严格模式（strict mode�
 3.提高编译器效率，增加运行速度。
 
 4.禁用了在 ECMAScript 的未来版本中可能会定义的一些语法，为未来新版本的 Javascript 做好铺垫。比如一些保留字如：class,enum,export, extends, import, super 不能做变量名
+
+<br/>
 
 **开启严格模式**
 
@@ -850,6 +920,8 @@ function fn(){
 //当前fn函数开启了严格模式
 ```
 
+<br/>
+
 **严格模式中的变化**
 
 严格模式对 Javascript 的语法和行为，都做了一些改变。
@@ -883,6 +955,8 @@ setTimeout(function() {
 
 
 
+<br/>
+
 
 
 ## 3. 对象与原型链
@@ -912,6 +986,8 @@ setTimeout(function() {
    }
    var obj = new Person('zs',12);
    ```
+
+<br/>
 
 **实例成员和静态成员：**
 
@@ -948,6 +1024,10 @@ var ldh = new Star('刘德华', 18);
 console.log(Star.sex);//静态成员只能通过构造函数来访问
 ```
 
+<br/>
+
+
+
 **（二）原型链**
 
 **对象原型：**
@@ -981,6 +1061,8 @@ __proto__对象原型的意义就在于为对象的查找机制提供一个方�
 __proto__对象原型的意义就在于为对象成员查找机制提供一个方向，或者说一条路线。
 ```
 
+<br/>
+
 
 
 
@@ -1002,6 +1084,7 @@ __proto__对象原型的意义就在于为对象成员查找机制提供一个�
 
 ![](_v_images/20201113093919175_6636.png)
 
+<br/>
 
 **子构造函数继承父构造函数中的属性：**
 
@@ -1028,6 +1111,8 @@ console.log(son);
 ```
 
 ![](_v_images/20201113094124693_5501.png)
+
+<br/>
 
 **借用原型对象继承方法：**
 
@@ -1067,4 +1152,6 @@ Father.prototype.money = function() {
 ![](_v_images/20201113094343118_25471.png)
 
 
+
+<br/>
 
