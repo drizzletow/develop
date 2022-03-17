@@ -39,9 +39,7 @@ GitHub：https://github.com/itdrizzle/develop
 
 * [HTML](Web/HTML.md) &nbsp;&nbsp;   [CSS](Web/CSS.md) &nbsp;&nbsp;  [JavaScript](Web/JavaScript.md) &nbsp;&nbsp;   [DOM和BOM](Web/WebAPI.md) &nbsp;&nbsp;   [jQuery、Ajax等常用技术和框架](Web/frame.md) &nbsp;&nbsp;   
 
-* [ECMAScript](Web/ES6.md) &nbsp;&nbsp;   [node和npm](Web/nodejs.md) &nbsp;&nbsp;    
-
-* [Vue](Web/Vue.md) &nbsp;&nbsp;   [uniapp](Web/uniapp.md) &nbsp;&nbsp;   [小程序](Web/小程序.md) &nbsp;&nbsp;   
+* [ECMAScript](Web/ES6.md) &nbsp;&nbsp;   [node和npm](Web/nodejs.md) &nbsp;&nbsp;     [Vue](Web/Vue.md) &nbsp;&nbsp;   [uniapp](Web/uniapp.md) &nbsp;&nbsp;   [小程序](Web/小程序.md) &nbsp;&nbsp;   
 
 * [XML和JSON](Web/XML.md) &nbsp;&nbsp;   [Servlet和JSP](Web/JavaWeb.md) &nbsp;&nbsp;  [MVC架构](Web/mvc.md) &nbsp;&nbsp;  
 

@@ -2,7 +2,7 @@
 
 树是数据元素（结点）之间具有层次关系的非线性结构。
 
-
+<br/>
 
 ## 1. 树的定义
 
@@ -12,7 +12,7 @@
 
 树是递归定义的。结点是树的基本单位，若干个结点组成一棵子树，若干棵互不相交的子树组成一棵树。树中每个结点都是该树中某一棵子树的根。因此，树是由结点组成的、结点之间具有层次关系的非线性结构。
 
-
+<br/>
 
 空树、1个和n个结点的树如图所示（结点与其子树的根结点之间的连线表示结点之间的层次关系）：
 
@@ -20,7 +20,7 @@
 
 
 
-
+<br/>
 
 ## 2. 概念术语
 
@@ -44,7 +44,7 @@
 
     例如，E的祖先结点有B和A，E是A和B的后代。
 
-    
+    <br/>
 
 - 结点的度（Degree）
 
@@ -56,7 +56,7 @@
 
   树的度是指树中各结点度的最大值。例如，上图树的度为3。
 
-  
+  <br/>
 
 - 结点层次、树的高度
 
@@ -68,7 +68,7 @@
 
   树的高度（Height）或深度（Depth）是树中结点的最大层次数。例如，上图树的高度为3。
 
-
+<br/>
 
 - 边、路径、直径
   设树中X结点是Y结点的父母结点，有序对（X，Y）称为连接这两个结点的分支，也称为边（Edge）。
@@ -81,12 +81,12 @@
 
   二叉树的直径（Diameter）指从根到叶子结点一条最长路径，直径的路径长度是该二叉树的高度-1。
 
-  
+  <br/>
 
 - 无序树、有序树
   在树的定义中，结点的子树T0、T1、…、Tm-1之间没有次序，可以交换位置，称为无序树，简称树。如果结点的子树T0、T1、…、Tm-1从左至右是有次序的，不能交换位置，则称该树为有序树（Ordered Tree）。
 
-
+<br/>
 
 - 森林（Forest）
 
@@ -142,7 +142,7 @@
           若 2i + 1 > n 则该结点没有右孩子，否则其右孩子的编号为 2i + 1。
 ```
 
-
+<br/>
 
 <span style="color:red; font-size:40px">重点</span>：
 
@@ -163,7 +163,7 @@
 
 
 
-
+<br/>
 
 ## 4. 存储结构
 
@@ -184,7 +184,7 @@ class TreeNode{
 
 
 
-
+<br/>
 
 
 
@@ -240,7 +240,7 @@ BST：二叉搜索树/二叉查找树/二叉排序树，是二叉树的一个改
       }
   ```
 
-  
+  <br/>
 
 - 插入：
 
@@ -293,7 +293,7 @@ BST：二叉搜索树/二叉查找树/二叉排序树，是二叉树的一个改
       }
   ```
 
-
+<br/>
 
 - 删除：分三种情况处理
 
@@ -386,7 +386,7 @@ BST：二叉搜索树/二叉查找树/二叉排序树，是二叉树的一个改
       }
   ```
 
-  
+  <br/>
 
 
 
@@ -404,7 +404,7 @@ Binary Tree Traversal：所谓遍历(Traversal)是指沿着某条搜索路线，
 > - 广度优先遍历（Breadth-First-Search）
 >   - 层序遍历（Level Order Traversal）
 
-
+<br/>
 
 - 深度优先遍历（Depth-First-Search）
 
@@ -455,7 +455,7 @@ Binary Tree Traversal：所谓遍历(Traversal)是指沿着某条搜索路线，
       }
   ```
 
-  
+  <br/>
 
   - 中序遍历（Inorder Traversal）
 
@@ -506,10 +506,12 @@ Binary Tree Traversal：所谓遍历(Traversal)是指沿着某条搜索路线，
 
   
 
+  <br/>
+
   
 
   - 后序遍历（Postorder Traversal）
-
+  
   ```java
   /**
        * 通过递归的方式，后（根）序遍历二叉树，并保存到链表中
@@ -586,10 +588,10 @@ Binary Tree Traversal：所谓遍历(Traversal)是指沿着某条搜索路线，
           return list;
       }
   ```
-
+  
   
 
-
+<br/>
 
 - 广度优先遍历（Breadth-First-Search）
 
@@ -621,7 +623,7 @@ Binary Tree Traversal：所谓遍历(Traversal)是指沿着某条搜索路线，
       }
   ```
 
-
+<br/>
 
 
 
@@ -723,7 +725,7 @@ Q2:如果我们只知道前序，中序，后序中的某两种，能否构建�
     }
 ```
 
-
+<br/>
 
 ```java
 // 测试代码
@@ -774,7 +776,7 @@ public void buildTreeByInAndPreTest() {
 
 
 
-
+<br/>
 
 
 
@@ -815,7 +817,7 @@ https://www.codelike.in
 
 
 
-
+<br/>
 
 
 
@@ -826,54 +828,6 @@ https://www.codelike.in
 
 
 # 三 B树和红黑树
-
-
-
-## 1. B树和234树
-
-
-
-234树和红黑树的对应转换关系：
-
-![image-20220315215221229](vx_images/image-20220315215221229.png)
-
-
-
-
-
-
-
-## 2. 树的旋转
-
-
-
-
-
-![image-20220315215403981](vx_images/image-20220315215403981.png)
-
-
-
-
-
-![image-20220315215517660](vx_images/image-20220315215517660.png)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -892,6 +846,196 @@ https://www.codelike.in
       操作起来: 自平衡的二叉搜索树(比较麻烦, 非局部操作), 红黑树(相对简单, 局部操作)
                     
 ```
+
+
+
+<br/>
+
+
+
+## 1. B树和234树
+
+<br/>
+
+
+
+234树和红黑树的对应转换关系：
+
+![image-20220315215221229](vx_images/image-20220315215221229.png)
+
+
+
+<br/>
+
+
+
+## 2. 树的旋转
+
+
+
+<br/>
+
+
+
+![image-20220316074655954](vx_images/image-20220316074655954.png)
+
+
+
+
+
+<br/>
+
+
+
+![image-20220316074738713](vx_images/image-20220316074738713.png)
+
+
+
+<br/>
+
+以下以 TreeMap 源码为例
+
+<br/>
+
+
+
+## 3. TreeMap
+
+### 1) put插入元素
+
+
+
+![TreeMap-put方法](vx_images/TreeMap-put方法.png) 
+
+<br/>
+
+```java
+/*
+1. root根节点（key）为null时, 直接将新增元素作为root即可。插入结束
+	设置一个 t 引用指向 root
+2. 优先使用Comparator比较大小，若没有Comparator、将新增元素强制转换为Comparable进行比较
+3. 查找树：
+   设置一个 parent 引用指向 t 的父节点
+   查找：循环比较插入节点和t的大小，直到 t==null 或 元素(key)重复
+   在TreeMap中重复时，覆盖vaue即可，key 不变。插入结束
+4. 此时t指向红黑树的叶子结点(null)，可通过 cmp 判断其为parent的左子节点还是右子节点，插入即可
+5. 插入后调用 fixAfterInsertion 调整红黑树
+
+```
+
+<br/>
+
+```java
+public V put(K key, V value) {
+        Entry<K,V> t = root;
+        if (t == null) {
+            compare(key, key); // type (and possibly null) check
+
+            root = new Entry<>(key, value, null);
+            size = 1;
+            modCount++;
+            return null;
+        }
+        int cmp;
+        Entry<K,V> parent;
+        // split comparator and comparable paths
+        Comparator<? super K> cpr = comparator;
+        if (cpr != null) {
+            do {
+                parent = t;
+                cmp = cpr.compare(key, t.key);
+                if (cmp < 0)
+                    t = t.left;
+                else if (cmp > 0)
+                    t = t.right;
+                else
+                    return t.setValue(value);
+            } while (t != null);
+        }
+        else {
+            if (key == null)
+                throw new NullPointerException();
+            @SuppressWarnings("unchecked")
+                Comparable<? super K> k = (Comparable<? super K>) key;
+            do {
+                parent = t;
+                cmp = k.compareTo(t.key);
+                if (cmp < 0)
+                    t = t.left;
+                else if (cmp > 0)
+                    t = t.right;
+                else
+                    return t.setValue(value);
+            } while (t != null);
+        }
+        Entry<K,V> e = new Entry<>(key, value, parent);
+        if (cmp < 0)
+            parent.left = e;
+        else
+            parent.right = e;
+        fixAfterInsertion(e);
+        size++;
+        modCount++;
+        return null;
+    }
+```
+
+
+
+<br/>
+
+
+
+### 2) 旋转和变色
+
+
+
+```java
+private void fixAfterInsertion(Entry<K,V> x) {
+        x.color = RED;
+
+        while (x != null && x != root && x.parent.color == RED) {
+            if (parentOf(x) == leftOf(parentOf(parentOf(x)))) {
+                Entry<K,V> y = rightOf(parentOf(parentOf(x)));
+                if (colorOf(y) == RED) {
+                    setColor(parentOf(x), BLACK);
+                    setColor(y, BLACK);
+                    setColor(parentOf(parentOf(x)), RED);
+                    x = parentOf(parentOf(x));
+                } else {
+                    if (x == rightOf(parentOf(x))) {
+                        x = parentOf(x);
+                        rotateLeft(x);
+                    }
+                    setColor(parentOf(x), BLACK);
+                    setColor(parentOf(parentOf(x)), RED);
+                    rotateRight(parentOf(parentOf(x)));
+                }
+            } else {
+                Entry<K,V> y = leftOf(parentOf(parentOf(x)));
+                if (colorOf(y) == RED) {
+                    setColor(parentOf(x), BLACK);
+                    setColor(y, BLACK);
+                    setColor(parentOf(parentOf(x)), RED);
+                    x = parentOf(parentOf(x));
+                } else {
+                    if (x == leftOf(parentOf(x))) {
+                        x = parentOf(x);
+                        rotateRight(x);
+                    }
+                    setColor(parentOf(x), BLACK);
+                    setColor(parentOf(parentOf(x)), RED);
+                    rotateLeft(parentOf(parentOf(x)));
+                }
+            }
+        }
+        root.color = BLACK;
+    }
+```
+
+
+
+
 
 
 

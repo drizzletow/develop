@@ -12,9 +12,13 @@
 - ViewModel能够监听到视图的变化，并能够通知数据发生改变
 - Vue.js 就是一个MVVM的实现者，他的核心就是实现了DOM监听与数据绑定
 
+<br/>
+
+
+
 ## 1. 引入Vue
 
-直接下载引入：https://cn.vuejs.org/v2/guide/installation.html
+直接下载引入：https://cn.vuejs.org/v2/guide/installation.html 
 
 CDN 引入：
 
@@ -46,7 +50,14 @@ CDN 加速： https://www.bootcdn.cn/
 </script>
 ```
 
+
+
+<br/>
+
+
+
 ## 2. Vue实例对象
+
 每个 Vue 应用都是通过用 `Vue` 函数创建一个新的 **Vue 实例** 开始的，其中 el 被Vue 放入了公有属性中，而data 则被放入了 私有属性中，而 data 中的数据，需要被外部使用，于是 Vue 直接将data 中的属性及属性值，直接挂载到 Vue 实例中，也就是说，data中的数据，我们可以直接使用 `app.user_name`  直接调用；
 ```js
 var app = new Vue({
@@ -61,7 +72,12 @@ var app = new Vue({
 console.log(app.user_name);
 ```
 
+<br/>
+
+
+
 ## 3. 插值表达式
+
 使用 `{{}}`  获取值的方式，叫做  ***插值***  或  ***插值表达式*** 
 
 数据绑定最常见的形式就是使用“Mustache”语法 (双大括号) 的文本插值：
@@ -87,8 +103,14 @@ console.log(app.user_name);
 </script>
 ```
 
+<br/>
+
+
+
+
 
 # 二 模板语法-指令
+
 ## 1. v-bind 属性绑定
 
 https://cn.vuejs.org/v2/api/#v-bind
@@ -99,6 +121,7 @@ https://cn.vuejs.org/v2/api/#v-bind
 
 ```html
 <img id=“app” v-bind:src="src" />
+<img id=“app” :src="src" />        <!-- 简写形式 -->
 <script>
     var vm = new Vue({
         el: '#app',
@@ -108,6 +131,8 @@ https://cn.vuejs.org/v2/api/#v-bind
     });
 </script>
 ```
+
+<br/>
 
 
 
@@ -124,6 +149,8 @@ https://cn.vuejs.org/v2/api/#v-bind
     });
 </script>
 ```
+
+<br/>
 
 
 
@@ -167,6 +194,10 @@ https://cn.vuejs.org/v2/api/#v-bind
       });
   </script>
   ```
+
+<br/>
+
+
 
 **绑定style**
 
@@ -214,6 +245,8 @@ https://cn.vuejs.org/v2/api/#v-bind
   </script>
   ```
 
+<br/>
+
 
 
 **v-bind 简化语法**
@@ -236,6 +269,8 @@ https://cn.vuejs.org/v2/api/#v-bind
 ```
 
 
+
+<br/>
 
 
 
@@ -267,6 +302,8 @@ https://cn.vuejs.org/v2/api/#v-bind
 通过浏览器 REPL 环境可以进行修改 `app.input_val = 'Vue'`  
 
 浏览器渲染结果： `<div id="div"><input type="text" value="Vue"></div>`
+
+<br/>
 
 
 
@@ -300,6 +337,8 @@ https://cn.vuejs.org/v2/api/#v-model
 
 > 注意：数据绑定是目前所有MVVM前端框架的核心特性；甚至可以说，没有数据绑定就不能算是框架；
 
+<br/>
+
 
 
 **双向数据绑定的应用范围：**
@@ -321,6 +360,8 @@ https://cn.vuejs.org/v2/api/#v-model
     })
 </script>
 ```
+
+<br/>
 
 
 
@@ -345,6 +386,8 @@ https://cn.vuejs.org/v2/api/#v-model
 </script>
 ```
 
+<br/>
+
 
 
 **绑定单选框**
@@ -366,6 +409,8 @@ https://cn.vuejs.org/v2/api/#v-model
     });
 </script>
 ```
+
+<br/>
 
 
 
@@ -392,6 +437,8 @@ https://cn.vuejs.org/v2/api/#v-model
     })
 </script>
 ```
+
+<br/>
 
 
 
@@ -444,6 +491,8 @@ https://cn.vuejs.org/v2/guide/events.html
 </script>
 ```
 
+<br/>
+
 
 
 **向事件处理器中传参**
@@ -481,6 +530,8 @@ methods: {
 }
 ```
 
+<br/>
+
 
 
 **事件修饰符**
@@ -498,6 +549,8 @@ methods: {
     }
 </script>
 ```
+
+<br/>
 
 
 
@@ -520,6 +573,8 @@ methods: {
     });
 </script>
 ```
+
+<br/>
 
 
 
@@ -544,6 +599,8 @@ methods: {
 </script>
 ```
 
+<br/>
+
 
 
 **按键修饰符**
@@ -566,6 +623,8 @@ methods: {
     });
 </script>
 ```
+
+<br/>
 
 
 
@@ -590,6 +649,8 @@ methods: {
 </script>
 ```
 
+<br/>
+
 
 
 **鼠标修饰符**
@@ -612,6 +673,10 @@ methods: {
     });
 </script>
 ```
+
+<br/>
+
+
 
 ## 4. v-if 条件判断
 
@@ -642,6 +707,8 @@ https://cn.vuejs.org/v2/api/#v-if
 </script>
 ```
 
+<br/>
+
 
 
 ## 5. v-for 循环
@@ -669,6 +736,8 @@ https://cn.vuejs.org/v2/api/#v-for
 ```
 
 
+
+<br/>
 
 
 
@@ -720,6 +789,9 @@ https://cn.vuejs.org/v2/api/#v-show
     })
 </script>
 ```
+
+<br/>
+
 
 
 ## 7. v-cloak / v-once
@@ -774,6 +846,8 @@ https://cn.vuejs.org/v2/api/#v-cloak
 </script>
 ```
 
+<br/>
+
 
 
 **v-once：**
@@ -795,6 +869,8 @@ https://cn.vuejs.org/v2/api/#v-once
     })
 </script>
 ```
+
+<br/>
 
 
 
@@ -841,6 +917,8 @@ https://cn.vuejs.org/v2/api/#v-html
 
 **HTML 属性不能用 `{{}}` 语法**
 
+<br/>
+
 
 
 ## 9. 自定义指令
@@ -864,6 +942,8 @@ https://cn.vuejs.org/v2/api/#v-html
     })
 </script>
 ```
+
+<br/>
 
 
 
@@ -890,6 +970,10 @@ https://cn.vuejs.org/v2/api/#v-html
     })
 </script>
 ```
+
+<br/>
+
+
 
 **为自定义指令传值：**
 
@@ -920,6 +1004,8 @@ https://cn.vuejs.org/v2/api/#v-html
 </script>
 ```
 
+<br/>
+
 
 
 
@@ -928,7 +1014,10 @@ https://cn.vuejs.org/v2/api/#v-html
 ## 1. computed/watch
 **计算属性和侦听器：** https://cn.vuejs.org/v2/guide/computed.html
 
-对于任何复杂逻辑，你都应当使用计算属性。**计算属性是基于它们的响应式依赖进行缓存的**。只在相关响应式依赖发生改变时它们才会重新求值
+对于任何复杂逻辑，你都应当使用计算属性。
+
+**计算属性是基于它们的响应式依赖进行缓存的**。只在相关响应式依赖发生改变时它们才会重新求值
+
 ```javascript
 var vm = new Vue({
   data: { a: 1 },
@@ -956,15 +1045,18 @@ vm.aDouble // => 4
 
 **侦听器 watch：**
 虽然计算属性在大多数情况下更合适，但有时也需要一个自定义的侦听器。这就是为什么 Vue 通过 watch 选项提供了一个更通用的方法，来响应数据的变化。
+
 **当需要在数据变化时执行异步或开销较大的操作时**，这个方式是最有用的。
 使用 watch 选项允许我们执行异步操作 (访问一个 API)，限制我们执行该操作的频率，并在我们得到最终结果前，设置中间状态。这些都是计算属性无法做到的。
+
+<br/>
 
 
 
 
 ## 2. 使用ref操作DOM
 
-在学习 jq 时，我们首要任务就是学习选择的使用，因为选择可以极其方便帮助我们获取节点查找dom，因为我们要通过dom展示处理数据。而在Vue中，我们的编程理念发生了变化，变为了数据驱动dom；但有时我们因为某些情况不得不脱离数据操作dom,因此vue为我们提供了 ref 属性获取dom节点；
+在Vue中，我们的编程理念发生了变化，变为了数据驱动dom；但有时我们因为某些情况不得不脱离数据操作dom,因此vue为我们提供了 ref 属性获取dom节点；
 
 ```html
 <div id="app">
@@ -992,8 +1084,12 @@ vm.aDouble // => 4
 
 但是在项目开发中，尽可能不要这样做，因为从一定程度上，ref 违背的mvvm设计原则；
 
+<br/>
+
+
 
 ## 3. filters-过滤器
+
 **私有(局部)过滤器：**
 
 **定义过滤器**
@@ -1018,6 +1114,8 @@ Vue.js 允许你自定义过滤器，可被用于一些常见的文本格式化�
 过滤器要被添加到操作值得后面，使用 管道符 `|` 分割；vue会自动将操作值，以实参的形式传入过滤器的方法中；
 
 `{{msg|myFilters}}`
+
+<br/>
 
 
 
@@ -1051,6 +1149,8 @@ Vue.js 允许你自定义过滤器，可被用于一些常见的文本格式化�
     })
 </script>
 ```
+
+<br/>
 
 
 
@@ -1097,67 +1197,18 @@ Vue.js 允许你自定义过滤器，可被用于一些常见的文本格式化�
 </script>
 ```
 
-## 4. json-server与axios
-
-**json-server 使用：**
-
-使用全局安装 ：`npm install json-server -g` 
-
-json-server 会将一个json文件作为数据库来存储数据，对json数据的格式是有要求的，如data.json的内容：
-
-```json
-{
-  "tb1": [
-    {
-      "id": 1,
-      "title": "标题1",
-      "author": "描述信息1"
-    },
-    {
-      "id": 2,
-      "title": "标题2",
-      "author": "描述信息2"
-    }
-  ],
-  "tb2": [
-    {
-      "id": 1,
-      "body": "some comment",
-      "postId": 1
-    }
-  ],
-  "tb3": {
-    "name": "typicode"
-  }
-}
-```
+<br/>
 
 
 
-启动服务： `json-server --watch data.json`
+## 4. 异步请求axios
 
+**axios：** 我们在构建应用时需要访问一个 API 并展示其数据。
 
-得到tb1所有的数据 —— GET：  http://localhost:3000/tb1
-
-根据id得到数据   —— GET ： http://localhost:3000/tb1/2
-
-添加一条数据   —— POST：   http://localhost:3000/tb1
-
-删除一条数据   —— DELETE：   http://localhost:3000/tb1/2
-
-模糊查找  —— GET ： http://localhost:3000/tb1?title_like=标题
-
-根据id修改数据   —— PUT： http://localhost:3000/tb1/1
-
-
-
-> 注意：json-server 严格遵循 HTTP 请求语义进行数据处理
-
-&nbsp;
-
-**axios：** 我们在构建应用时需要访问一个 API 并展示其数据。做这件事的方法有好几种，而使用基于 [**Promise**](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise) 的 HTTP 客户端 [axios](http://www.axios-js.com/zh-cn/docs/) 则是其中非常流行的一种。
+做这件事的方法有好几种，而使用基于 [**Promise**](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise) 的 HTTP 客户端 [axios](http://www.axios-js.com/zh-cn/docs/) 则是其中非常流行的一种。
 
 ```html
+<!-- 普通导入方式 -->
 <script src="./axios.js"></script>
 <script>
     // 获取全部数据
@@ -1184,6 +1235,49 @@ json-server 会将一个json文件作为数据库来存储数据，对json数据
     .catch(error => console.log(error))
 </script>
 ```
+
+<br/>
+
+
+
+**Vue项目中使用axios**：
+
+1, 导包或者导入配置文件
+
+```shell
+cnpm install axios  --save
+```
+
+
+
+2, 在mian.js配置
+
+```js
+import axios from 'axios'
+
+Vue.prototype.$axios = axios
+```
+
+
+
+3, 使用
+
+```js
+this.$axios.get("http://192.168.2.100:8084/api/mall/getGoodsByType?typeId=1")
+    .then(res => {
+    // console.log(res.data.data)
+    this.list = res.data.data
+})
+
+this.$axios.post("http://192.168.2.100:8084/api/mall/addOrder", obj)
+    .then(res => {
+
+})
+```
+
+
+
+<br/>
 
 
 
@@ -1222,7 +1316,7 @@ json-server 会将一个json文件作为数据库来存储数据，对json数据
 
 对于这些在过渡中切换的类名来说，如果你使用一个没有名字的 `<transition>`，则 `v-` 是这些类名的默认前缀。如果你使用了 `<transition name="my-transition">`，那么 `v-enter` 会替换为 `my-transition-enter`。
 
-
+<br/>
 
 ```html
 <style>
@@ -1272,7 +1366,7 @@ json-server 会将一个json文件作为数据库来存储数据，对json数据
 </script>
 ```
 
-
+<br/>
 
 这就是Vue中动画及过渡的基本使用方式，因为这些动画效果都需要我们自己写CSS样式，相对比较麻烦，
 在项目中，可以借助第三方 CSS 动画库来实现，如：Animate.css 
@@ -1280,6 +1374,8 @@ json-server 会将一个json文件作为数据库来存储数据，对json数据
 
 
 
+
+<br/>
 
 
 
@@ -1290,7 +1386,13 @@ json-server 会将一个json文件作为数据库来存储数据，对json数据
 
 # 四 组件化开发
 组件是可复用的 Vue 实例，且带有一个名字。把这个组件作为自定义元素来使用。组件的好处是写一次可以进行任意次数的复用。
+
+<br/>
+
 ## 1. 定义和使用
+
+在Vue中所谓组件, 就是Vue对象, 我们可以通过把一个页面拆分成多个Vue对象实现, 拆成多个组件
+
 ```html
 <div id="app">
     <!-- 使用组件 -->
@@ -1316,7 +1418,7 @@ json-server 会将一个json文件作为数据库来存储数据，对json数据
 
 这种组件被称为 ***全局组件***
 
-
+<br/>
 
 在具体的某个vue实例中，也可以定义组件，但是组件仅会在具体的 vue 实例中起作用，这种组件被称为 ***局部(私有)组件***
 
@@ -1351,11 +1453,69 @@ json-server 会将一个json文件作为数据库来存储数据，对json数据
 > 组件中的tamplate属性必须有一个唯一的根元素，否则会报错
 > 一个组件的 data 选项必须是一个函数，因此每个实例可以维护一份被返回对象的独立的拷贝：
 
+<br/>
 
 
-## 2. props / $emit
-- 通过props向子组件传递数据
-- 子组件可以通过调用内建的 $emit 方法并传入事件名称来触发一个事件，父级组件可以接收该事件
+
+## 2. 使用Vue-cli
+
+我们创建一个Vue项目, 大致需要下面的几个流程：
+
+```shell
+    1, 安装node , node是js的运行环境(node的本质是个浏览器)、这一步等价于java安装jvm
+
+​    2, 安装cnpm, (node自带npm工具, 但是我们没法快速访问国外内容, 所以需要安装中国镜像访问工具)
+
+​		(npm 或者cnpm 类似java的包管理工具Maven )
+
+​    3, 安装vue-cli , 这是一个Vue项目构建工具、这一步等价于java安装idea软件
+    
+    	在计算机命令行执行如下命令(总共需要两个命令)、判断安装成功的标志:检查版本号 vue -V
+
+    	cnpm install -g @vue/cli
+		cnpm install -g @vue/cli-init
+
+
+​    4, 安装webpack, 这是一个包管理工具、这一步等价于写java代码时, 在idea里安装一些插件
+    
+    	cnpm install -g webpack
+
+​    5, 创建Vue项目、这一步等价于我们写java代码时, 用idea创建项目
+    
+    	vue init webpack 项目名
+    	
+    	接下来会出现各种选项，默认回车, 让选择的y或者n 统一选n(输入n 回车)
+		注意最后一步: 选最后一个,回车 -> 项目目录构建完成
+		
+		最后一步, 在项目文件夹下安装包  注意使用 cnpm install
+
+
+	启动这个前端vue项目、命令 npm run dev
+
+    
+```
+
+
+
+<br/>
+
+
+
+## 3. Vue项目中的组件
+
+```js
+// TODO
+```
+
+
+
+<br/>
+
+
+
+## 4. 组件之间的通信
+- 通过 `props` 向子组件传递数据
+- 子组件可以通过调用内建的 `$emit` 方法并传入事件名称来触发一个事件，父级组件可以接收该事件
 - 预留slot，可以和 HTML 元素一样，在中间包裹其他标签和组件
 
 ```html
@@ -1400,9 +1560,93 @@ json-server 会将一个json文件作为数据库来存储数据，对json数据
 </script>
 ```
 
+<br/>
 
 
-## 3. SPA / vue-router
+
+【总结】：
+
+**父组件向子组件传值**：
+
+1, 父组件传递
+
+```html
+<top1 v-bind:topuser="all.user"></top1>	
+```
+
+2, 子组件接收
+
+```js
+props: ['topuser']
+```
+
+ 在一个vue对象中props属性专门用来接收父组件传值,  可以当做data来看待 (但是props语法要求不可修改)
+
+<br/>
+
+
+
+**子组件向父组件传值**：
+
+1, 子组件抛出方法
+
+```js
+this.$emit("changelist")
+```
+
+2, 父组件接收方法
+
+```html
+<top1 v-on:changelist = "changeapplist"></top1>
+```
+
+<br/>
+
+
+
+**任意组件间的组件传值: bus**：
+
+1, 创建配置文件
+
+```java
+import Vue from 'vue'
+var bus = new Vue()
+export default bus
+
+```
+
+
+
+2, main.js配置
+
+```js
+import bus from './bus/bus'
+
+// 这里的作用就是：每个Vue对象上都挂载了 $bus 这个对象
+Vue.prototype.$bus = bus
+```
+
+
+
+3, 使用
+
+````java
+// 抛出方法
+  this.$bus.$emit("addage2", this.inputstr)
+      
+// 监听方法
+ this.$bus.$on("addage2", res => {
+     this.age = parseInt(this.age) + parseInt(res)
+ })
+````
+
+
+
+<br/>
+
+
+
+## 5. SPA/vue-router
 **单页应用：**
 
 - 什么是单页应用
@@ -1419,8 +1663,7 @@ json-server 会将一个json文件作为数据库来存储数据，对json数据
     - **对搜索引擎不友好**
     - **开发难度相对较高**
 
-
-
+<br/>
 
 **vue路由插件 —— vue-router**
 
@@ -1472,7 +1715,7 @@ https://router.vuejs.org/zh/
 </script>
 ```
 
-
+<br/>
 
 上例中，在HTML中我们直接使用了 a 标签，但是这样并不好，因为官方为我们提供了 `router-link` 标签
 
@@ -1496,7 +1739,7 @@ https://router.vuejs.org/zh/
 </div>
 ```
 
-
+<br/>
 
 使用 router-link 的一大好处就是，每当我们点击时，在标签内就会自动帮我们添加 class 属性，而此时，我们就可以利用 class 属性，来定义样式：
 
@@ -1507,6 +1750,8 @@ https://router.vuejs.org/zh/
     }
 </style>
 ```
+
+<br/>
 
 
 
@@ -1540,13 +1785,145 @@ https://router.vuejs.org/zh/
    ```
 
 
+
+<br/>
+
+
+
+## 6. 第三方组件
+
+```js
+// 引入第三方插件/自己创建一个第三方插件
+
+1, 导包或者导入配置文件
+
+2, 在mian.js配置
+
+3, 使用
+```
+
+
+
+<br/>
+
+
+
+**element**:
+
+网址：https://element.eleme.cn/#/zh-CN/component/installation
+
+```shell
+1. 在我们的项目路径下安装element
+
+   cnpm install element-ui --save
+
+
+2. 配置main.js文件
+
+    import ElementUI from 'element-ui';
+    import 'element-ui/lib/theme-chalk/index.css';
+
+    Vue.use(ElementUI);
+
+
+3. 复制组件代码、配置数据
+```
+
+
+
+<br/>
+
+
+
+**echarts**：
+
+网站：https://echarts.apache.org/zh/index.html
+
+```js
+1. 在创建好的vue路径下安装echarts: 比如如下, 在vue项目vue1中安装echarts
+   ( 新版本的echarts 略有问题, 可以选择4.9版本, 安装方式指定版本号)
+
+   cnpm install echarts --save
+ 
+   cnpm install echarts@4.9.0 --save
+
+   
+2. 在main.js配置echarts
+
+    import echarts from 'echarts'
+    Vue.prototype.$echarts = echarts
+
+
+3. 使用echarts
+
+
+```
+
+
+
+<br/>
+
+
+
+**iconfont**：
+
+iconfont官网: https://www.iconfont.cn/ 
+
+```js
+1. 搜索你所需要的图标
+
+2. 把选中的图标加入购物车
+
+3. 把购物车的图标添加致项目
+
+4. 
+```
+
+
+
+<br/>
+
+
+
+**Google Fonts**：
+
+网站:  https://fonts.google.com/ 
+
+```js
+1. 选择一个想使用的语言、打开这种语言
+
+2. 使用方式一：
+
+    1). 下载解压
+
+    2). 创建一个CSS文件, 并引入配置
+
+    3). 在html导入CSS文件, 并使用
+
+3. 使用方式二：
+	
+    1). 点击 Embed ， 
+
+    2). 复制链接
+
+    3). 粘贴到Html和css中引入和使用
+```
+
+
+
+<br/>
+
+
+
 # 五 Vuex 
 
 
 
 
 
-
+```js
+// TODO
+```
 
 
 

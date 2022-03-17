@@ -487,7 +487,8 @@ fruits[fruits.length] = "Kiwi";          // 向 fruits 追加 "Kiwi"
 //使用 delete 会在数组留下未定义的空洞。请使用 pop() 或 shift() 取而代之。
 delete fruits[0];           // 把 fruits 中的首个元素改为 undefined
 
-//splice() 方法可用于向数组添加新项：第一个参数定义了应添加新元素的位置（拼接）。第二个参数定义应删除多少元素。其余参数为要添加的新元素。
+//splice() 方法可用于向数组添加新项：
+// 第一个参数定义了应添加新元素的位置（拼接）。第二个参数定义应删除多少元素。其余参数为要添加的新元素。
 var fruits = ["Banana", "Orange", "Apple", "Mango"];
 fruits.splice(2, 2, "Lemon", "Kiwi");             //Banana,Orange,Lemon,Kiwi
 fruits.splice(0, 1);                             // 删除 fruits 中的第一个元素
