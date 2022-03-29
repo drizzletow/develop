@@ -27,7 +27,9 @@ GitHub：https://github.com/itdrizzle/develop
 
 ## DataBase
 
-*  [MySQL基础](Database/mysql-1.md) &nbsp;&nbsp;   [MySQL高级](Database/mysql-2.md) &nbsp;&nbsp; [MySQL存储引擎](Database/innodb.md) &nbsp;&nbsp;   [JDBC](Database/jdbc.md) &nbsp;&nbsp;   [ORM框架实现原理](Database/orm.md) &nbsp;&nbsp;   
+*  [MySQL基础](Database/mysql-1.md) &nbsp;&nbsp;   [MySQL索引及查询优化](Database/mysql-2.md) &nbsp;&nbsp; [InnoDB存储引擎](Database/innodb.md) &nbsp;&nbsp;   [MySQL-JDBC](Database/jdbc.md) &nbsp;&nbsp;  
+
+*   [mybatis](Database/mybatis.md) &nbsp;&nbsp;    [ORM框架实现原理](Database/orm.md) &nbsp;&nbsp;   
 
 * [Redis缓存技术](Database/Redis.md) 
 
@@ -47,9 +49,9 @@ GitHub：https://github.com/itdrizzle/develop
 
 ## 框架及中间件
 
-* [Git版本控制](Environment/Git.md) &nbsp;&nbsp;  [Maven](Environment/maven.md) &nbsp;&nbsp; [Linux](Environment/Linux.md) &nbsp;&nbsp;  [Docker](Environment/Docker.md) &nbsp;&nbsp; [Kubernetes](Environment/kubernetes.md) &nbsp;&nbsp; [项目部署上线](Environment/deployment.md) &nbsp;&nbsp;
 
-* [ElasticSearch](Environment/ElasticSearch.md) &nbsp;&nbsp; [RabbitMQ](Environment/RabbitMQ.md) &nbsp;&nbsp; 
+
+* [ElasticSearch](Frame/ElasticSearch.md) &nbsp;&nbsp; [RabbitMQ](Frame/RabbitMQ.md) &nbsp;&nbsp; 
 
 
 
@@ -67,7 +69,9 @@ GitHub：https://github.com/itdrizzle/develop
 
 ## 常用开发工具
 
-* [IDEA和Eclipse](Tools/idea.md)    &nbsp;&nbsp;  
+* [IDEA和Eclipse](Tools/idea.md)    &nbsp;&nbsp;   [Windows命令和工具](Tools/windows.md)    &nbsp;&nbsp;  
+
+* [Git版本控制](Tools/Git.md) &nbsp;&nbsp;  [Maven](Tools/maven.md) &nbsp;&nbsp; [Linux](Tools/Linux.md) &nbsp;&nbsp;  [Docker](Tools/Docker.md) &nbsp;&nbsp; [Kubernetes](Tools/kubernetes.md) &nbsp;&nbsp; [项目部署](Tools/deployment.md) &nbsp;&nbsp;
 
 
 <br/> <br/>
