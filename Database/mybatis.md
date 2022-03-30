@@ -1304,7 +1304,90 @@ public class GoodsMapperTest {
 
 ## 2. 一对多查询
 
+![image-20220330192058797](vx_images/image-20220330192058797.png)
 
+<br/>
+
+Mapper接口：
+
+```java
+
+// 查询指定id的用户及其对应的订单列表
+UserVO selectUserVOById(@Param("id") Integer id);
+
+```
+
+<br/>
+
+mapper.xml：
+
+```xml
+<!-- UserMapper.xml -->
+	<!-- 连接查询 -->
+    <select id="selectUserVOByIds" resultMap="userVOMap">
+        select * from user as u
+        left join `order` as o on u.id = o.user_id
+        where u.id in
+            <foreach collection="idList" item="id" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+    </select>
+    <resultMap id="userVOMap" type="cn.itdrizzle.bean.vo.UserVO">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="age" property="age" />
+        <result column="gender" property="gender"/>
+        <collection property="orderList" ofType="cn.itdrizzle.bean.Order">
+            <id column="oid" property="id"/>
+            <result column="order_name" property="orderName"/>
+            <result column="price" property="price"/>
+        </collection>
+    </resultMap>
+
+
+    <!-- 分次查询 -->
+    <select id="selectUserVOById" resultMap="userVOMap2">
+        select  id as uid, username, password, age, gender
+        from user where id = #{id}
+    </select>
+    <resultMap id="userVOMap2" type="cn.itdrizzle.bean.vo.UserVO">
+        <id column="uid" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="age" property="age" />
+        <result column="gender" property="gender"/>
+        <association property="orderList" javaType="java.util.List"
+                     select="cn.itdrizzle.mapper.OrderMapper.selectOrderByUserId"
+                     column="uid"
+        />
+    </resultMap>
+```
+
+<br/>
+
+```xml
+<!-- OrderMapper.xml -->
+<select id="selectOrderByUserId" resultType="cn.itdrizzle.bean.Order">
+    select id, order_name as orderName, price, user_id as userId
+    from `order`
+    where user_id = #{userId}
+</select>
+```
+
+<br/>
+
+
+
+测试类：
+
+```java
+@Test
+public void testSelectUserVOById(){
+    UserVO userVO = userMapper.selectUserVOById(8);
+    System.out.println(userVO);
+}
+```
 
 
 
@@ -1314,7 +1397,123 @@ public class GoodsMapperTest {
 
 ## 3. 多对多查询
 
+![image-20220330201309679](vx_images/image-20220330201309679.png)
 
+<br/>
+
+```java
+// UserRoleVO.
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserRoleVO {
+    private Integer id;
+    private String username;
+    private String password;
+    private Integer age;
+    private String gender;
+    private List<Role> roleList;
+}
+```
+
+<br/>
+
+
+
+Mapper接口：
+
+```java
+// 查询用户信息（包括有哪些 role ）
+UserRoleVO selectUserRoleVOById(Integer id);
+
+List<UserRoleVO> selectUserRoleVOByIds(List<Integer> idList);
+
+```
+
+<br/>
+
+
+
+mapper.xml：
+
+```xml
+<!--多表查询 —— 多对多 (连接查询：与一对多的方式基本一致) -->
+    <select id="selectUserRoleVOById" resultMap="userRoleVOMap">
+        select u.id as uid, username, `password`, age, gender,role_id, role_name, description
+        from user as u
+        left join sys_user_role as ur on u.id = ur.user_id
+        left join role as r on ur.role_id = r.id
+        where u.id = #{id}
+    </select>
+    <resultMap id="userRoleVOMap" type="cn.itdrizzle.bean.vo.UserRoleVO">
+        <id column="uid" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="age" property="age" />
+        <result column="gender" property="gender"/>
+        <collection property="roleList" ofType="cn.itdrizzle.bean.Role">
+            <id column="role_id" property="id"/>
+            <result column="role_name" property="roleName"/>
+            <result column="description" property="description"/>
+        </collection>
+    </resultMap>
+
+
+    <!--多表查询 —— 多对多 (分次查询 ) -->
+    <select id="selectUserRoleVOByIds" resultMap="userRoleVOMap2">
+      select * from user
+      where id in
+          <foreach collection="list" item="id" open="(" close=")" separator=",">
+              #{id}
+          </foreach>
+    </select>
+    <resultMap id="userRoleVOMap2" type="cn.itdrizzle.bean.vo.UserRoleVO">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="age" property="age" />
+        <result column="gender" property="gender"/>
+        <collection property="roleList" ofType="cn.itdrizzle.bean.Role"
+                    select="selectRoleByUserId"
+                    column="id"
+        />
+    </resultMap>
+
+    <!--根据用户 id查询 角色 -->
+    <select id="selectRoleByUserId" resultType="cn.itdrizzle.bean.Role">
+        select role_id as id, role_name as roleName, description
+        from sys_user_role as ur
+        left join role as r on ur.role_id = r.id
+        where user_id = #{id}
+    </select>
+```
+
+<br/>
+
+
+
+测试类：
+
+```java
+// 多对多
+@Test
+public void testSelectUserRoleVOById(){
+    UserRoleVO userRoleVO = userMapper.selectUserRoleVOById(2);
+    System.out.println(userRoleVO);
+}
+
+@Test
+public void testSelectUserRoleVOByIds(){
+    ArrayList<Integer> idList = new ArrayList<>();
+    idList.add(2);
+    idList.add(5);
+
+    List<UserRoleVO> userRoleVOList = userMapper.selectUserRoleVOByIds(idList);
+    for (UserRoleVO userRoleVO : userRoleVOList) {
+        System.out.println(userRoleVO);
+    }
+}
+```
 
 
 
