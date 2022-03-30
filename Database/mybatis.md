@@ -1,4 +1,4 @@
-# 一 mybatis Introduction
+# 一 mybatis document
 
 mybatis – MyBatis 3  官方文档：https://mybatis.org/mybatis-3/index.html  
 
@@ -431,9 +431,76 @@ Mybatis的环境配置主要是帮助我们去连接多个数据库。
 
 ## 4. ${}和#{}的区别
 
+在Mybatis的mapper文件里面，有两种方式可以获取java传入的值 ：
+
+```java
+
+- #{} 底层是调用的prepareStatement，采用的是预编译占位的方式，效率更高，更加安全 
+
+- ${} 底层是采用的statement，底层还是字符串拼接，有sql注入的风险，但有特定的使用场景
+    
+    #{}会把传入的数据都当成一个字符串来处理，会在传入的数据上面加引号
+
+	${}则是把传入的数据直接显示在sql语句中，不会添加双引号(这意味着如果非要传入非表名或列名的参数，需要自己加引号)
+
+    statement有数据库注入的风险，工作中我们应该尽量使用PrepareStatement，也就是使用#{} 这种方式
+    
+```
+
+<br/>
+
+```java
+ 
+- ${} 的使用场景：
+
+  当我们对SQL语句传入表名或者是列名的时候，我们需要使用${} 来取值。
+  （因为如果使用 #{} 来取值，SQL语句会先预编译（缺少表名 或者是列名），预编译会通不过）
+  
+   - 当数据库分表后，需要传入表名 
+     分表：同一种数据，分开在不同的表（这些不同的表，只有名字不同，结构是一样的）中存储的情况
+    
+   - 当需要排序、分组的时候，也要传入列名
+    
+ 这些场景中虽然需要传值，但都不会是用户输入的值，即便是列名、我们也会进行各种限制，避免用户输入这些内容，造成安全隐患
+
+```
 
 
 
+<br/>
+
+使用示例：
+
+```java
+Order[]  selectOrderArray(String tableName);
+```
+
+<br/>
+
+```xml
+<sql id="all_column">
+    id, order_name as orderName, price, user_id as userId
+</sql>
+<select id="selectOrderArray" resultType="cn.itdrizzle.bean.Order">
+    select <include refid="all_column" />
+    from ${tableName}
+</select>
+```
+
+<br/>
+
+```java
+@Test
+public void testSelectOrderArray(){
+    String tableName = "`order`";
+
+    Order[] orders = orderMapper.selectOrderArray(tableName);
+
+    for (int i = 0; i < orders.length; i++) {
+        System.out.println(orders[i]);
+    }
+}
+```
 
 
 
@@ -514,7 +581,9 @@ mapper.xml：
 
 ```
 
-可见这种方式可读性较差，当参数个数增加时，很容易出错
+arg0, arg1... 还可以替换为 param1, param2 ...
+
+但这种方式可读性较差，当参数个数增加时，很容易出错
 
 <br/>
 
@@ -627,41 +696,636 @@ public void testSelectByMap() {
 
 ## 2. 输出映射
 
+输出映射即Mybatis 可以通过哪些方式给我们封装从数据库返回的数据。
+
+<br/>
 
 
 
+### 1) 简单类型
+
+**返回简单类型**：（包括：Java语法中的基本类型、包装类以及字符串 Java.lang.String）
+
+不论你需要返回单个值、还是返回一个List，都只需要在接口中指定类型即可，xml文件中的 resultType 属性可设置也可以不设置
 
 
+
+<br/>
+
+### 2) Java对象
+
+**返回一个Java对象（或者说java bean 、实体类等）**：
+
+接口中返回值为类名，xml中 resultType 需要设置 全限定类名
+
+```java
+
+// JavaBean
+User selectById(Integer id);
+
+// 列名和表字段名不一致的情况
+UserVO selectById2(Integer id);
+
+```
+
+<br/>
+
+```xml
+<select id="selectById" resultType="com.xxx.vo.User">
+    select * from user where id = #{id}
+</select>
+
+<!-- 如果出现数据库中列的值和对象中成员变量的值对应不上的时候，可以采用别名的方式来解决 (或者参照后面的ResultMap)-->
+<select id="selectById2" resultType="com.xxx.vo.UserVO">
+    select id,name as username,email,age from user where id = #{id}
+</select>
+```
+
+<br/>
+
+
+
+### 3) ResultMap
+
+Mybatis给开发者提供的高级映射功能，目前可以先使用一个简单版本，连接查询的时候 ResultMap还大有用武之地
+
+```java
+// resultMap 
+User selectUserById(@Param("id") Integer id);
+
+List<User> selectAllUser();
+
+```
+
+<br/>
+
+```xml
+
+<resultMap id="user2Map" type="com.xxx.bean.User">
+    <!-- 主键通过id标签来映射，可以帮助我们在多表查询的时候提高效率
+		column: 列名
+		property：成员变量名     -->
+    <id column="id" property="id"/>
+    <result column="name" property="username"/>
+    <result column="age" property="age"/>
+    <result column="nickname" property="nickname"/>
+
+</resultMap>
+
+<select id="selectUserById" resultMap="user2Map">
+    select * from user where id = #{id}
+</select>
+
+<select id="selectAllUser" resultMap="user2Map">
+    select * from user
+</select>
+
+```
+
+
+
+<br/>
 
 
 
 # 三 mybatis动态SQL
 
+## 1. if和where
 
+Mapper接口：
 
+```java
 
+void updateUsernameOrAgeById(User user);
 
+```
 
+<br/>
+
+mapper.xml：
 
 ```xml
-<select id="selectUserById" resultType="cn.itdrizzle.bean.User">
-    select * from user where 1=1
-    <if test="id != null">
-        and id = #{id}
-    </if>
-</select>
-
-<select id="selectUserById" resultType="cn.itdrizzle.bean.User">
-    select * from user
+<update id="updateUsernameOrAgeById" parameterType="cn.itdrizzle.bean.User">
+    update user
+    <set>
+        <if test="username != null">username = #{username},</if>
+        <if test="age != null">age = #{age},</if>
+    </set>
     <where>
-        <if test="id != null">
-            and id = #{id}
-        </if>
+        id = #{id}
     </where>
+</update>
+```
+
+<br/>
+
+```java
+/*
+where标签三个作用：
+1. sql语句中拼接where字符
+2. sql语句中去除跟着的and或者or
+3. where 标签里面没有内容，不会拼接where
+
+
+xml文件中如果需要用到小于，需要使用转义字符(正常大于没有问题，但是也推荐使用转义字符)
+
+    特殊字符           转义字符            	OGNL
+    >                  &gt;                gt
+    <                  &lt;                lt
+    >=                 &gt;=               gte
+    <=                 &lt;=               lte
+
+```
+
+<br/>
+
+
+
+## 2. choose when otherwise
+
+if并没有else标签，在Mybatis中使用 `choose-when-otherwise` 来替代 `if-else` 的作用
+
+```java
+
+这个标签就相当于java中的 `if else`:
+
+<when>       相当于  if
+
+<otherwise>  相当于  else
+    
+```
+
+<br/>
+
+```xml
+<select id="selectUserListById" resultType="com.xxx.bean.User">
+    select * from user where
+        <choose>
+            <when test="id gt 3">
+                id = (select max(id) from user)
+            </when>
+            <otherwise>
+                id = (select min(id) from user)
+            </otherwise>
+        </choose>
 </select>
 ```
 
 
+
+<br/>
+
+
+
+## 3. trim和set
+
+**trim示例**: 
+
+```xml
+    <!--
+        prefix: 增加指定的前缀
+        suffix: 增加指定的后缀
+        prefixoverrdes:  删除指定的前缀
+        suffixOverrides: 删除指定的后缀
+    -->
+```
+
+<br/>
+
+mapper
+
+```java
+// 根据id修改user的值，假如成员变量没有值，那么不修改
+int updateUserByIdSelective(@Param("user") User user);
+```
+
+<br/>
+
+mapper.xml
+
+```xml
+<update id="updateUserByIdSelective">
+
+    update user
+    <trim prefix="set" suffix="" prefixOverrides="" suffixOverrides=",">
+          <if test="user.name != null"> name = #{user.name},</if>
+          <if test="user.age != null"> age = #{user.age},</if>
+          <if test="user.nickname != null"> nickname = #{user.nickname},</if>
+    </trim>
+    <where>
+        id = #{user.id}
+    </where>
+</update>
+```
+
+<br/>
+
+
+
+**set示例**：
+
+mapper
+
+```java
+// 根据id修改user的值，假如成员变量没有值，那么不修改
+int updateUserByIdSelectiveUseSet(@Param("user") User user);
+```
+
+mapper.xml
+
+```xml
+<update id="updateUserByIdSelectiveUseSet">
+    update user
+    <set>
+        <if test="user.name != null"> name = #{user.name},</if>
+        <if test="user.age != null"> age = #{user.age},</if>
+        <if test="user.nickname != null"> nickname = #{user.nickname},</if>
+    </set>
+    <where>
+        id = #{user.id}
+    </where>
+</update>
+```
+
+`<set>`  标签就相当于 `<trim prefix="set" suffixOverrides=",">`  这个配置。
+
+
+
+<br/>
+
+
+
+## 4. sql和include
+
+在Mybatis中，对重复使用的代码片段可以使用sql标签单独列出来，然后在各个sql语句中使 用标签引入代码片段
+
+一般使用 `sql-include` 标签来帮助我们提取列名
+
+<br/>
+
+Mapper接口：
+
+```java
+ List<User> selectUserDynamic(User user);
+```
+
+<br/>
+
+mapper.xml：
+
+```xml
+<sql id="all_column">
+    id, username, password, age, gender
+</sql>
+
+<select id="selectUserDynamic" resultType="cn.itdrizzle.bean.User">
+    select <include refid="all_column"/>
+    from user
+    <where>
+        <if test="username != null"> and username = #{username} </if>
+        <if test="age != null"> and age = #{age} </if>
+        <if test="gender != null"> and gender = #{gender} </if>
+    </where>
+</select>
+
+```
+
+
+
+<br/>
+
+
+
+## 5. selectKey获取自增ID
+
+**selectKey标签**：这个标签可以帮助我们在执行目标SQL语句之前或者之后执行额外的一条SQL语句
+
+<br/>
+
+Mapper接口：
+
+```java
+
+Integer insertUserAndGetId(@Param("user") User user);
+
+```
+
+<br/>
+
+mapper.xml：
+
+```xml
+<insert id="insertUserAndGetId" parameterType="cn.itdrizzle.bean.User">
+    insert into user values (null, #{user.username}, #{user.password}, #{user.age}, #{user.gender})
+    <selectKey resultType="integer" order="AFTER" keyProperty="user.id">
+        select last_insert_id()
+    </selectKey>
+</insert>
+
+```
+
+<br/>
+
+测试类：
+
+```java
+@Test
+public void testInsertUserAndGetId(){
+    User user = new User();
+    user.setUsername("user2205");
+    user.setPassword("123456");
+    user.setAge(19);
+    user.setGender("female");
+
+    Integer affectedRows = userMapper.insertUserAndGetId(user);
+    System.out.println("affectedRows = " + affectedRows);
+    System.out.println("插入成功, ID = " + user.getId());
+}
+```
+
+
+
+<br/>
+
+**useGeneratedKeys属性**：
+
+```xml
+
+<!--
+除了上述方式外，获取自增ID还可以直接使用 insert标签的 useGeneratedKeys 属性：
+    useGeneratedKeys: 表示开启自增主键的功能
+    keyProperty: 表示把值映射到哪里去
+-->
+<insert id="insertUserAndGetId" useGeneratedKeys="true" keyProperty="user.id">>
+    insert into user values (null, #{user.username}, #{user.password}, #{user.age}, #{user.gender})
+    <selectKey resultType="integer" order="AFTER" keyProperty="user.id">
+        select last_insert_id()
+    </selectKey>
+</insert>
+
+<!-- useGeneratedKeys (insert and update only) 
+This tells MyBatis to use the JDBC getGeneratedKeys method to retrieve keys generated internally 
+by the database (e.g. auto increment fields in RDBMS like MySQL or SQL Server). Default: false.
+
+```
+
+
+
+<br/>
+
+## 6. foreach标签
+
+The *foreach* element is very powerful, and allows you to specify a collection, declare item and index variables that can be used inside the body of the element. 
+
+It also allows you to specify opening and closing strings, and add a separator to place in between iterations. 
+
+The element is smart in that it won’t accidentally append extra separators.
+
+<br/>
+
+**foreach标签 使用场景** ：1 - in 查询、 2 - 批量插入
+
+
+
+<br/>
+
+Mapper接口：
+
+```java
+
+int insertOrderBatch(@Param("orderList") List<Order> orderList);
+
+List<Order> selectOrderByIds(@Param("ids") Integer[] ids);
+
+```
+
+
+
+<br/>
+
+mapper.xml：
+
+```xml
+<insert id="insertOrderBatch">
+    insert into `order` values
+    <foreach collection="orderList" item="o" separator=",">
+        (null, #{o.orderName}, #{o.price}, #{o.userId})
+    </foreach>
+</insert>
+
+<select id="selectOrderByIds" resultType="cn.itdrizzle.bean.Order">
+    select id, order_name as orderName, price
+    from `order` where
+    <foreach collection="ids" item="id" open="id in (" close=")" separator=",">
+        #{id}
+    </foreach>
+</select>
+```
+
+【注意】：`<foreach collection="">` 标签的collection属性
+
+当接口中使用了 @Param 注解时，直接使用 注解中的名字即可，入上例中情形
+
+但如果接口中没有使用注解，
+
+​	那么如果是 List 类型，则可以使用 `agr0 | collection | list` 三种方式均可
+
+​	如果是数组类型，则可以使用 `arg0 | array` 
+
+<br/>
+
+
+
+测试类：
+
+```java
+// in 查询测试
+@Test
+public void testSelectOrderByIds(){
+    Integer[] ids = {3, 4, 5};
+
+    List<Order> orderList = orderMapper.selectOrderByIds(ids);
+
+    for (Order order : orderList) {
+        System.err.println(order);
+    }
+}
+
+// 批量插入
+@Test
+public void testInsertOrderBatch(){
+    List<Order> orderList = new ArrayList<>();
+
+    int num = 5;
+    int start = 11;
+    while (num > 0) {
+        String orderName = "mystery" + start;
+        Long price = (long) (Math.random() * 999999 + 1000);
+        Integer userId = (int) (Math.random() * 100);
+        Order order = new Order(null, orderName, price, userId);
+        orderList.add(order);
+        start++;
+        num--;
+    }
+    System.out.println(orderList);
+
+    int affectedRows = orderMapper.insertOrderBatch(orderList);
+    System.out.println("batch insert affectedRows = " + affectedRows);
+}
+```
+
+
+
+<br/>
+
+
+
+# 四 mybatis多表查询
+
+## 1. 一对一查询
+
+
+
+
+
+## 2. 
+
+
+
+
+
+
+
+
+
+# 五 使用技巧及问题记录
+
+## 1. IDEA常用插件
+
+**Lombok**：
+
+先在 IDEA 中 安装 Lombok 插件，然后在项目中导包即可使用
+
+```xml
+<dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+    <version>1.18.22</version>
+</dependency>
+```
+
+<br/>
+
+```java
+// 使用示例：
+@Data                     // 有无参构造
+@AllArgsConstructor       // 全参构造（会导致@Data的无参构造失效）
+@NoArgsConstructor        // 无参构造（可以用来解决@AllArgsConstructor导致的@Data无参构造失效问题）
+public class Student {
+    private Integer id;
+    private String name;
+    private String gender;
+    private Integer age;
+}
+```
+
+lombok也会带来一些问题：
+
+一个项目组中，只要有一个人使用lombok，那么大家就都得使用lombok，其实不太友好
+
+（ 项目组中不要做第一个使用Lombok的人！）
+
+<br/>
+
+
+
+**MyBatisCodeHelper-Pro**：
+
+Document： https://gejun123456.github.io/MyBatisCodeHelper-Pro
+
+```shell
+
+Mybatis有很多类似的插件，这些插件的功能大同小异。
+
+- 可以帮助我们自动生成@Param注解
+- 可以帮助我们在 接口文件 和其对应的 Mapper.xml 之间来回跳转
+- 可以帮助我们自动生成标签
+- 可以帮助我们提示代码，检查错误
+   ......
+   
+```
+
+
+
+<br/>
+
+## 2. mapper文件模板
+
+模板：
+
+```xml
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="">
+
+
+</mapper>
+```
+
+<br/>
+
+文件模板设置步骤：
+
+![image-20220329155905784](vx_images/image-20220329155905784.png)
+
+
+
+<br/>
+
+
+
+## 3. 缺失Jboss.VFS
+
+具体问题描述：mybatis开启日志时，IDEA控制台会输出一些多余的干扰信息以及乱码，如下：
+
+![image-20220329144640587](vx_images/image-20220329144640587.png)
+
+<br/>
+
+原因（ mybatis-config.xml 中使用了 package的方式 ）：
+
+```xml
+<configuration>
+    <environments default="development">
+        <!--some environments-->
+    </environments>
+
+    <typeAliases>
+        <typeAlias alias="Tag" type="domain.blog.Tag"/>
+        <!-- 此处会调用 VFS -->
+        <package name="domain.blog"/>
+    </typeAliases>
+
+    <mappers>
+        <mapper class="com.demo.mapper.PostMapper"/>
+
+        <!-- 此处会调用 VFS -->
+        <package name="com.demo.mapper.builder"/>
+    </mappers>
+</configuration>
+```
+
+<br/>
+
+解决方法：引入 Jboss.VFS 即可
+
+```xml
+<dependency>
+    <groupId>org.jboss</groupId>
+    <artifactId>jboss-vfs</artifactId>
+    <version>3.2.16.Final</version>
+</dependency>
+```
 
 
 
