@@ -536,7 +536,7 @@ mapper.xml
 
 <span style='color:red;font-size:文字大小;font-family:字体;'>**#{任意值}**</span> 这种方式来取值。
 
-tip：当只传一个参数的时候，假如这个参数配置了@Param注解，那么后续就不同通过 `#{任意值} ` 来取值了
+tip：当只传一个参数的时候，假如这个参数配置了@Param注解，那么后续就不能通过 `#{任意值} ` 来取值了
 
 
 
@@ -1184,17 +1184,141 @@ public void testInsertOrderBatch(){
 
 ## 1. 一对一查询
 
+![image-20220330154112463](vx_images/image-20220330154112463.png)
+
+<br/>
+
+![image-20220330154913251](vx_images/image-20220330154913251.png)
+
+<br/>
+
+
+
+Mapper接口：
+
+```java
+public interface GoodsMapper {
+
+    GoodsVO selectGoodsById(Integer id);
+
+    List<GoodsVO> selectGoodsByIds(@Param("idList") List<Integer> idList);
+
+    GoodsDetail selectGoodsDetailById(Integer id);
+}
+```
+
+<br/>
+
+```xml
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.itdrizzle.mapper.GoodsMapper">
+    
+	<!--连接查询-->
+    <resultMap id="goodsMap" type="cn.itdrizzle.bean.vo.GoodsVO">
+        <id column="id" property="id"/>
+        <result column="goods_name" property="goodsName"/>
+        <association property="goodsDetail" javaType="cn.itdrizzle.bean.GoodsDetail">
+            <id column="gd_id" property="id"/>
+            <result column="price" property="price"/>
+            <result column="img_url" property="imgUrl"/>
+        </association>
+    </resultMap>
+    <select id="selectGoodsById" resultMap="goodsMap">
+        select *
+        from goods as g
+                 left join goods_detail as gd
+                           on g.gd_id = gd.id
+        where g.id = #{id}
+    </select>
+
+    
+    <!--分次查询-->
+    <select id="selectGoodsByIds" resultMap="goodsMap2">
+        select * from goods
+        where id in
+            <foreach collection="idList" item="id" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+    </select>
+    <resultMap id="goodsMap2" type="cn.itdrizzle.bean.vo.GoodsVO">
+        <id column="id" property="id"/>
+        <result column="goods_name" property="goodsName"/>
+        <association property="goodsDetail" javaType="cn.itdrizzle.bean.GoodsDetail"
+                     select="selectGoodsDetailById"
+                     column="gd_id"
+        />
+    </resultMap>
+    <select id="selectGoodsDetailById" resultType="cn.itdrizzle.bean.GoodsDetail">
+        select id, price, img_url as imgUrl, g_id as gId
+        from goods_detail where id = #{id}
+    </select>
+</mapper>
+```
+
+<br/>
+
+
+
+测试类：
+
+```java
+public class GoodsMapperTest {
+    static GoodsMapper goodsMapper;
+
+    static {
+        try {
+            InputStream inputStream = Resources.getResourceAsStream("mybatis-config.xml");
+            SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+            SqlSession sqlSession = sqlSessionFactory.openSession(true);
+            goodsMapper = sqlSession.getMapper(GoodsMapper.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testSelectGoodsById(){
+        GoodsVO goodsVO = goodsMapper.selectGoodsById(3);
+        System.out.println(goodsVO);
+    }
+
+    @Test
+    public void testSelectGoodsDetailByIds(){
+        ArrayList<Integer> idList = new ArrayList<>();
+        idList.add(3);
+        idList.add(9);
+        List<GoodsVO> goodsVOList = goodsMapper.selectGoodsByIds(idList);
+
+        for (GoodsVO goodsVO : goodsVOList) {
+            System.out.println(goodsVO);
+        }
+    }
+}
+```
+
+
+
+<br/>
+
+
+
+## 2. 一对多查询
 
 
 
 
-## 2. 
+
+<br/>
+
+
+
+## 3. 多对多查询
 
 
 
 
 
-
+<br/>
 
 
 
