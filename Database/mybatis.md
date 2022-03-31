@@ -262,18 +262,34 @@ public void testSelectByProxy() throws IOException {
 
 这个里面是Mybatis极为重要的配置，会改变Mybatis的行为与属性值。
 
-可以有很多配置，例如懒加载，缓存，日志等等。
+可以有很多配置，例如懒加载，缓存，日志等
 
 ```xml
 <settings>
     <!-- 日志配置 -->
     <setting name="logImpl" value="STDOUT_LOGGING"/>
-    <!--<setting name="" value=""/>-->
+    
+    <!-- 懒加载   true: 表示开启  false：表示关闭 -->
+    <setting name="lazyLoadingEnabled" value="true"/>
+    
+    
     <!--<setting name="" value=""/>-->
     <!--<setting name="" value=""/>-->
     <!--<setting name="" value=""/>-->
 </settings>
 ```
+
+<br/>
+
+```java
+
+/* 懒加载：延迟加载的意思
+   是指在我们使用多表查询的分次查询的时候，假如第二次执行的SQL语句结果，代码中没有引用的话，就不加载，
+   等到需要第二次查询的SQL语句的结果被引用的时候，再去执行SQL语句
+
+```
+
+
 
 <br/>
 
@@ -340,7 +356,7 @@ public void testSelectByProxy() throws IOException {
 | collection | Collection                 |
 | iterator   | Iterator                   |
 
-<span style='color:red;background:yellow;font-size:文字大小;font-family:字体;'>**总结：Mybatis给Java类型中的基本类型、包装类型和集合类型起了内置的别名，基本都是名称的小写。**</span>
+<span style='color:red;font-size:文字大小;font-family:字体;'>**总结：Mybatis给Java类型中的基本类型、包装类型和集合类型起了内置的别名，基本都是名称的小写。**</span>
 
 tips：建立JavaBean的时候，JavaBean的成员变量的属性应该尽量使用包装类型。
 
@@ -501,6 +517,83 @@ public void testSelectOrderArray(){
     }
 }
 ```
+
+
+
+<br/>
+
+
+
+## 5. mybatis缓存
+
+Mybatis可以给我们缓存查询的结果。
+
+Mybatis的缓存有两种，分别叫做一级缓存和二级缓存。
+
+
+
+<br/>
+
+**一级缓存**：
+
+Mybatis的一级缓存是一个<span style='color:red;font-size:文字大小;font-family:字体;'>**SqlSession级别**</span>的缓存。
+
+意思就是使用同一个SqlSession，去使用同样的条件查询同样的数据，那么在第一次查询完之后，会把查询的结果放到这个SqlSession的内部（内存空间），等到后面查询的时候，假如使用的是同一个SqlSession，传入的是同样的参数，那么这个时候，就会直接从SqlSesssion内部取出结果，并返回，不会查询数据库了。
+
+Mybatis的一级缓存默认是开启的，也没有提供开关给用户关闭。
+
+<br/>
+
+二级缓存是一个<span style='color:red;font-size:文字大小;font-family:字体;'>**namespace级别**</span>的缓存。意思就是每一个Mapper.xml配置文件，都可以开启自己的缓存。
+
+![image-20220331211827277](vx_images/image-20220331211827277.png)
+
+<br/>
+
+如何开启Mybatis的二级缓存呢？
+
+- 缓存总开关
+
+  ```xml
+  <!-- 二级缓存总开关 默认是开启的-->
+  <setting name="cacheEnabled" value="true"/> 
+  ```
+
+- 需要打开具体的Mapper.xml 配置文件的缓存开关
+
+  ![image-20220331155958577](vx_images/image-20220331155958577.png)
+
+- 查询涉及到的实例对象，需要实现序列化接口
+
+  ![image-20220331161218301](vx_images/image-20220331161218301.png)
+
+
+
+​	如何开启呢？
+
+![image-20220331161307273](vx_images/image-20220331161307273.png)
+
+
+
+<br/>
+
+Mybatis的一级缓存和二级缓存在工作中用不用呢？ 现在的情况是企业一般不使用Mybatis的一级缓存和二级缓存。
+
+一级缓存不够强大，因为一级缓存的使用有局限性，要基于同一个SQLSession。
+
+二级缓存一般也不用，因为二级缓存作为缓存来说，功能是不够的。
+
+对于缓存的 <span style='color:red;font-size:文字大小;font-family:字体;'>**功能性的支持是比较少**</span> 的，而且使用起来，还有安全性的问题。
+
+<br/>
+
+
+
+那么使用什么来当缓存呢？
+
+- Redis
+
+![image-20220331162653277](vx_images/image-20220331162653277.png)
 
 
 
@@ -1402,7 +1495,7 @@ public void testSelectUserVOById(){
 <br/>
 
 ```java
-// UserRoleVO.
+// UserRoleVO.java
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -1640,7 +1733,7 @@ Mybatis有很多类似的插件，这些插件的功能大同小异。
 
 <br/>
 
-解决方法：引入 Jboss.VFS 即可
+解决方法：引入 Jboss-VFS 即可
 
 ```xml
 <dependency>

@@ -16,7 +16,9 @@ GitHub：https://github.com/itdrizzle/develop
 
 * [JVM内存管理](Jvm/Jvm内存管理.md)  &nbsp;&nbsp;  [JVM类加载机制](Jvm/Jvm类加载.md)  &nbsp;&nbsp;   [垃圾回收](Jvm/gc.md)  &nbsp;&nbsp;  
 
- [正则表达式](JavaSE/regex.md) &nbsp;&nbsp;
+*  [Java虚拟机规范](Jvm/Specification.md)  &nbsp;&nbsp;  
+
+ * [正则表达式](JavaSE/regex.md) &nbsp;&nbsp;
 
 ## Java高并发
 * [IO底层原理]()  &nbsp;&nbsp;  [Java NIO]()  &nbsp;&nbsp; [Reactor模式]()  &nbsp;&nbsp;  [Netty核心原理]()  &nbsp;&nbsp; 
