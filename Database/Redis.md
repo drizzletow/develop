@@ -1,52 +1,172 @@
-## 1. 安装与配置
- &nbsp; &nbsp; 通过[redis官网](https://redis.io/)下载上传至服务器，或通过wget直接下载
+# 一 Redis安装与配置
+
+## 1. Redis的安装
+
+ 通过[redis官网](https://redis.io/)下载上传至服务器，或通过wget直接下载
 
 ```shell
-wget http://download.redis.io/releases/redis-6.2.4.tar.gz
 
-tar -zxvf redis-6.2.4.tar.gz
+# 下载解压
 
-yum install gcc-c++        # 需要先安装编译环境
+wget http://download.redis.io/releases/redis-6.2.6.tar.gz
 
-cd redis-6.2.4/            # 进入redis目录进行安装
+tar -zxvf redis-6.2.6.tar.gz
+
+
+# 安装  （Ubuntu下最好在国外源下安装 gcc ，否则可能出错）
+
+sudo apt-get install gcc         # 需要先安装编译环境 （ centos: yum install gcc-c++  ）
+
+sudo chmod -R 777 redis-6.2.6/   # ubuntu可能存在权限问题，先赋予权限再安装
+
+cd redis-6.2.6/                  # 进入redis目录进行安装
+
 make && make install
+
 ```
 
-- 配置redis 
+<br/>
+
+
+
+不报错的话就已经在 /usr/local/bin/ 目录下生成了 redis-server 执行文件
+
+如果是普通 (非root用户) 应该会报下面错误:
+
+![image-20220402194342248](vx_images/image-20220402194342248.png)
+
+<br/>
+
+
+
+这时需要手动复制一些文件到指定目录
+
+这里暂且为了多熟悉下Redis和linux，就不使用其默认的位置了，而是将执行文件和配置文件全放在了自定义的文件夹下
 
 ```shell
-# 开机自启动
-cd /home/software/redis-6.2.4/utils/
-cp redis_init_script /etc/init.d/
+
+sudo mkdir -p /usr/local/redis/bin/      # sudo mkdir -p /usr/local/redis/bin/   
+
+sudo mkdir -p /usr/local/redis/conf/     # 存放配置文件目录
+
+
+# 然后将Redis src下的可执行文件拷贝到/usr/local/redis/bin/,配置文件拷贝到/usr/local/redis/conf/
+
+pwd          # /usr/local/redis/redis-6.2.6/src
+
+sudo cp redis-server redis-cli /usr/local/redis/bin/
+sudo cp ../redis.conf /usr/local/redis/conf/
+
+
+
+# 此时已经可以启动Redis了
+
+cd /usr/local/redis
+./bin/redis-server ./conf/redis.conf &      # ctrl+c正常会中断程序,加上&之后ctrl+c程序也不会退出
+
+^C
+
+```
+
+
+
+启动客户端连接试试：
+
+![image-20220402202046595](vx_images/image-20220402202046595.png)
+
+<br/>
+
+
+
+```shell
+
+# 这里先关闭 redis-server, 因为下面需要修改其配置文件
+
+ps -ef|grep redis 
+
+kill -9 pid
+
+```
+
+
+
+<br/>
+
+
+
+## 2. Redis基础配置 
+
+```shell
+
+# 修改配置文件之前别忘了先备份 
+
+sudo cp /usr/local/redis/conf/redis.conf /usr/local/redis/conf/redis.conf.backup
+
 
 # 修改redis.conf
-mkdir /usr/local/redis
-cp /home/software/redis-6.2.4/redis.conf /usr/local/redis/
-vim /usr/local/redis/redis.conf
+
+sudo vim /usr/local/redis/conf/redis.conf
+
 ```
+redis.conf : 
+
+```shell 
+
+daemonize yes                       # 让redis启动后在后台运行
+
+dir /usr/local/redis/db             # 修改redis的工作目录 (持久化文件的路径) sudo mkdir db
+
+bind 0.0.0.0                        # 让远程连接不受ip限制
+
+requirepass itdrizzle               # 设置密码
+
 ```
-daemonize yes                       #让redis启动后在后台运行
-dir /usr/local/redis/working        #修改redis的工作目录  (记得创建目录： `mkdir /usr/local/redis/working` )
-bind 0.0.0.0                        #让远程连接不受ip限制
-requirepass cc0110..                #设置密码
-```
-- 修改`redis_init_script`：  
+
+
+<br/>
 
 ```shell
+
+# 此时再启动即可使用远程密码连接
+
+./bin/redis-server ./conf/redis.conf
+
+```
+
+
+
+<br/>
+
+
+
+## 3. Redis服务配置
+
+redis安装包的 utils 目录下有一些方便管理Redis的脚本，如：`redis_init_script` , `systemd-redis_server.service` 
+
+
+
+```shell
+
+# 开机自启动
+cd /home/software/redis-6.2.6/utils/
+cp redis_init_script /etc/init.d/
+
+
 vim /etc/init.d/redis_init_script
-```
-```
-#添加开机自启动配置
-#chkconfig: 22345 10 90
-#description: Start and Stop redis
 
-#修改配置文件位置
-CONF="/usr/local/redis/redis.conf"
+    #修改配置文件位置
+    
+    CONF="/usr/local/redis/redis.conf"
 
 ```
-- 启动redis服务
+
+
+<br/>
+
+启动redis服务：
 
 ```shell
+
 chmod 777 /etc/init.d/redis_init_script
 
 /etc/init.d/redis_init_script start          #启动
@@ -55,35 +175,72 @@ cd /etc/init.d/
 chkconfig redis_init_script on               #开启自启动 
 
 ps -ef|grep redis
+
 ```
 
-- 启动redis客户端： `redis-cli`
+
+
+
+
+<br/>
+
+
+
+## 
+
+
+
+<br/>
+
+
+
+启动redis客户端： `redis-cli`
 
 ```shell
-redis-cli                        #启动
-redis-cli -a cc0110.. shutdown   #关闭
-redis-cli -a password ping       #查看是否存活 PONG表示正常
+
+redis-cli                         # 启动
+
+redis-cli -a 123456.. shutdown    # 关闭
+
+redis-cli -a password ping        # 查看是否存活 PONG表示正常
+
 ```
 
--  `redis-cli`的基本使用
+
+
+<br/>
+
+`redis-cli`的基本使用：
+
+```shell
+
+> auth 123456      # 类似登录（必须输入密码）
+
+> set name tom     # OK          设置name的值为tom
+> get name         # "tom"       获取name的值
+
+> del name         # (integer)1  返回删除的数量
+> get name         # (nil)       删除后再获取为空
+
+> type age         # string      返回age的类型
+> keys *           # 查看所有的key(不建议再生产上使用，有性能影响)
+
+> mset             # 连续设值
+> mget             # 连续取值
+> msetnx           # 连续设置,如果存在则不设置
 
 ```
-> auth cc0110..    #类似登录（必须输入密码）
 
-> set name tom     #OK          设置name的值为tom
-> get name         #"tom"       获取name的值
-> del name         #(integer)1  返回删除的数量
-> get name         #(nil)       删除后再获取为空
 
-> type age         #string      返回age的类型
-> keys *           #查看所有的key(不建议再生产上使用，有性能影响)
 
-> mset             #连续设值
-> mget             #连续取值
-> msetnx           #连续设置,如果存在则不设置
-```
 
-## 2. redis数据类型
+
+<br/>
+
+
+
+# 二 Redis数据类型
+
 - string 字符串 
 
 ```redis
@@ -184,7 +341,35 @@ zrangebyscore zset 分数1 分数2 limit start end      #查询分数之间的me
 zrem zset value                                    #删除member
 ```
 
-## 3. springboot整合redis
+
+
+
+
+
+
+
+
+# 三 Redis持久化
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 六 springboot整合redis
 
 - 引入redis依赖，完成redis相关配置（pom文件和application.yaml）
 
