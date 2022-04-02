@@ -1,4 +1,17 @@
-# 一 Linux基础命令
+# 一 Linux简介
+
+
+
+一些在线网站：
+
+- [鸟哥的 Linux 私房菜 服务器架设篇](http://cn.linux.vbird.org/linux_server/)
+- [鸟哥的 Linux 私房菜 基础学习篇](http://cn.linux.vbird.org/linux_basic/linux_basic.php) 
+
+
+
+<br/>
+
+
 
 ## 1. 命令行提示符
 
@@ -12,6 +25,8 @@ Linux命令行结尾的提示符有 “#” 和 “$” 两种不同的符号
 > 命令行提示符@前面的字符代表当前登录的用户（可用whoami查询）
 >
 > @后面的为主机名（可用hostname查询）
+
+
 
 <br/>
 
@@ -119,7 +134,7 @@ shutdown是一个用来安全关闭或重启Linux系统的命令，系统在关�
 
 
 
-# 二 Linux常用命令
+## 4. 查看系统信息
 
 linux查看cpu、内存、版本信息
 
@@ -149,15 +164,32 @@ cat /proc/meminfo  # 查看详细内存信息
 
 
 
+<br/>
+
+## 5. Linux语言设置
+
+```shell
+
+locale                  # 查看当前使用的语言
+
+locale -a               # 查看系统中可以使用的语言
 
 
-## 1. 用户管理
+vi /etc/locale.conf     # 修改以下内容（LANG="zh_CN.UTF-8" ==> LANG="en_US.UTF-8" ）
+
+#LANG="zh_CN.UTF-8"
+LANG="en_US.UTF-8"
+
+
+```
 
 
 
+<br/>
 
 
-## 2. 文件和目录
+
+# 二 文件与目录管理
 
 
 
@@ -171,7 +203,7 @@ ls命令可以理解为英文单词list的缩写，其功能是列出目录的�
 
 <br/>
 
-**常用参数：**
+**常用参数：** 
 
 | 常用参数 | 参数说明                                         |
 | :------: | ------------------------------------------------ |
@@ -185,14 +217,26 @@ ls命令可以理解为英文单词list的缩写，其功能是列出目录的�
 
 <br/>
 
+```
+
+stat命令：用于显示文件的状态信息。stat命令的输出信息比ls命令的输出信息要更详细
+
+```
+
+
+
+<br/>
+
 
 
 <span style="font:normal bold 25px '宋体',sans-serif; color:blue"> pwd：显示当前所在的位置</span> ：
 
 ```shell
+
 pwd命令是 “print working directory” 中每个单词的首字母缩写，其功能是显示当前工作目录的绝对路径。
 
 在实际工作中，我们在命令行操作命令时，经常会在各个目录路径之间进行切换，此时可使用pwd命令快速查看当前我们所在的目录路径。
+
 ```
 
 
@@ -204,6 +248,7 @@ pwd命令是 “print working directory” 中每个单词的首字母缩写，�
 <span style="font:normal bold 25px '宋体',sans-serif; color:blue">cd：切换目录</span>：
 
 ```shell
+
 # cd命令是 “change directory” 中每个单词的首字母缩写，其功能是从当前工作目录切换到指定的工作目录。
 
 cd -                 # 返回当前用户上一次所在的目录
@@ -216,6 +261,8 @@ cd ~                 # 进入当前用户的家目录
 <br/>
 
 
+
+## 1. mkdir和touch
 
 <span style="font:normal bold 25px '宋体',sans-serif; color:blue">mkdir：创建目录</span>：
 
@@ -260,11 +307,118 @@ touch命令有两个功能：一是创建新的空文件；二是改变已有文
 
 ![image-20220314220906574](vx_images/image-20220314220906574.png)
 
-
+<br/>
 
 ```shell
+
 touch a.txt b.txt          # 创建多个文件
-touch log{01..05}          # log01  log02  log03  log04  log05 
+
+touch log{01..05}          # log01  log02  log03  log04  log05  (注意是两个点)
+
+```
+
+<br/>
+
+
+
+## 2. 修改文件时间
+
+<span style="font:normal bold 25px '宋体',sans-serif; color:blue">文件时间</span>：
+
+- **modifiy time (mtime)**：
+
+  当该文件的『内容』变更时，就会升级这个时间！内容数据指的是文件的内容，而不是文件的属性或权限喔！
+
+- **changetime (ctime)**：
+
+  当该文件的『状态 (status)』改变时，就会升级这个时间，举例来说，像是权限与属性被更改了，都会升级这个时间啊。
+
+- **access time (atime)**：
+
+  当『该文件的内容被读取』时，就会升级这个读取时间 (access)。
+
+  举例来说，我们使用 cat 去读取 /etc/man_db.conf， 就会升级该文件的 atime 了。
+
+```shell
+
+# 查看 文件时间
+
+ls -l 文件名                      # 查看 mtime
+
+ls -l --time=ctime 文件名         # 查看 ctime
+
+ls -l --time=atime 文件名         # 查看 atime
+
+```
+
+示例：
+
+![image-20220401102014938](vx_images/image-20220401102014938.png)
+
+<br/>
+
+```shell
+
+touch 这个命令的两个常见功能：
+
+1. 创建一个空的文件；
+
+2. 将某个文件的所有日期更新为系统当前时间， 或将(mtime 与 atime)修改为指定时间 
+
+```
+
+<br/>
+
+![image-20220401105626927](vx_images/image-20220401105626927.png)
+
+<br/>
+
+![image-20220401110013639](vx_images/image-20220401110013639.png)
+
+<br/>
+
+change time 只能通过修改系统时间来自定义（但是一般情况下修改系统时间需要root权限）
+
+```shell
+
+[root@DevMachine temp]# date -s 06/06/2022 >> a.bash
+
+# 文件的atime和mtime已经改变，但是ctime时间没变
+[root@DevMachine temp]# stat a.bash
+  File: ‘a.bash’
+  Size: 29              Blocks: 8          IO Block: 4096   regular file
+Device: fd00h/64768d    Inode: 67415159    Links: 1
+Access: (0644/-rw-r--r--)  Uid: (    0/    root)   Gid: (    0/    root)
+Context: unconfined_u:object_r:admin_home_t:s0
+Access: 2022-03-03 23:23:00.000000000 +0800
+Modify: 2022-06-06 00:00:00.000000000 +0800
+Change: 2022-06-06 00:00:00.000000000 +0800
+ Birth: -
+ 
+#此时系统时间已经改变
+[root@DevMachine temp]# date "+%F %T"
+2022-06-06 00:00:56
+
+# 更新系统时间为正常时间
+[root@DevMachine temp]# /usr/sbin/ntpdate ntp.api.bz
+ 1 Apr 11:21:35 ntpdate[1803]: step time server 114.118.7.161 offset -5661630.439834 sec
+
+# 系统时间已经更新正常
+[root@DevMachine temp]# date "+%F %T"
+2022-04-01 11:21:44
+
+# 系统时间已经还原，ctime修改已完成
+[root@DevMachine temp]# stat a.bash
+  File: ‘a.bash’
+  Size: 29              Blocks: 8          IO Block: 4096   regular file
+Device: fd00h/64768d    Inode: 67415159    Links: 1
+Access: (0644/-rw-r--r--)  Uid: (    0/    root)   Gid: (    0/    root)
+Context: unconfined_u:object_r:admin_home_t:s0
+Access: 2022-03-03 23:23:00.000000000 +0800
+Modify: 2022-06-06 00:00:00.000000000 +0800
+Change: 2022-06-06 00:00:00.000000000 +0800
+ Birth: -
+ 
 ```
 
 
@@ -272,6 +426,8 @@ touch log{01..05}          # log01  log02  log03  log04  log05
 <br/>
 
 
+
+## 3. 复制移动删除
 
 <span style="font:normal bold 25px '宋体',sans-serif; color:blue">cp：复制文件或目录</span>:
 
@@ -282,7 +438,9 @@ cp命令可以理解为英文单词copy的缩写，其功能为复制文件或�
 
 
 ```shell
+
 cp /etc/ssh/sshd_config /etc/ssh/sshd_config.ori
+
 ```
 
 
@@ -294,6 +452,7 @@ cp /etc/ssh/sshd_config /etc/ssh/sshd_config.ori
 mv命令可以理解为英文单词move的缩写，其功能是移动或重命名文件（move/rename files）
 
 ```shell
+
 mv a.txt b.txt             # 若b.txt 不存在，则将 a.txt 重命名为 b.txt
 
 ```
@@ -313,7 +472,9 @@ rm命令可以理解为英文单词remove的缩写，其功能是删除一个或
 
 
 ```shell
-rm -rf dir                   # 递归强制删除dir目录
+
+rm -rf dir                   # 递归强制删除dir目录及其内部文件和目录
+
 ```
 
 
@@ -332,231 +493,396 @@ rmdir命令在实际工作中使用的极少
 
 <br/>
 
-<span style="font:normal bold 25px '宋体',sans-serif; color:blue">
+
+
+## 4. 查看文件内容
+
+<span style="font:normal bold 25px '宋体',sans-serif; color:blue">  cat、tac、nl 直接查看文件内容</span> : 
+
+- cat 由第一行开始显示文件内容，cat 是 Concatenate （连续）的简写
+- tac 从最后一行开始显示，可以看出 tac 是 cat 的倒著写！
+- nl  显示的时候，顺道输出行号！
+
+这些命令在文件行数较多时使用并不方便、推荐使用下面介绍的 more 和 less
 
 
 
 <br/>
 
+<span style="font:normal bold 25px '宋体',sans-serif; color:blue">  more、less 分页查看文件</span> : 
 
+- more 一页一页的显示文件内容
 
-## 3. 文件权限
+  ```shell
+  空白键 (space)  ：代表向下翻一页；
+  Enter          ：代表向下翻『一行』；
+  /字串           ：代表在这个显示的内容当中，向下搜寻『字串』这个关键字；
+  :f             ：立刻显示出档名以及目前显示的行数；
+  q              ：代表立刻离开 more ，不再显示该文件内容。
+  b 或 [ctrl]-b  ：代表往回翻页，不过这动作只对文件有用，对管线无用。
+  ```
 
-<br/>
+  <br>
 
+- less 与 more 类似，但是比 more 更好的是，他可以往前翻页！
 
-
-
-
-
-
-<br/>
-
-## 4. 压缩和解压
-
-<br/>
-
-
-
-
-
-<br/>
-
-
-
-## 5. 网络操作
-
-<br/><br/>
-
-
+  ```
+  空白键       ：向下翻动一页；
+  [pagedown]  ：向下翻动一页；
+  [pageup]    ：向上翻动一页；
+  /字串        ：向下搜寻『字串』的功能；
+  ?字串        ：向上搜寻『字串』的功能；
+  n           ：重复前一个搜寻 (与 / 或 ? 有关！)
+  N           ：反向的重复前一个搜寻 (与 / 或 ? 有关！)
+  q           ：退出 less 这个程序；
+  ```
 
 
 
 <br/>
 
+<span style="font:normal bold 25px '宋体',sans-serif; color:blue">  head、tail 从头（尾）查看文件（指定行数）</span> : 		
 
-
-## 6. 软件安装
-
-
-
-<br/>
-
-
-
-
-
-
-
-<br/>
-
-
-
-## 7. 进程管理
-
-
-
-<br/>
-
-
-
-
-
-
-
-
-
-
-
-<br/>
-
-
-
-# 三 Vim
-
-
-
-
-
-# 四 虚拟机
-
-## 1. vagrant
-
-**virtualbox + vagrant 安装虚拟机**：
-
-1. 下载安装 [Virtual box](https://www.virtualbox.org/) 的`主程序`和`拓展包`，安装后修改虚拟机存放位置（需要cpu开启虚拟化）
-2. 下载安装 [Vagrant](https://www.vagrantup.com/) （ Vagrant 是没有图形界面的，安装程序会自动把安装路径加入到 PATH 环境变量 ）
-
-```
-vagrant version
-```
-
-- 配置vagrant (虚拟机镜像文件存储目录，默认为：C:\Users\用户名\.vagrant.d)  —— `VAGRANT_HOME`
-
-![](vx_images/1721139220770.png)
-
-
-3. 下载虚拟机镜像
-使用 Vagrant 创建虚机时，需要指定一个镜像，也就是 box。开始这个 box 不存在，所以 Vagrant 会先从网上（[镜像网站](https://app.vagrantup.com/boxes/search)）下载，然后缓存在本地目录中。但默认下载往往会比较慢，我们可以自己下载镜像文件。常用的两个 Linux 操作系统镜像的下载地址：
-- CentOS [官网下载](http://cloud.centos.org/centos/) ，[CentOS-7.box （点击下载）](http://cloud.centos.org/centos/7/vagrant/x86_64/images/CentOS-7.box) 列表中有一个 vagrant 目录，选择其中的 .box 后缀的文件下载即可。
-- Ubuntu [官网下载](http://cloud-images.ubuntu.com/) ，[清华大学镜像站下载](https://mirror.tuna.tsinghua.edu.cn/ubuntu-cloud-images/) ，同样选择针对 vagrant 的 .box 文件即可。
-
-
-    **添加 box**：接下来我们需要将下载后的 .box 文件添加到 vagrant 中：
+- head  只看头几行 （若没有加上 -n 这个选项时，默认只显示十行）
+- tail     只看尾巴几行 （默认也是显示十行，若要显示非十行，就加 -n number 的选项即可）
 
 ```shell
-#如果这是第一次运行，此时 VAGRANT_HOME 目录下会自动生成若干的文件和文件夹，其中有一个 boxes 文件夹，这就是要存放 box 文件的地方。
-vagrant box list
 
-#执行 vagrant box add 命令添加 box: (命令后面跟着的是镜像文件的路径，通过 --name centos-7 为这个 box 指定名字)
-vagrant box add E:\Package\VM\VirtualBox\CentOS-7.box --name centos-7
+head -n 1 /etc/my.cnf            # 查看第一行文件
 
-vagrant box list        #再次查询，可以看到有了一个 box
-```
-
-
-4. Vagrant新建虚拟机
-
-```shell
-#先进入vagrant工作目录（Vagrantfile所在的目录）再执行命令
-vagrant init centos-7
-#首次执行会先安装再启动，之后就是启动的功能（注意要在Vagrantfile所在的目录执行）
-vagrant up
-```
-```shell
-# 常用命令
-vagrant status         #查看虚拟机状态
-vagrant ssh            #以 vagrant 用户直接登入虚拟机中，使用 exit; 退出
-
-vagrant halt           #关闭虚拟机
-vagrant suspend        #暂停虚拟机
-vagrant resume         #恢复虚拟机
-vagrant reload         #重载虚拟机(可能会重启失败，需要重启宿主机才能开机虚拟机)
-vagrant destroy        #删除虚拟机
-```
-
-5. 配置私有网络
-上述创建的虚拟机网络默认使用的是 `网络地址转换（NAT）+ 端口转发` 的方式，我们需要修改 `Vagrantfile`，为虚拟机设置指定的私有网络地址：
-
-```shell
-#取消改行的注释，根据下图宿主机的IP地址，修改前三段地址一致即可
-config.vm.network "private_network", ip: "192.168.56.10"
-```
+tail -n +100 /etc/man_db.conf    # 代表该文件从100行以后都会被列出来
 
 ```
-ipconfig
-```
-![](vx_images/4608247249196.png)
-
-```shell
-#修改Vagrantfile文件后，需要重启虚拟机，若重启失败可删除重装，先修改Vagrantfile，再vagrant up
-vagrant reload
-```
-
-6. 更改虚拟机配置（[Provider配置](https://www.vagrantup.com/docs/providers/virtualbox/configuration)）
-
-```shell
-config.vm.provider "virtualbox" do |v|
-v.memory = 4096
-v.cpus = 4
-end
-```
-> 【注意】5、6 两步骤修改后可能会导致虚拟机无法启动，可在安装前先修改好Vagrantfile文件。系统用户密码均为 ：vagrant
 
 <br/>
 
+```shell 
 
+# 例题：假如我想要显示 /etc/man.config 的第 11 到第 20 行呢？
 
-## 2. VMware
+# 答：先取前 20 行，再取后十行，所以结果就是：
 
-**（1）设置静态网络IP**：
+head -n 20 /etc/man_db.conf | tail -n 10 
 
-    VMware 点击 编辑 ——> 虚拟网络编辑器 (如图：)
-
-![](vx_images/2467802020864.png)
-
-
-```shell
-ip addr
-vi /etc/sysconfig/network-scripts/ifcfg-ens33
-
-service network restart 
 ```
 
 
 
 <br/>
 
-**（2）设置虚拟机自启动**：
 
-1. 创建启动、关闭脚本
 
-```bash
-# 在系统的某个安静的盘中创建一个vm_start.bat文件，然后使用编辑器打开。写入: 
-"C:\Program Files (x86)\VMware\VMware Workstation\vmrun.exe" start "D:\VirtualMachines\DevMachines\DevMachines.vmx" nogui
+## 5. 压缩和解压缩
 
-# 再次创建一个vm_stop.bat文件
-"C:\Program Files (x86)\VMware\VMware Workstation\vmrun.exe" stop "D:\VirtualMachines\DevMachines\DevMachines.vmx"
+```shell 
+在Linux操作系统中，默认支持两种压缩格式
+	1   .tar.gz
+	2   .zip
+	
+	
+不同的压缩格式可以使用不同的软件来解压与压缩
 
-#测试运行文件: 双击启动文件vm_start.bat，如果弹出dos窗口且虚拟机启动则无误,双击停止文件vm_stop.bat，如果弹出dos窗口且虚拟机停止则无误
+ 1  .tar.gz  这种压缩格式其实是Linux比较传统的压缩格式，需要借助于tar命令
+   
+     tar -zcvf name.tar.gz test            # 压缩
+  
+     tar -zxvf name.tar.gz -C targetDir    # 解压   -C 表示解压到指定的路径下
+ 
+   
+ 2   .zip
+ 
+    zip name.zip fileName                   # 压缩
+  
+    unzip name.zip                          # 解压
+  
+```
+
+
+
+<br/>
+
+
+
+## 6. 追加与重定向
+
+```shell
+
+重定向：可以把控制台输出的内容重定向到文件中。
+	   如果文件不存在，那么会创建文件
+	   如果文件已经存在，那么会覆盖文件中的内容
+	   echo 'bob' > 1.txt
+	   ll > 2.txt
+	   
+	   
+追加： 其实就是在指定文件的末尾追加控制台输出的内容
+	  不会覆盖原来文件中的内容
+	  如果文件不存在，依然会创建文件
+	  ll >> 2.txt
+
+```
+
+
+
+<br/>
+
+
+
+# 三 用户与权限管理
+
+## 1. 用户和组管理
+
+用户管理：
+
+```shell
+
+sudo useradd -m -s /bin/bash username         # 创建 `username` 用户
+#  useradd     创建用户的命令
+#  -m          指创建用户逇同时给这个用户创建一个家目录
+#  -s          指定shell的版本为bash
+#  username：  用户名称
+
+
+sudo userdel [-r] username                    # 删除用户
+#  userdel     删除用户的命令
+#  -r          指删除用户的同事，还要删除用户的家目录
+#  username：  用户名
+
+
+sudo passwd username                          # 给用户设置密码
+
+
+su username                                   # 切换用户
+
 ```
 
 <br/>
 
-2. 添加到自启动任务
-
-`Win+ R`  -> `gpedit.msc` -> 用户配置 -> windows设置 -> 鼠标双击脚本(登录/注销) -> 鼠标双击“登录”或“注销”分别添加启动、关闭脚本
 
 
-【Q】主机访问不到虚拟机的服务的解决办法
+组管理：
 
 ```shell
-firewall-cmd --query-port=9200/tcp                           #查看端口号是否开启,如果是no，就说明没有开放
 
-firewall-cmd --zone=public --add-port=6379/tcp --permanent   #开通6379端口(redis)
-firewall-cmd --zone=public --add-port=8848/tcp --permanent   #开通8848端口(nacos)
-firewall-cmd --zone=public --add-port=3306/tcp --permanent   #开通3306端口(mysql)
+# 添加组
+sudo groupadd groupName
 
-firewall-cmd --reload                                        #重启防火墙，端口正常开启
-systemctl restart docker                                     #如果是docker容器的化则要重启下docker服务 
+# 添加用户的时候指定组
+sudo useradd -m -s /bin/bash -g groupName username
+
+# 查询用户所属的组的信息
+id username
+
+# 修改组
+sudo usermod -g groupName username
+
 ```
+
+
+
+<br/>
+
+
+
+## 2. 文件权限管理
+
+Linux里面，任何一个文件都具有『User, Group及Others』三种身份的权限
+
+![image-20220401204409112](vx_images/image-20220401204409112.png)
+
+<br/>
+
+rwx这三个参数对文件和目录的意义是不同的，如下：
+
+| 参数 |      文件       |               目录               | 权限分数 |
+| :--: | :-------------: | :------------------------------: | :------: |
+|  r   |   可读(read)    |  r (read contents in directory)  |    4     |
+|  w   |   可写(write)   | w (modify contents of directory) |    2     |
+|  x   | 可执行(execute) |       x (access directory)       |    1     |
+
+<br/>
+
+```shell
+
+r (read)：     可读取此一文件的实际内容，如读取文本文件的文字内容等；
+w (write)：    可以编辑、新增或者是修改该文件的内容(但不含删除该文件)；
+x (execute)：  该文件具有可以被系统执行的权限。
+
+
+r (read contents in directory)：
+表示具有读取目录结构列表的权限，所以当你具有读取(r)一个目录的权限时，表示你可以查询该目录下的文件名数据。 
+所以你就可以利用 ls 这个指令将该目录的内容列表显示出来！
+
+w (modify contents of directory)：
+可写入权限对目录来说表示你具有操作该目录结构列表的权限，也就是底下这些权限：
+    - 建立新的文件与目录；
+    - 删除已经存在的文件与目录(不论该文件的权限为何！)
+    - 将已存在的文件或目录进行更名；
+    - 移动该目录内的文件、目录位置。
+
+x (access directory)：
+目录不可以被执行，目录的x代表的是用户能否进入该目录成为工作目录的用途！ 
+所谓的工作目录(work directory)就是你目前所在的目录！
+举例来说，当你登入Linux时， 你所在的家目录就是你当下的工作目录。而变换目录的指令是『cd』(change directory)
+
+```
+
+<br/>
+
+
+
+<span style="font:normal bold 25px '宋体',sans-serif; color:blue"> chmod：修改文件的权限</span>: 
+
+```shell
+
+# 方式一：
+sudo chmod u=rwx,g=rw,o=r fileName
+# u：表示文件拥有者
+# g：表示同组的成员
+# o：表示其他组的成员
+
+
+# 方式二：通过数字来指代权限
+sudo chmod 764 fileName
+
+```
+
+<br/>
+
+```shell
+
+# 一些常见情景例：
+
+如果要将该文件变成可执行文件，并且不让其他人修改的话， 那么就需要 -rwxr-xr-x 这样的权限，即 chmod 755 test.sh 
+
+如果有些文件你不希望被其他人看到，那么应该将文件的权限设定为： -rwxr----- ， 即 chmod 740 filename 
+
+```
+
+
+
+<br/>
+
+
+
+# 四 进程与服务管理
+
+## 1. Linux进程管理
+
+```shell
+
+# 查看进程
+ps
+# -e 显示所有的进程
+# -f 全格式
+
+# a 表示显示终端上所有的进程
+# u 以用户的格式来显示进程信息
+# x 显示后台运行的进程
+
+
+# 一般查询进程，分为两种方式 ps -ef 、 ps aux
+ps -ef  可以显示父进程的信息
+ps aux  可以显示进程占用的资源信息
+
+
+# 搜索进程（常用）
+ps -ef | grep 进程名或进程id
+ps aux | grep 进程名或进程id
+
+
+# 关闭进程
+kill -9 pid      # 强制关闭进程，从操作系统内核级别杀死进程
+kill -15 pid     # 让内核通知应用主动关闭
+
+```
+
+
+
+<br/>
+
+## 2. Linux服务管理
+
+
+
+
+
+
+
+<br/>
+
+
+
+# 五 SSH和网络管理
+
+## 1. 常用网络工具
+
+```shell
+
+# 安装网络管理工具
+sudo apt install net-tools
+
+# 查看ip
+ifconfig
+
+# 通过网络中的心跳机制查看网络是否正常
+ping ip
+
+
+# 端口号查询
+netstat -anp | grep port
+
+lsof -i:port
+
+# windows下
+netstat -ano | findstr port
+
+```
+
+
+
+<br/>
+
+
+
+## 2. SSH远程连接
+
+```shell
+
+# 首先需要给远程服务器（Linux服务器）安装ssh
+
+## 搜索ssh是否已经安装
+ps -ef | grep ssh
+
+
+# 假如没有搜索到，则需要安装ssh服务
+apt update
+
+# 安装ssh
+sudo apt install openssh-server
+
+# 重启ssh
+sudo service ssh restart 
+
+# 执行完了以上指令之后，我们可以搜索ssh服务是否已经启动
+ps -ef | grep ssh
+
+```
+
+阿里云、华为云、腾讯云等云服务器会默认安装好ssh服务。
+
+
+
+
+
+
+
+
+
+
+
+
+
+<br/>
+
+
+

@@ -99,7 +99,8 @@ MySQL8.0文档：https://dev.mysql.com/doc/refman/8.0/en/
 **Linux下的安装步骤**：https://dev.mysql.com/doc/refman/5.7/en/binary-installation.html
 
 ```shell
-0.  目标：将 mysql5.7 安装到  /usr/local/mysql
+
+0.  目标：将 mysql5.7 安装到  /usr/local/mysql (不建议安装到其他位置，可能会导致socket连接失败)
 
 	准备：在/usr/local/ 目录下创建 mysql 和 software 目录
 	
@@ -119,7 +120,7 @@ mv ./mysql-5.7.37-linux-glibc2.12-x86_64/* /usr/local/mysql/
 
 3、安装依赖、创建mysql用户组及其用户
 
-yum install libaio
+yum install libaio   （Ubuntu使用：sudo apt-get install libaio1）
 
 groupadd mysql
 useradd -r -g mysql -s /bin/false mysql
@@ -150,7 +151,7 @@ source  /etc/profile  # 使用source命令使修改立刻生效：
 
 cp support-files/mysql.server /etc/init.d/mysql.server
 
-chkconfig --add mysql.server 
+chkconfig --add mysql.server  （ 或 systemctl enable mysql.server）
 
 
 7. 使用 （首次使用需要先修改密码）
@@ -188,11 +189,16 @@ default-character-set=utf8
 [mysqld]
 character-set-server=utf8
 default-storage-engine=INNODB
+
 ```
 
 【注意】关于Linux下没有my.cnf的情形：从5.7.18开始官方不再二进制包中提供my-default.cnf文件。
 
+
+
 <br/>
+
+
 
 <span style="font:normal bold 22px arial,sans-serif;color:blue">Navicat无法连接Mysql时：</span> 
 

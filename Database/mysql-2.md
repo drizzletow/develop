@@ -4,6 +4,12 @@
 
 默认使用主键列作为索引（若不设置主键、mysql会自动设置一个隐藏列作为索引）
 
+
+
+[CodingLabs - MySQL索引背后的数据结构及算法原理](http://blog.codinglabs.org/articles/theory-of-mysql-index.html) 
+
+
+
 <br/>
 
 

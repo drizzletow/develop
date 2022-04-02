@@ -82,7 +82,7 @@ IDEA可以便捷的创建一个maven项目，但一个普通的java项目也可�
 
 先创建一个java普通项目、再创建maven项目所需的目录结构和 pom.xml 文件
 
-![image-20220326161522530](../../../WorkPlace/Java/CSKY/05 Database/Day08_Maven/work/vx_images/image-20220326161522530.png)
+![image-20220326161522530](vx_images/image-20220326161522530.png)
 
 <br/>
 
@@ -106,13 +106,13 @@ IDEA可以便捷的创建一个maven项目，但一个普通的java项目也可�
 
 此时，maven项目已经创建完成了，可以执行maven命令试试：
 
-![image-20220326161925897](../../../WorkPlace/Java/CSKY/05 Database/Day08_Maven/work/vx_images/image-20220326161925897.png)
+![image-20220326161925897](vx_images/image-20220326161925897.png)
 
 <br/>
 
 但此时IDEA还不能识别为maven项目，需要标记以下：
 
-![image-20220326162214441](../../../WorkPlace/Java/CSKY/05 Database/Day08_Maven/work/vx_images/image-20220326162214441.png)
+![image-20220326162214441](vx_images/image-20220326162214441.png)
 
 
 
@@ -216,7 +216,7 @@ Maven defines 3 lifecycles in `META-INF/plexus/components.xml`:
 
 **Maven常用命令**：
 
-- <span style='color:red;background:yellow;font-size:文字大小;font-family:字体;'>**clean：可以帮助我们清除编译生成的target文件夹**</span>
+- <span style='color:red;font-size:文字大小;font-family:字体;'>**clean：可以帮助我们清除编译生成的target文件夹**</span>
 
   ```
   mvn clean
@@ -232,7 +232,7 @@ Maven defines 3 lifecycles in `META-INF/plexus/components.xml`:
 
   <br/>
 
-- <span style='color:red;background:yellow;font-size:文字大小;font-family:字体;'>**compile：编译的意思。可以帮助我们去编译项目，这个很常用。**</span> 
+- <span style='color:red;font-size:文字大小;font-family:字体;'>**compile：编译的意思。可以帮助我们去编译项目，这个很常用。**</span> 
 
   ```
   mvn compile
@@ -248,7 +248,7 @@ Maven defines 3 lifecycles in `META-INF/plexus/components.xml`:
 
   <br/>
 
-- <span style='color:red;background:yellow;font-size:文字大小;font-family:字体;'>**package：打包的意思，可以帮助我们把项目进行打包。打成（.jar 和.war）**</span>
+- <span style='color:red;font-size:文字大小;font-family:字体;'>**package：打包的意思，可以帮助我们把项目进行打包。打成（.jar 和.war）**</span>
 
   ```xml
   <!-- 在pom.xml文件中，可以修改这个配置 -->
@@ -266,7 +266,7 @@ Maven defines 3 lifecycles in `META-INF/plexus/components.xml`:
 
   <br/>
 
-- <span style='color:red;background:yellow;font-size:文字大小;font-family:字体;'>**install：安装的意思，其实就是把我们的jar包复制到本地仓库中去，根据坐标放置jar包。**</span> 
+- <span style='color:red;font-size:文字大小;font-family:字体;'>**install：安装的意思，其实就是把我们的jar包复制到本地仓库中去，根据坐标放置jar包。**</span> 
 
   ```
   mvn install
@@ -286,7 +286,7 @@ Maven defines 3 lifecycles in `META-INF/plexus/components.xml`:
   我们一般不使用maven来做项目的部署。在企业中，有专门的项目部署（运维）工具：jenkins和k8s（docker）
 
 
- 
+
 
 <br/>
 

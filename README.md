@@ -31,7 +31,7 @@ GitHub：https://github.com/itdrizzle/develop
 
 *  [MySQL基础](Database/mysql-1.md) &nbsp;&nbsp;   [MySQL索引及查询优化](Database/mysql-2.md) &nbsp;&nbsp; [InnoDB存储引擎](Database/innodb.md) &nbsp;&nbsp;   [MySQL-JDBC](Database/jdbc.md) &nbsp;&nbsp;  
 
-*   [mybatis](Database/mybatis.md) &nbsp;&nbsp;    [ORM框架实现原理](Database/orm.md) &nbsp;&nbsp;   
+*   [mybatis-introduction](Database/mybatis.md) &nbsp;&nbsp;    [mybatis-源码剖析](Database/mybatis源码.md) &nbsp;&nbsp;   
 
 * [Redis缓存技术](Database/Redis.md) 
 
@@ -73,7 +73,9 @@ GitHub：https://github.com/itdrizzle/develop
 
 * [IDEA和Eclipse](Tools/idea.md)    &nbsp;&nbsp;   [Windows命令和工具](Tools/windows.md)    &nbsp;&nbsp;  
 
-* [Git版本控制](Tools/Git.md) &nbsp;&nbsp;  [Maven](Tools/maven.md) &nbsp;&nbsp; [Linux](Tools/Linux.md) &nbsp;&nbsp;  [Docker](Tools/Docker.md) &nbsp;&nbsp; [Kubernetes](Tools/kubernetes.md) &nbsp;&nbsp; [项目部署](Tools/deployment.md) &nbsp;&nbsp;
+* [Linux-install](Tools/Linux-install.md) &nbsp;&nbsp;  [Linux常用命令](Tools/Linux.md) &nbsp;&nbsp;  [VIM使用技巧](Tools/vim.md) &nbsp;&nbsp;  
+
+* [Git版本控制](Tools/Git.md) &nbsp;&nbsp;  [Maven](Tools/maven.md) &nbsp;&nbsp; [Docker](Tools/Docker.md) &nbsp;&nbsp; [Kubernetes](Tools/kubernetes.md) &nbsp;&nbsp; [项目部署](Tools/deployment.md) &nbsp;&nbsp;
 
 
 <br/> <br/>
