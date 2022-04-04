@@ -50,9 +50,10 @@ sudo mkdir -p /usr/local/redis/bin/      # sudo mkdir -p /usr/local/redis/bin/
 sudo mkdir -p /usr/local/redis/conf/     # 存放配置文件目录
 
 
-# 然后将Redis src下的可执行文件拷贝到/usr/local/redis/bin/,配置文件拷贝到/usr/local/redis/conf/
+# 然后将Redis src下的编译好的可执行文件拷贝到 /usr/local/redis/bin/
+#                           配置文件拷贝到 /usr/local/redis/conf/
 
-pwd          # /usr/local/redis/redis-6.2.6/src
+cd /usr/local/redis/redis-6.2.6/src
 
 sudo cp redis-server redis-cli /usr/local/redis/bin/
 sudo cp ../redis.conf /usr/local/redis/conf/
@@ -116,9 +117,22 @@ daemonize yes                       # 让redis启动后在后台运行
 
 dir /usr/local/redis/db             # 修改redis的工作目录 (持久化文件的路径) sudo mkdir db
 
-bind 0.0.0.0                        # 让远程连接不受ip限制
+bind 0.0.0.0                        # 0.0.0.0 表示所有的IP地址都可以连接并访问Redis服务器
 
 requirepass itdrizzle               # 设置密码
+
+
+# 当客户端闲置多长时间后关闭连接,0表示不关闭连接
+timeout 300
+
+# 端口,一般不建议更改
+port 6379
+
+# 日志级别  DEBUG | VERBOSE | NOTICE | WARNING
+loglevel DEBUG
+
+# Redis默认有16个数据库
+database 16
 
 ```
 
@@ -131,6 +145,9 @@ requirepass itdrizzle               # 设置密码
 
 ./bin/redis-server ./conf/redis.conf
 
+
+# 测试完后同样 kill 掉 Redis 服务，下面还要进行自启动等服务配置
+
 ```
 
 
@@ -139,54 +156,119 @@ requirepass itdrizzle               # 设置密码
 
 
 
-## 3. Redis服务配置
+## 3. Redis服务启动
 
-redis安装包的 utils 目录下有一些方便管理Redis的脚本，如：`redis_init_script` , `systemd-redis_server.service` 
+redis安装包的 utils 目录下有一些便捷的服务脚本，如：`redis_init_script` , `systemd-redis_server.service` 
+
+分别为 `/etc/init.d/xxx` 脚本 , 和 systemctl 的脚本，
+
+<br/>
 
 
+
+ **systemd的方式** （未配置成功，待解决......）: 
+
+> 
+>
+> 注：（ 个人查看Ubuntu下的目录是 `/lib/systemd/system`， 但很多资料说的是 /usr/lib/systemd/system  ）
+>
+> 
+>
+> 对于那些支持 Systemd 的软件，安装的时候，会自动在`/usr/lib/systemd/system`目录添加一个配置文件。
+>
+> 如果你想让该软件开机启动，就执行下面的命令（以`httpd.service`为例）。
+>
+> > ```bash
+> > $ sudo systemctl enable httpd
+> > ```
+>
+> 上面的命令相当于在`/etc/systemd/system` 目录添加一个符号链接，指向`/usr/lib/systemd/system` 里面的`httpd.service`文件。
+>
+> 这是因为开机时，`Systemd`只执行`/etc/systemd/system`目录里面的配置文件。
+>
+> 这也意味着，如果把修改后的配置文件放在该目录，就可以达到覆盖原始配置的效果
+>
+> 
+>
+> systemd有系统和用户区分：
+>
+> **系统（/user/lib/systemd/system/）**、**用户（/etc/lib/systemd/user/）** 
+>
+> 一般系统管理员手工创建的单元文件建议存放在/etc/systemd/system/目录下面。
+>
+> /usr/lib/systemd/system目录自动存放启动文件的配置位置，里面一般包含有XXXXX.service
+>
+> 
+
+<br/>
+
+
+
+下面使用 systemd 的方式创建 Redis 的开机自启服务：
 
 ```shell
+
+# 先将安装包下的 systemd 服务文件复制到 上述所说的位置
+
+sudo cd /usr/local/redis/redis-6.2.6/utils/
+
+sudo cp systemd-redis_server.service /usr/lib/systemd/user/redis-server.service
+
+
+
+#修改配置文件位置
+ 
+sudo vim /usr/lib/systemd/user/reids-server.service
+
+	ExecStart=/usr/local/redis/bin/redis-server /usr/local/redis/conf/redis.conf --supervised systemd --daemonize yes
+   
+   
 
 # 开机自启动
-cd /home/software/redis-6.2.6/utils/
-cp redis_init_script /etc/init.d/
 
+sudo systemctl enable redis-server.service
 
-vim /etc/init.d/redis_init_script
-
-    #修改配置文件位置
-    
-    CONF="/usr/local/redis/redis.conf"
+sudo systemctl start redis-server.service         # 启动
 
 ```
 
 
 <br/>
 
-启动redis服务：
+
+
+**init方式**：
 
 ```shell
 
-chmod 777 /etc/init.d/redis_init_script
+# 复制 init 脚本到 /etc/init.d/ 下
 
-/etc/init.d/redis_init_script start          #启动
+cd /usr/local/redis/redis-6.2.6/utils/
 
-cd /etc/init.d/
-chkconfig redis_init_script on               #开启自启动 
+sudo cp ./redis_init_script /etc/init.d/redis-server.service
+
+
+# 修改脚本内容
+
+sudo vim /etc/init.d/redis-server.service 
+
+    EXEC=/usr/local/redis/bin/redis-server
+    CLIEXEC=/usr/local/redis/bin/redis-cli
+
+    CONF="/usr/local/redis/conf/redis.conf"
+
+
+update-rc.d redis-server.service defaults 90       #开启自启动 
+
+
+/etc/init.d/redis-server.service start             # 启动
+         
 
 ps -ef|grep redis
 
+sudo kill -9 pid                                   # 关闭
+
 ```
-
-
-
-
-
-<br/>
-
-
-
-## 
 
 
 
@@ -239,9 +321,280 @@ redis-cli -a password ping        # 查看是否存活 PONG表示正常
 
 
 
-# 二 Redis数据类型
+# 二  Redis持久化配置
 
-- string 字符串 
+Redis持久化存储有两种持久化方案：RDB（Redis DataBase）和AOF（Append-Only File）。
+
+RDB是将内存中数据的快照（指定的时间间隔存储数据集的时间点快照）存储到磁盘内，
+
+AOF则是通过日志记录Redis内的所有操作。redis服务重启时通过这些操作重建原始数据集
+
+<img src="vx_images/image-20220403131502350.png" alt="image-20220403131502350" style="zoom: 50%;" />
+
+<br/>
+
+Redis 4之后支持AOF+RDB混合持久化的方式，结合了两者的优点，
+
+可以通过aof-use-rdb-preamble配置项开启混合持久化功能的开关。
+
+
+
+## 1. RDB持久化
+
+RDB（Redis DataBase）是将Redis内存中数据的快照写⼊到⼆进制⽂件中，是Redis的默认持久化方案。
+
+触发RDB持久化的方式分别为：正常关闭redis、根据配置文件设置的次数定时触发、save和bgsave命令
+
+- 以一段时间内达到指定修改的次数为规则来触发快照操作（在redis.conf中配置，快照文件名为dump.rdb）
+
+  每当Redis服务重启的时候都会从该文件中把数据加载到内存中。
+
+- 使用save和bgsave命令手动来触发
+
+  save会阻塞服务器进程。在执行save命令的过程中，服务器不能处理任何请求
+
+  bgsave（background save，后台保存）命令会通过一个子进程在后台处理数据RDB持久化
+
+  > 本质上save和bgsave调用的都是rdbSave函数，所以Redis不允许save和bgsave命令同时执行，
+  >
+  > 当然这也是为了避免RDB文件数据出现不一致性的问题。
+
+<br/>
+
+RDB持久化的配置文件：
+
+```bash
+
+# 默认定时持久化规则
+save 900 1
+save 300 10
+save 60 10000
+
+# 关闭：
+#	1）注释掉所有save point 配置可以关闭 RDB 持久化。
+#	2）在所有 save point 配置后增加：save ""，该配置可以删除所有之前配置的 save point。
+
+
+# 默认值为yes，当启用了RDB且最后一次在后台保存数据失败，Redis是否停止接收数据：
+# yes代表可以继续写入数据；no代表不会写入成功，通知用户持久化出现错误
+stop-writes-on-bgsave-error yes
+
+
+# 持久化的数据是否进行压缩
+rdbcompression yes
+
+
+# 存储的快照是否进行CRC64算法的数据校验，如果希望获取到最大的性能提升，可以关闭此功能
+Rdbchecksum yes
+
+
+# 设置快照的文件名，默认是dump.rdb
+dbfilename dump.rdb
+
+dir /usr/local/redis/db     # dump.rdb的存储位置
+
+```
+
+<br/>
+
+RDB默认持久化策略默认有三种方式：
+
+​	第一种：在60秒内有10000次操作即触发RDB持久化。
+
+​	第二种：没有满足第一种条件时，在300秒内有10次操作即触发RDB持久化。
+
+​	第三种：没有满足第二种条件时，在900秒内有1次操作即触发RDB持久化。
+
+<br/>
+
+Redis有一个周期性操作函数，默认每隔100ms执行一次，其中的一项工作就是检查自动触发bgsave命令的条件是否成立
+
+<br/>
+
+RDB全量备份总是非常耗时的，而且不能提供强一致性（Strict Consistency），即
+
+- 如果Redis进程崩溃，那么在最近一次RDB备份之后的数据也会随之消失。
+
+  （⼩内存机器不适合使⽤，RDB机制符合要求才会照快照，可能会丢失数据）
+
+- 在默认情况下，RDB数据持久化实时性比较差，而配置为高时效性时，频繁操作的成本则会很高
+
+
+
+适⽤于容灾备份 、全量复制
+
+
+
+<br/>
+
+
+
+## 2. AOF持久化
+
+AOF（Append Only File）以独立日志的方式记录每次的写命令，可以很好地解决了数据持久化的实时性。
+
+系统重启时可以重新执行AOF文件中的命令来恢复数据。AOF会先把命令追加在AOF缓冲区，然后根据对应策略写入硬盘。
+
+<br/>
+
+AOF持久化的相关配置：
+
+```bash
+# 开启AOF持久化
+appendonly yes
+
+# AOF文件名
+appendfilename "appendonly.aof"
+
+# AOF文件存储路径 （与rdb的一致）
+dir dir /usr/local/redis/db 
+
+
+# aof文件比上次重写时增长100%(配置可以大于100%)时触发重写
+auto-aof-rewrite-percentage 100 
+
+# aof文件大小超过64MB时触发重写
+auto-aof-rewrite-min-size 64mb 
+
+
+// aof 持久化策略，任选一个，默认是everysec
+# appendfsync always
+appendfsync everysec
+# appendfsync no
+
+```
+
+<br/>
+
+```bash 
+
+使用AOF持久化可以根据不同的fsync策略来备份数据，因为AOF采用的是追加的日志方式，
+因此即使断电也不会出现磁盘寻道或磁盘被损坏的问题。
+
+如果由于某种原因（磁盘已满或其他原因）日志只记录了一半，那么可以使用redis-check-aof工具轻松修复。
+
+当数据量太大时，Redis能够在后台自动重写AOF，并生成一个全新的文件，其中包含创建当前数据集所需的最少操作集，
+一旦准备好新的文件，Redis就会切换新的文件并开始把日志追加到新的文件。
+
+
+AOF文件包含了所有操作的日志，而且很容易看懂，当用户不小心使用了flushall命令，flushall会把所有的数据删除，
+但是可以根据AOF文件找到错误的命令，把这些错误的指令删除，然后重新启动Redis，就可以恢复对应的业务数据。
+但是在此期间，AOF文件不能被重写，重写之后的AOF文件不再是可以让用户理解的内容。
+
+AOF文件会以文本格式保存所有写操作命令，且未经压缩，因此对于同一数据集，AOF文件通常大于等效的RDB文件。
+
+```
+
+
+
+<br/>
+
+
+
+## 3. 混合持久化
+
+RDB和AOF持久化的区别：
+
+| 特性 \ 方式 | RDB（Redis DataBase）    | AOF（Append Only File） |
+| ----------- | ------------------------ | ----------------------- |
+| 启动优先级  | 低                       | 高                      |
+| 文件体积    | 小                       | 大                      |
+| 恢复性能    | 速度快                   | 速度慢                  |
+| 数据安全性  | 丢失上次保存点之后的数据 | 因配置策略而不同        |
+
+<br/>
+
+使用RDB持久化会有数据丢失的风险，但是数据恢复的速度快；使用AOF持久化可以保证数据的完整性，但数据恢复的速度慢。
+
+在Redis 4之后的版本新增了AOF+RDB混合模式，先使用RDB存储快照，然后使用AOF持久化记录所有的写操作，当满足重写策略或手动触发重写的时候，将最新的数据存储为新的RDB记录。
+
+重启服务时会从RDB和AOF两部分恢复数据，既保证了数据的完整性，又提高了数据恢复的性能。
+
+
+
+开启AOF+RDB混合模式持久化的配置命令如下：
+
+```shell
+
+# redis.conf
+
+aof-use-rdb-preamble yes
+
+```
+
+只要在redis.conf配置文件中写入上面这行代码就可以开启AOF+RDB混合模式。(注意此模式在Redis 4及以上版本才支持)
+
+在 redis 4 刚引入时，默认是关闭混合持久化的，但是在 redis 5 中默认已经打开了。
+
+
+
+<br/>
+
+混合持久化并不是一种全新的持久化方式，而是对已有方式的优化。混合持久化只发生于 AOF 重写过程。
+
+使用了混合持久化，重写后的新 AOF 文件前半段是 RDB 格式的全量数据，后半段是 AOF 格式的增量数据。
+
+```bash
+
+开启混合模式后，在bgrewriteaof命令之后会在AOF文件中以RDB格式写入当前最新的数据，之后的写操作继续以AOF的追加形式追加写命令。
+当Redis重启的时候，先加载RDB的部分再加载剩余的AOF部分。
+
+混合持久化本质是通过 AOF 后台重写（bgrewriteaof 命令）完成的，不同的是当开启混合持久化时，fork 出的子进程
+先将当前全量数据以 RDB 方式写入新的 AOF 文件，然后再将 AOF 重写缓冲区（aof_rewrite_buf_blocks）的
+增量命令以 AOF 方式写入到文件，写入完成后通知主进程将新的含有 RDB 格式和 AOF 格式的 AOF 文件替换旧的的 AOF 文件。
+
+```
+
+优点：结合 RDB 和 AOF 的优点, 更快的重写和恢复。
+
+缺点：AOF 文件里面的 RDB 部分不再是 AOF 格式，可读性差。
+
+
+
+<br/>
+
+## 4. 持久化选择
+
+RDB、AOF、混合持久，我应该用哪一个？
+
+```bash
+
+一般来说， 如果想尽量保证数据安全性， 你应该同时使用 RDB 和 AOF 持久化功能，同时可以开启混合持久化。
+
+如果你非常关心你的数据， 但仍然可以承受数分钟以内的数据丢失， 那么你可以只使用 RDB 持久化。
+
+如果你的数据是可以丢失的，则可以关闭持久化功能，在这种情况下，Redis 的性能是最高的。
+
+
+使用 Redis 通常都是为了提升性能，而如果为了不丢失数据而将 appendfsync  设置为 always 级别时，
+对 Redis 的性能影响是很大的，在这种不能接受数据丢失的场景，其实可以考虑直接选择 MySQL 等类似的数据库。
+
+```
+
+<br/>
+
+
+
+服务启动时如何加载持久化数据?
+
+
+简单来说，如果同时启用了 AOF 和 RDB，Redis 重新启动时，会使用 AOF 文件来重建数据集，因为通常来说，AOF 的数据会更完整。
+
+而在引入了混合持久化之后，使用 AOF 重建数据集时，会通过文件开头是否为“REDIS”来判断是否为混合持久化
+
+具体流程如下图所示：
+
+![image-20220404121522026](vx_images/image-20220404121522026.png)
+
+
+
+<br/>
+
+
+
+# 三 Redis数据类型
+
+## 1. string
 
 ```redis
 > set rekey data              :设置已经存在的key ,会覆盖
@@ -263,7 +616,11 @@ redis-cli -a password ping        # 查看是否存活 PONG表示正常
 > setrange key start newdata  :从start位置开始替换数据
 ```
 
-- hash :类似map ,存储结构化数据结构,比如存储一个对象 (不能有嵌套对象)
+
+
+## 2. hash
+
+类似map ,存储结构化数据结构,比如存储一个对象 (不能有嵌套对象)
 
 ```
 > hset user name tom             #创建一个user对象 ,这个对象中包含name属性, name值为tom
@@ -285,7 +642,11 @@ redis-cli -a password ping        # 查看是否存活 PONG表示正常
 > hdel user field1 field2        #删除指定的对象属性
 ```
 
-- list 列表
+
+
+## 3. list
+
+list 列表
 
 ```
 lpush userList 1 2 3 4 5         #构建一个list ,从左边开始存入数据(最后存入的数据在最左面)
@@ -304,7 +665,11 @@ linsert list before/after value newValue  #在value的前/后插入一个新的�
 
 rpush list1 pig cow sheep chicken duck
 ```
-- set 集合
+
+
+## 4. set
+
+set 集合
 
 ```
 sadd set1 cow sheep pig duck sheep     #新建集合并向其中添加不重复的元素
@@ -340,26 +705,6 @@ zrangebyscore zset 分数1 分数2 limit start end      #查询分数之间的me
 
 zrem zset value                                    #删除member
 ```
-
-
-
-
-
-
-
-
-
-# 三 Redis持久化
-
-
-
-
-
-
-
-
-
-
 
 
 

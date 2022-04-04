@@ -1551,7 +1551,7 @@ Systemd 统一管理所有 Unit 的启动日志。
 > $ sudo systemctl enable httpd
 > ```
 
-上面的命令相当于在`/etc/systemd/system`目录添加一个符号链接，指向`/usr/lib/systemd/system`里面的`httpd.service`文件。
+上面的命令相当于在`/etc/systemd/system` 目录添加一个符号链接，指向`/usr/lib/systemd/system` 里面的`httpd.service`文件。
 
 这是因为开机时，`Systemd`只执行`/etc/systemd/system`目录里面的配置文件。
 
@@ -1640,6 +1640,8 @@ WantedBy=multi-user.target
 ```
 
 以看到，配置文件分成几个区块，每个区块包含若干条键值对。 下面依次解释每个区块的内容。
+
+
 
 <br>
 
