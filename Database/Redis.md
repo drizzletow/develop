@@ -282,7 +282,7 @@ sudo kill -9 pid                                   # 关闭
 
 redis-cli                         # 启动
 
-redis-cli -a 123456.. shutdown    # 关闭
+redis-cli -a password shutdown    # 关闭
 
 redis-cli -a password ping        # 查看是否存活 PONG表示正常
 
@@ -296,7 +296,7 @@ redis-cli -a password ping        # 查看是否存活 PONG表示正常
 
 ```shell
 
-> auth 123456      # 类似登录（必须输入密码）
+> auth password    # 类似登录（必须输入密码）
 
 > set name tom     # OK          设置name的值为tom
 > get name         # "tom"       获取name的值
@@ -307,11 +307,29 @@ redis-cli -a password ping        # 查看是否存活 PONG表示正常
 > type age         # string      返回age的类型
 > keys *           # 查看所有的key(不建议再生产上使用，有性能影响)
 
-> mset             # 连续设值
+> mset             # 连续设值 如：MSET key1 "Hello" key2 "World"
 > mget             # 连续取值
-> msetnx           # 连续设置,如果存在则不设置
+> msetnx           # 连续设置,如果存在则不设置 
 
 ```
+
+
+
+<br/>
+
+## 4. Redis命令中心
+
+Redis命令中心（Redis commands）：http://redis.cn/commands.html  
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -336,6 +354,8 @@ AOF则是通过日志记录Redis内的所有操作。redis服务重启时通过�
 Redis 4之后支持AOF+RDB混合持久化的方式，结合了两者的优点，
 
 可以通过aof-use-rdb-preamble配置项开启混合持久化功能的开关。
+
+<br/>
 
 
 
@@ -553,6 +573,8 @@ aof-use-rdb-preamble yes
 
 <br/>
 
+
+
 ## 4. 持久化选择
 
 RDB、AOF、混合持久，我应该用哪一个？
@@ -594,43 +616,124 @@ RDB、AOF、混合持久，我应该用哪一个？
 
 # 三 Redis数据类型
 
-## 1. string
+Redis⽀持五种数据类型：String（字符串），hash（哈希），list（列表），set（集合）以及 zset（sorted set：有序集合） 等
 
-```redis
-> set rekey data              :设置已经存在的key ,会覆盖
-> setnx rekey data            :设置已经存在的key ,不会覆盖
+REDIS data-types-intro：http://redis.cn/topics/data-types-intro.html 
 
-> set key value ex seconds    :设置带过期时间的数据
-> expire key seconds          :设置过期时间
-> ttl key                     :查看剩余时间, -1永不过期, -2过期
+<br/>
 
-> append key value            :合并字符串,将value合并到key对应的值上
-> strlen key                  :字符串长度
+Redis数据类型相关的通用命令：
 
-> incr key                    :累加1 (类似 a+=1 的效果)
-> decr key                    :累减1
-> incrby key num              :累加给定数值
-> decrby key num              :累减给定数值
+```bash
 
-> getrange key start end      :截取数据, end=-1代表到最后
-> setrange key start newdata  :从start位置开始替换数据
+# 通常用SET command 和 GET command来设置和获取字符串值
+> set mykey somevalue 
+> get mykey
+
+
+# SET 命令有些有趣的操作，例如，当key存在时SET会失败，或相反的，当key不存在时它只会成功
+> set mykey newval nx    #(nil)
+> set mykey newval xx    # OK
+
+
+# 使用MSET和MGET命令, 一次存储或获取多个key对应的值 (MGET 命令返回由值组成的数组)
+> mset a 10 b 20 c 30
+> mget a b c            
+
+
+# 使用EXISTS命令返回1或0标识给定key的值是否存在，使用DEL命令可以删除key对应的值
+> set mykey hello
+> exists mykey                 # (integer)1
+> del mykey                    # (integer)1
+> exists mykey                 # (integer)0
+
+
+# TYPE命令可以返回key对应的值的存储类型：
+> set mykey x                  # OK
+> type mykey                   # string
+> del mykey                    # (integer) 1
+> type mykey                   # none
+
+
+# Redis超时:数据在限定时间内存活 （可以对key设置一个超时时间，当这个时间到达后会被删除）
+> set key some-value           # OK
+> expire key 5                 # (integer) 1     设置过期时间（默认单位为seconds）
+> get key (immediately)        # "some-value"
+> get key (after some time)    # (nil)
+
+# 也可以再次调用这个命令来改变超时时间，使用PERSIST命令去除超时时间 （TTL命令用来查看key对应的值剩余存活时间）
+> set key 100 ex 10            # OK  设置带过期时间的数据 或 改变超时时间 （默认单位为seconds）
+> ttl key                      # (integer) 9  查看剩余时间, -1永不过期, -2过期
+
+
 ```
 
 
 
-## 2. hash
+<br/>
 
-类似map ,存储结构化数据结构,比如存储一个对象 (不能有嵌套对象)
+
+
+## 1. Redis Strings
+
+二进制安全的字符串
+
+```bash
+
+> set rekey data              # 设置已经存在的key ,会覆盖
+> setnx rekey data            # 设置已经存在的key ,不会覆盖
+
+> append key value            # 合并字符串,将value合并到key对应的值上
+> strlen key                  # 字符串长度
+
+> incr key                    # 累加1 (类似 a+=1 的效果)
+> decr key                    # 累减1
+> incrby key num              # 累加给定数值
+> decrby key num              # 累减给定数值
+
+> getrange key start end      # 截取数据, end=-1代表到最后
+> setrange key start newdata  # 从start位置开始替换数据
 
 ```
-> hset user name tom             #创建一个user对象 ,这个对象中包含name属性, name值为tom
-> hget user name                 #获得用户对象中name的值
-                     
-> hmset user age 18 sex male     #设置对象中的多个键值对,存在则覆盖
-> hset user age 17 weight 80     #设置对象中的多个键值对,存在则覆盖
 
-> hmget user age sex             #获得对象中的多个属性
-> hgetall user                   #获得整个对象的内容
+<br/>
+
+
+
+## 2. Redis Hashes
+
+REDIS data-types-intro：http://redis.cn/topics/data-types-intro.html#hashes 
+
+Redis hash ：由field和关联的value组成的map。field和value都是字符串的。
+
+Redis hash 看起来就像一个 “hash” 的样子，由键值对组成，类似map ,存储结构化数据结构,比如存储一个对象 (不能有嵌套对象) 
+
+Hash 便于表示 *objects*，实际上，你可以放入一个 hash 的域数量实际上没有限制（除了可用内存以外）
+
+<br/>
+
+```bash
+# `HMSET` 指令设置 hash 中的多个域：
+> hmset user:1001 username zhangsan birthday 1999 verified 1
+OK
+
+> type user:1001                    # hash
+
+> hget user:1001 username           #  "zhangsan"   `HGET` 取回单个域。
+
+> hmget user:1001 username other    # `HMGET` 和 `HGET` 类似，但返回一系列值：
+1) "zhangsan"
+2) (nil)
+
+
+> hgetall user:1001
+1) "username"
+2) "zhangsan"
+3) "birthday"
+4) "1999"
+5) "verified"
+6) "1"
+
 
 > hincrby user age 2             #累加属性
 > hincrbyfloat user age2.2       #累加属性
@@ -640,81 +743,234 @@ RDB、AOF、混合持久，我应该用哪一个？
 > hkeys user                     #获得所有属性
 > hvals user                     #获得所有值
 > hdel user field1 field2        #删除指定的对象属性
+
+
 ```
 
 
 
-## 3. list
+<br/>
 
-list 列表
+
+
+## 3. Redis lists
+
+REDIS data-types-intro：http://redis.cn/topics/data-types-intro.html#lists 
+
+list 按插入顺序排序的字符串元素的集合。 Redis lists基于Linked Lists实现。
 
 ```
+
+这意味着即使在一个list中有数百万个元素，在头部或尾部添加一个元素的操作，其时间复杂度也是常数级别的。
+用LPUSH 命令在十个元素的list头部添加新元素，和在千万元素list头部添加新元素的速度相同。
+
+那么，坏消息是什么？在数组实现的list中利用索引访问元素的速度极快，而同样的操作在linked list实现的list上没有那么快。
+
+Redis Lists用linked list实现的原因是：对于数据库系统来说，至关重要的特性是：能非常快的在很大的列表上添加元素。
+另一个重要因素是，正如你将要看到的：Redis lists能在常数时间取得常数长度。
+
+如果快速访问集合元素很重要，建议使用可排序集合(sorted sets)。可排序集合我们会随后介绍。
+
+```
+
+<br/>
+
+```bash
+
+lpush list1 pig cow sheep chicken duck
 lpush userList 1 2 3 4 5         #构建一个list ,从左边开始存入数据(最后存入的数据在最左面)
 rpush userList 1 2 3 4 5         #构建一个list ,从右边开始存入数据(最后存入的数据在最右面)
-lrange list start end            #获得数据
-lpop                             #从左侧开始拿出一个数据
-rpop                             #从右侧开始拿出一个数据 
+
+
 llen list                        #list长度
-lindex list index                #获取list下标的值
+lindex list index                #获取list指定下标的值
 lset list index value            #把某个下标的值替换
 
+lrange list start end            #获得数据 (-1表示最后一个元素，-2表示list中的倒数第二个元素，以此类推)
+
+
+lpop                             #从左侧开始拿出(并删除)一个数据
+rpop                             #从右侧开始拿出(并删除)一个数据 
+
 lrem list num value              #删除num个相同的value
-ltrim list start end             #截取值,并赋值给原来的list
+
+ltrim list start end             #把list从左边截取指定长度,并赋值给原来的list
+
 
 linsert list before/after value newValue  #在value的前/后插入一个新的值
 
-rpush list1 pig cow sheep chicken duck
+```
+<br>
+
+
+
+**key 的自动创建和删除** : 
+
+目前为止，在我们的例子中，我们没有在推入元素之前创建空的 list，或者在 list 没有元素时删除它。在 list 为空时删除 key，并在用户试图添加元素（比如通过 `LPUSH`）而键不存在时创建空 list，是 Redis 的职责。
+
+这不光适用于 lists，还适用于所有包括多个元素的 Redis 数据类型 – Sets, Sorted Sets 和 Hashes。
+
+基本上，我们可以用三条规则来概括它的行为：
+
+1. 当我们向一个聚合数据类型中添加元素时，如果目标键不存在，就在添加元素前创建空的聚合数据类型。
+2. 当我们从聚合数据类型中移除元素时，如果值仍然是空的，键自动被销毁。
+3. 对一个空的 key 调用一个只读的命令，比如 `LLEN` （返回 list 的长度），或者一个删除元素的命令，将总是产生同样的结果。该结果和对一个空的聚合类型做同个操作的结果是一样的。
+
+规则 1 示例：
+
+```bash
+
+> del mylist                       # (integer) 1
+
+> lpush mylist 1 2 3               # (integer) 3
+
+```
+
+但是，我们不能对存在但类型错误的 key 做操作：  
+
+```bash
+
+> set foo bar 
+OK 
+
+> lpush foo 1 2 3 
+(error) WRONGTYPE Operation against a key holding the wrong kind of value 
+
+> type foo 
+string
+
 ```
 
 
-## 4. set
 
-set 集合
+规则 2 示例:
+
+```bash
+
+> lpush mylist 1 2 3         # (integer) 3
+
+> exists mylist              # (integer) 1
+
+> lpop mylist                # "3"
+> lpop mylist                # "2"
+> lpop mylist                # "1"
+
+> exists mylist              # (integer) 0
 
 ```
+
+所有的元素被弹出之后， key 不复存在。
+
+
+
+规则 3 示例:
+
+```bash
+
+> del mylist            # (integer) 0
+
+> llen mylist           # (integer) 0
+
+> lpop mylist           # (nil)
+
+```
+
+
+
+<br/>
+
+
+
+## 4. Redis Sets 
+
+REDIS data-types-intro：http://redis.cn/topics/data-types-intro.html#sets 
+
+set 集合,  Redis Set 是 String 的无序排列 (不重复且无序的字符串元素的集合)
+
+```bash
+
+# SADD 指令把新的元素添加到 set 中
 sadd set1 cow sheep pig duck sheep     #新建集合并向其中添加不重复的元素
+
 srandmember set1 2                     #随机获取集合中的两个元素
 smembers set1                          #查看全部集合元素
+
 scard set1                             #统计个数
-sismember set1 pig                     #判断pig是否为set1的元素
+sismember set1 pig                     #判断pig是否为set1的元素 (一个特定的元素是否存在？)
 
 srem set1 pig                          #删除set1中的pig
 spop set1 2                            #随机删除两个元素
 
 smove set2 set1 10                     #将set2中的10转移到set1中
+
 sdiff set1 set2                        #返回set1中存在而set2中不存在的元素
+
 sinter set1 set2                       #求交集
 sunion set1 set2                       #求并集
-```
-
-- zset 有序的set
 
 ```
+
+<br/>
+
+
+
+## 5. Redis Sorted sets 
+
+REDIS data-types-intro：http://redis.cn/topics/data-types-intro.html#sorted-sets 
+
+Sorted sets are a data type which is similar to a mix between a Set and a Hash. 
+
+Like sets,  sorted sets are composed of unique, non-repeating string elements, so in some sense a sorted set is a set as well.
+
+every element in a sorted set is associated with a floating point value, called *the score* (this is why the type is also similar to a hash, since every element is mapped to a value).
+
+<br>
+
+```bash
+
 zadd zset 10 value1 20 value2 30 value3            #设置member和对应的分数
+
 zrange zset 0 -1                                   #查看所有zset中的内容
 zrange zset 0 -1 withscores                        #...带有分数
+
 zrank zset value                                   #获得对应的下标
 zscore zset value                                  #获得对应的分数
 
 zcard zset                                         #统计个数
 zcount zset 分数1 分数2                             #统计个数[包含边界]
 
+
 zrangebyscore zset分数1 分数2                       #查询分数之间的member(包含分数1 分数2)
 zrangebyscore zset (分数1 (分数2                    #查询分数之间的member (不包含分数1和分数2 )
-zrangebyscore zset 分数1 分数2 limit start end      #查询分数之间的member(包含分数1 分数2) ,获得的结果集再次根据下标区间做查询
+
+# 查询分数之间的member(包含分数1 分数2) ,获得的结果集再次根据下标区间做查询
+zrangebyscore zset 分数1 分数2 limit start end      
 
 zrem zset value                                    #删除member
+
 ```
 
 
 
+<br/>
 
 
 
 
 
+# 六 项目整合redis
 
-# 六 springboot整合redis
+## 1.  Java for Redis
+
+
+
+
+
+<br/>
+
+
+
+## 2. springboot
 
 - 引入redis依赖，完成redis相关配置（pom文件和application.yaml）
 
