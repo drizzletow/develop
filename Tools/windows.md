@@ -58,6 +58,8 @@ brightPurple ：未知。
 brightCyan ：  ssh vim 等工具打开文件后的 { 和 } 等符号背景。
 brightWhite ： 目录箭头左边和中间的提示文字。
 
+"cursorColor": 光标颜色
+
 ```
 
 

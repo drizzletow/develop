@@ -1,5 +1,11 @@
 # 一 Redis安装与配置
 
+Redis官网：https://redis.io/
+
+AnotherRedisDesktopManager Gitee：https://gitee.com/qishibo/AnotherRedisDesktopManager/releases 
+
+<br/>
+
 ## 1. Redis的安装
 
  通过[redis官网](https://redis.io/)下载上传至服务器，或通过wget直接下载
@@ -319,19 +325,31 @@ redis-cli -a password ping        # 查看是否存活 PONG表示正常
 
 ## 4. Redis命令中心
 
-Redis命令中心（Redis commands）：http://redis.cn/commands.html  
+ Redis命令十分丰富，包括的命令组有Cluster、Connection、Geo、Hashes、HyperLogLog、Keys、Lists、Pub/Sub、Scripting、Server、Sets、Sorted Sets、Strings、Transactions一共14个redis命令组两百多个redis命令
 
+Redis 命令中心：http://redis.cn/commands.html  
 
+Redis Commands：https://redis.io/commands/ 
 
+<br/>
 
-
-
-
-
-
-
-
-
+| 命令组       | 描述                          | 文档地址                                                   |
+| ------------ | ----------------------------- | ---------------------------------------------------------- |
+| Connection   | connection(连接) 相关的命令   | [connection](http://redis.cn/commands.html#connection)     |
+| Keys         | 操作 key 的通用命令           | [generic](http://redis.cn/commands.html#generic)           |
+| Strings      | string 类型相关的命令         | [string](http://redis.cn/commands.html#string)             |
+| Lists        | list 类型相关的命令           | [list](http://redis.cn/commands.html#list)                 |
+| Hashes       | hash 类型相关的命令           | [hash](http://redis.cn/commands.html#hash)                 |
+| Sets         | set 类型相关的命令            | [set](http://redis.cn/commands.html#set)                   |
+| Sorted Sets  | sorted set 类型相关的命令     | [sorted set）](http://redis.cn/commands.html#sorted_set)   |
+| HyperLogLog  | 基数统计 相关的命令           | [hyperloglog](http://redis.cn/commands.html#hyperloglog)   |
+| Geo          | 地理位置信息 相关的命令       | [geo](http://redis.cn/commands.html#geo)                   |
+| Steams       | stream 相关的命令             | [streams](http://redis.cn/commands.html#streams)           |
+| Transactions | redis 事务的相关命令          | [transactions](http://redis.cn/commands.html#transactions) |
+| Scripting    | redis 脚本常用命令            | [scripting](http://redis.cn/commands.html#scripting)       |
+| Pub/Sub      | 发布订阅 (pub/sub) 相关的命令 | [pubsub](http://redis.cn/commands.html#pubsub)             |
+| Server       | 用于管理 redis 服务           | [server](http://redis.cn/commands.html#server)             |
+| Cluster      | Redis Cluster集群相关的命令   | [cluster](http://redis.cn/commands.html#cluster)           |
 
 
 
@@ -676,7 +694,7 @@ Redis数据类型相关的通用命令：
 
 ## 1. Redis Strings
 
-二进制安全的字符串
+二进制安全的字符串、Commands：https://redis.io/commands/?group=string 
 
 ```bash
 
@@ -695,6 +713,18 @@ Redis数据类型相关的通用命令：
 > setrange key start newdata  # 从start位置开始替换数据
 
 ```
+
+应用场景：
+
+- 缓存 token  （或类似的单个值的缓存）
+
+- 作为计数器：如统计网站的访问量（日访问量 = 日pv，page view），通过incr这个指令来做
+
+  还有用户的总点赞数、关注数、粉丝数、帖子的评论数、热度、文章的阅读数和收藏数等
+
+- 其他所有的数据结构最后都可以使用String来实现
+
+
 
 <br/>
 
@@ -746,6 +776,12 @@ OK
 
 
 ```
+
+应用场景：  
+
+- hash这种数据结构，可以天然的帮助我们存储对象
+
+  例如登录之后，存储用户这个对象的信息，电商应用中，缓存购物车信息
 
 
 
@@ -800,6 +836,13 @@ ltrim list start end             #把list从左边截取指定长度,并赋值�
 linsert list before/after value newValue  #在value的前/后插入一个新的值
 
 ```
+应用场景：
+
+- 可以用作消息队列
+- 可以用作消息未读清单（例如：bilibili）
+
+
+
 <br>
 
 
@@ -903,12 +946,22 @@ spop set1 2                            #随机删除两个元素
 
 smove set2 set1 10                     #将set2中的10转移到set1中
 
-sdiff set1 set2                        #返回set1中存在而set2中不存在的元素
+
+# 求差集 （即剔除set1 中 set1和set2交集 的那部分）
+# 也可以说返回set1中存在而set2中不存在的元素 
+sdiff set1 set2                        
 
 sinter set1 set2                       #求交集
 sunion set1 set2                       #求并集
 
 ```
+
+应用场景：
+
+- 利用随机的特性，可以帮助我们 抽奖、点名、投票等等
+- 利用set的并集特性，求共同的好友，进行好友推荐等业务
+
+
 
 <br/>
 
@@ -933,7 +986,7 @@ zadd zset 10 value1 20 value2 30 value3            #设置member和对应的分�
 zrange zset 0 -1                                   #查看所有zset中的内容
 zrange zset 0 -1 withscores                        #...带有分数
 
-zrank zset value                                   #获得对应的下标
+zrank zset value                                   #获得对应的下标、The rank (or index) is 0-based
 zscore zset value                                  #获得对应的分数
 
 zcard zset                                         #统计个数
@@ -950,6 +1003,10 @@ zrem zset value                                    #删除member
 
 ```
 
+应用场景：
+
+- 积分排行榜、新闻排行榜、直播打赏排名等
+
 
 
 <br/>
@@ -958,11 +1015,32 @@ zrem zset value                                    #删除member
 
 
 
-# 六 项目整合redis
+# 六 Java操作redis
 
 ## 1.  Java for Redis
 
+引入依赖：
 
+Maven Repository: redis.clients » jedis ：https://mvnrepository.com/artifact/redis.clients/jedis
+
+```xml
+
+<!-- https://mvnrepository.com/artifact/redis.clients/jedis -->
+<dependency>
+    <groupId>redis.clients</groupId>
+    <artifactId>jedis</artifactId>
+    <version>3.3.0</version>
+</dependency>
+
+```
+
+<br>
+
+
+
+```
+
+```
 
 
 
