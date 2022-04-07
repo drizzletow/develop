@@ -2,8 +2,15 @@
 
 
 
-## T
+##  1. 切换目录和盘符
 
+```bash
+
+cd directory            # 切换目录
+
+d:                      # 切换到 d 盘
+
+```
 
 
 
@@ -79,7 +86,9 @@ GitHub：https://github.com/gerardog/gsudo
 ```shell
 # 安装方式：
 
-1. 下载解压，配置环境变量即可
+1. Github下载msi格式，安装即可，或下载zip格式，解压配置环境变量即可
+
+https://github.com/gerardog/gsudo/releases/tag/v1.2.0
 
 
 2. 通过 PowerShell 命令安装
@@ -298,7 +307,9 @@ jv_sitecorian.omp.json
 
 # 三 PowerShell
 
-下载： https://docs.microsoft.com/zh-cn/powershell/scripting/install/installing-powershell-on-windows
+官网下载： https://docs.microsoft.com/zh-cn/powershell/scripting/install/installing-powershell-on-windows
+
+GitHub：https://github.com/PowerShell/PowerShell/releases/
 
 
 

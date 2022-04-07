@@ -130,3 +130,34 @@ mvn dependency:resolve -Dclassifier=sources
 ![image-20211101162525695](vx_images/image-20211101162525695.png)
 
 <br>
+
+
+
+
+
+
+
+
+
+国内下载vscode速度慢问题解决
+
+![image-20220407153956878](E:\VNotebook\Develop\Tools\vx_images\image-20220407153956878.png)
+
+```bash
+
+vscode.cdn.azure.cn       # <--------就是左边这个 (国内的镜像)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+

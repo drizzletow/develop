@@ -37,6 +37,8 @@ XML（*EX*tensible *M*arkup *L*anguage） 是一种*标记语言*，是被设计
   - 在 XML 中，文档中的空格不会被删节
   - XML 以 LF 存储换行
 
+<br>
+
 
 
 ## 2. 元素和属性
@@ -61,6 +63,8 @@ XML（*EX*tensible *M*arkup *L*anguage） 是一种*标记语言*，是被设计
 
 - 上例中，只有 `<book>` 元素拥有 **属性**  (`id="1001"`)  **XML 属性必须加引号**
 
+<br>
+
 
 
 ## 3. CDATA
@@ -82,10 +86,10 @@ XML（*EX*tensible *M*arkup *L*anguage） 是一种*标记语言*，是被设计
   在 XML 中，只有字符 "<" 和 "&" 确实是非法的。大于号是合法的，但是用实体引用来代替它是一个好习惯。
 
   - `"<"` 会产生错误，因为解析器会把该字符解释为新元素的开始
+- `"&"` 也会产生错误，因为解析器会把该字符解释为字符实体的开始
+  
 
-  - `"&"` 也会产生错误，因为解析器会把该字符解释为字符实体的开始
-
-    
+  <br>
 
 - **CDATA** 指的是不应由 XML 解析器进行解析的文本数据（Unparsed Character Data）
 
@@ -99,6 +103,8 @@ XML（*EX*tensible *M*arkup *L*anguage） 是一种*标记语言*，是被设计
   </script>
   ```
 
+  <br>
+  
   
 
 ## 4. XML验证
@@ -106,6 +112,8 @@ XML（*EX*tensible *M*arkup *L*anguage） 是一种*标记语言*，是被设计
 - **XML DTD**—— 定义 XML 文档的结构。它使用一系列合法的元素来定义文档结构。[XML DTD教程](https://www.w3school.com.cn/dtd/dtd_intro.asp)
 
 - **XML Schema** —— 一种基于 XML 的 DTD 代替者，它名为 XML Schema。[XML Schema教程](https://www.w3school.com.cn/schema/schema_schema.asp)
+
+<br>
 
 
 
@@ -144,7 +152,7 @@ XML（*EX*tensible *M*arkup *L*anguage） 是一种*标记语言*，是被设计
   - 它合并了许多超出基本XML文档表示的功能，包括集成的XPath 支持、XML Schema支持以及用于大文档或流化文档的基于事件的处理，它还提供了构建文档表示的选项
   - DOM4J是一个非常优秀的Java XML API，具有性能优异、功能强大和极端易用使用的特点，同时它也是一 个开放源代码的软件。如今你可以看到越来越多的Java软件都在使用DOM4J来读写XML。 目前许多开源项目中大量采用DOM4J , 例如:Hibernate
 
-
+<br>
 
 **XML常见的解析器**：
 
@@ -154,6 +162,8 @@ XML（*EX*tensible *M*arkup *L*anguage） 是一种*标记语言*，是被设计
 | Jsoup  | jsoup 是一款Java 的HTML解析器，可直接解析某个URL地址、HTML文本内容 （） |
 | PULL   | Android操作系统内置的解析器（sax方式）                       |
 | JAXP   | sun公司提供的解析器，支持dom和sax两种思想                    |
+
+<br>
 
 
 
@@ -177,7 +187,11 @@ DOM4J是一个开源 XML 解析包、应用于 Java 平台，采用了 Java 集�
 </dependency>
 ```
 
-普通java项目导入 jar 包 参照：[IDEA导入jar包](./jar包导入.md)
+普通java项目导入 jar 包 参照：[IDEA导入jar包](./jar包导入.md) 
+
+<br>
+
+
 
 
 ## 1. 解析XML文件
@@ -227,6 +241,8 @@ public class XMLReadDemo {
 
 read方法除了可以解析输入流外，还可以是File类的对象，URL等
 
+<br>
+
 
 
 ## 2. 解析网络文件
@@ -264,6 +280,8 @@ public class NetXMLDemo {
 }
 ```
 
+<br>
+
 
 
 ## 3. XPATH解析
@@ -281,7 +299,7 @@ XPath即为XML路径语言，它是一种用来确定XML（标准通用标记语
 
 想了解更多关于XPATH的信息，请参考：<a herf="https://www.w3school.com.cn/xpath/xpath_syntax.as "> XPATH教程</a> 
 
-
+<br>
 
 使用dom4j的Xpath需要导入`jaxen.jar`
 
@@ -298,6 +316,8 @@ for (Node node : nodes) {
     System.out.println(node.getText());
 }
 ```
+
+<br>
 
 
 
@@ -344,6 +364,8 @@ public class CreateXML {
 }
 ```
 
+<br>
+
 
 
 ## 5. XStream
@@ -382,6 +404,8 @@ public class ObjectToXML {
 </person>
 ```
 
+<br>
+
 
 
 # 三 JSON
@@ -390,7 +414,7 @@ public class ObjectToXML {
 
 但它比 XML 更小、更快，更易解析。
 
-
+<br>
 
 **JSON 语法规则**：JSON 语法是 JavaScript 对象表示语法的子集
 
@@ -416,7 +440,7 @@ public class ObjectToXML {
 
 下面将分别用Gson和FastJson解析上述json字符串
 
-
+<br>
 
 ## 1. Gson
 
@@ -446,7 +470,7 @@ public class GsonDemo {
 }
 ```
 
-
+<br>
 
 ## 2. FastJson
 
