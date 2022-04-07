@@ -1,16 +1,22 @@
 # 一 IDEA设置
 
+一个神奇的网站：https://zhile.io/
+
+ja-netfilter：https://zhile.io/2021/11/29/ja-netfilter-javaagent-lib.html
+
+
+<br>
+
 ## 1. 常用插件
 
-- IDE Eval Reset（ 源网站：https://zhile.io/  ）
-
-  插件设置：手动添加第三方插件仓库地址：`https://plugins.zhile.io` 、搜索：`IDE Eval Reset` 插件进行安装
-
-- Free Mybatis plugin
 - Lombok
+
 - Maven Helper
 
+- 
 
+
+<br>
 
 ## 2. 自动导包
 
@@ -19,6 +25,7 @@
 ![image-20211111204005219](vx_images/image-20211111204005219.png)
 
 
+<br>
 
 ## 3. 注释模板
 
@@ -76,6 +83,7 @@ groovyScript("def result=\"${_1}\"; if(result == \"void\"){return \"\";}else{ret
 
 【注】使用方式：先键入 /*aa 再按tab健即可
 
+<br>
 
 
 # 二 常用快捷键
@@ -93,13 +101,14 @@ groovyScript("def result=\"${_1}\"; if(result == \"void\"){return \"\";}else{ret
 
 【注】Ctrl+Alt+L 常和其他快捷键冲突、改用Ctrl+Shift+Alt+L
 
+<br>
 
 
 ## 2. 其他快捷键
 
 
 
-
+<br>
 
 
 # 三 常见问题
@@ -120,3 +129,4 @@ mvn dependency:resolve -Dclassifier=sources
 
 ![image-20211101162525695](vx_images/image-20211101162525695.png)
 
+<br>

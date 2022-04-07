@@ -1038,7 +1038,39 @@ Maven Repository: redis.clients » jedis ：https://mvnrepository.com/artifact/r
 
 
 
-```
+```java
+
+public class SortedSetDemo {
+    public static void main(String[] args) {
+        Jedis jedis = new Jedis("192.168.5.150");
+        jedis.auth("itdrizzle");
+
+        String ssk = "sorted_set_key";
+
+        jedis.del(ssk);
+
+        Map<String, Double> map = new HashMap<>();
+        map.put("user1", 88.0);
+        map.put("user2", 56.0);
+        map.put("user3", 75.0);
+        map.put("user4", 85.0);
+        map.put("user5", 68.0);
+
+        jedis.zadd(ssk, map);
+        jedis.expire(ssk, 120);
+
+        System.out.println("jedis.zrange(ssk, 0, -1) = " + jedis.zrange(ssk, 0, -1));
+        System.out.println("jedis.zrangeWithScores(ssk, 0, 2) = " + jedis.zrangeWithScores(ssk, 0, 2));
+
+        System.out.println("jedis.zrank(ssk, \"user2\") = " + jedis.zrank(ssk, "user2"));
+        System.out.println("jedis.zscore(ssk, \"user2\") = " + jedis.zscore(ssk, "user2"));
+
+        System.out.println("jedis.zcard(ssk) = " + jedis.zcard(ssk));
+        System.out.println("jedis.zcount(ssk, 60, 80) = " + jedis.zcount(ssk, 60, 80));
+
+        jedis.close();
+    }
+}
 
 ```
 

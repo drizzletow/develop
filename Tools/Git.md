@@ -47,8 +47,12 @@ Mac 用户：Xcode Command Line Tools 自带 Git（`xcode-select --install`）
 如果要对配置信息进行修改，重复上述命令即可。配置只需要执行一次。
 
 
-git config --global core.editor vim     # 选择你喜欢的文本编辑器
 
+git config --global credential.helper store  # 解决频繁输入账户名和密码的问题
+# 使用上述的命令配置好之后，再操作一次git pull，它会提示你输入账号密码，之后就不需要再输入密码了
+
+
+git config --global core.editor vim     # 选择你喜欢的文本编辑器
 git config --global --edit              # 用文本编辑器打开全局配置文件，手动编辑
 
 ```
@@ -153,6 +157,29 @@ git clone <repo> <directory>
 
 ```bash 
 
+git status -s         # 以精简的方式显示文件状态
+
+git status            # 输出的命令很详细，但有些繁琐
+
+
+如果用 git status -s 或 git status --short 命令，会得到更为紧凑的格式输出
+
+	- 新添加的未跟踪文件前面有 ?? 标记，
+
+	- 新添加到暂存区中的文件前面有 A 标记，
+
+	- 修改过的文件前面有 M标记。M 有两个可以出现的位置:
+		出现在右边的 M 表示该文件被修改了但是还没放入暂存区
+		出现在靠左边的 M 表示该文件被修改了并放入了暂存区
+
+	输出标记会有两列,第一列是对staging区域而言,第二列是对working目录而言
+
+```
+
+<br>
+
+```bash 
+
 # 忽略文件
 
 未追踪的文件通常有两类:
@@ -161,7 +188,10 @@ git clone <repo> <directory>
 显然前者应该出现在 `git status` 的输出中，而后者一般没什么用
 
 因此，Git 允许你完全忽略这些文件，只需要将路径放在一个特定的 `.gitignore` 文件中。
-所有想要忽略的文件应该分别写在单独一行，`*` 字符用作通配符。
+所有想要忽略的文件应该分别写在单独一行，`*` 字符用作通配符, 如：
+	index.html     # 文件名
+	*.class        # 以.class 结尾的文件
+	target         # 目录名
 
 ```
 
@@ -191,8 +221,11 @@ git add <file>
 git add <directory>
 
 
-# 
-git add .
+git add .    # 提交新文件(new)和被修改(modified)文件，不包括被删除(deleted)文件
+
+git add -u   # 提交被修改(modified)和被删除(deleted)文件，不包括新文件(new)
+
+git add -A   # 提交所有变化
 
 
 git add -i
@@ -217,7 +250,7 @@ git add -i
 
 ```bash
 
-# 提交已经缓存的快照。但将 `<message>` 作为提交信息，而不是运行文本编辑器
+# 提交已经缓存的快照、将 `<message>` 作为提交信息，而不是运行文本编辑器
 git commit -m "<message>"
 
 
@@ -448,7 +481,7 @@ git push -f origin master        #强制用本地的代码去覆盖掉远程仓�
 
 共有两个项目成员（Neil 和 itdrizzle）进行开发：
 
-![image-20220405210657663](vx_images/image-20220405210657663.png)
+![image-20220406075626394](vx_images/image-20220406075626394.png)
 
 
 
@@ -510,9 +543,13 @@ itdrizzle 这时先将远程仓库的代码拉取到本地，而且使用了 git
 
 <br>
 
+
+
 # 三 撤销与删除
 
+## 1. git checkout
 
+`git checkout` 这个命令有三个不同的作用：检出文件、检出提交和检出分支（这里只关心前两种用法）
 
 - `git checkout <commit>` —— 更新工作目录中的所有文件，使得和某个特定提交中的文件一致。
 - `git checkout <commit> <file>` —— 它将工作目录中的 `<file>`文件变成` <commit> `中那个文件的拷贝，**并将它加入缓存区**。 [更多](https://github.com/geeeeeeeeek/git-recipes/wiki/2.5-检出之前的提交)
@@ -521,11 +558,51 @@ itdrizzle 这时先将远程仓库的代码拉取到本地，而且使用了 git
 - 将文件从暂存区中删除： `git rm --cached 文件`
 - 将 git 仓库中指定的更新记录恢复出来，并且覆盖暂存区和工作目录：`git rest --hard commitID` 
 
+
+
+<br>
+
+## 2. git revert
+
+
+
+<br>
+
+
+
+## 3. git reset
+
+
+
 <br/>
 
 
 
-# 四 Git问题汇总
+# 四 Git分支管理
+
+## 1. git branch
+
+
+
+
+
+
+
+## 2. git checkout
+
+
+
+
+
+## 3. git merge
+
+
+
+<br/>
+
+
+
+# 五 Git问题汇总
 
 ## 1.  ssh免登陆
 
@@ -538,9 +615,13 @@ itdrizzle 这时先将远程仓库的代码拉取到本地，而且使用了 git
 私钥名称：id_rsa
 
 ```bash
+
 ssh-keygen -t rsa -C "msdrizzle@outlook.com"    #进入gitbash , 使用如下命令，连续三次回车
-cat ~/.ssh/id_rsa.pub                           #查看公钥 (然后登录Gitee,在设置中找到SSHKEY将id_rsa.pub文件的内容复制进去即可)
+
+cat ~/.ssh/id_rsa.pub   #查看公钥 (然后登录Gitee,在设置中找到SSHKEY将id_rsa.pub文件的内容复制进去即可)
+
 ssh -T git@gitee.com -y                         #测试是否成功
+
 ```
 
 <br/>
@@ -549,9 +630,11 @@ ssh -T git@gitee.com -y                         #测试是否成功
 
 ## 2. 中文乱码问题
 ```bash
+
 git config --global core.quotepath false             #git status 乱码解决方法
 git config --global i18n.commitencoding utf-8        #git commit 乱码解决方法
 git config --global i18n.logoutputencoding utf-8     #git status 乱码解决方法
 
 #注意：如果是Linux系统，需要设置环境变量 export LESSCHARSET=utf-8
+
 ```

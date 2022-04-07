@@ -99,22 +99,28 @@ Tomcat的⽬录简介： （ 通过url访问服务器示例: http://localhost:80
 
 
 ```xml
+
 <!-- Windows下启动信息乱码的处理方式： 在conf文件夹下的logging.properties文件修改如下语句： 
 	此方法可以让其在cmd窗口中不乱码，但很可能与idea的utf8冲突，导致idea中启动Tomcat乱码...
 	故而不推荐修改，使用默认的UTF-8即可
 -->
 java.util.logging.ConsoleHandler.encoding = GBK  （UTF-8）
+
 ```
 
 ```xml
+
 <!-- server.xml 常用配置： 端口、协议等 -->
 <Connector port="8888" protocol="HTTP/1.1" connectionTimeout="20000" redirectPort="8443" />
+
 ```
 
 ```xml
+
 <!-- tomcat-users.xml文件用来配置管理Tomcat服务器的用户与权限 -->
 <role rolename="manager-gui"/> 
 <user username="admin" password="123456" roles="manager-gui"/>
+
 ```
 
 

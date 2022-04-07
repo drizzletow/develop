@@ -39,15 +39,27 @@ GitHub：https://github.com/itdrizzle/develop
 
 <br/>
 
-## JavaWeb+前端
+## Web(Frontend)
 
 * [HTML](Web/HTML.md) &nbsp;&nbsp;   [CSS](Web/CSS.md) &nbsp;&nbsp;  [JavaScript](Web/JavaScript.md) &nbsp;&nbsp;   [DOM和BOM](Web/WebAPI.md) &nbsp;&nbsp;   [jQuery、Ajax等常用技术和框架](Web/frame.md) &nbsp;&nbsp;   
 
 * [ECMAScript](Web/ES6.md) &nbsp;&nbsp;   [node和npm](Web/nodejs.md) &nbsp;&nbsp;     [Vue](Web/Vue.md) &nbsp;&nbsp;   [uniapp](Web/uniapp.md) &nbsp;&nbsp;   [小程序](Web/小程序.md) &nbsp;&nbsp;   
 
-* [XML和JSON](Web/XML.md) &nbsp;&nbsp;   [Servlet和JSP](Web/JavaWeb.md) &nbsp;&nbsp;  [MVC架构](Web/mvc.md) &nbsp;&nbsp;  
+
 
 <br/>
+
+
+## JavaEE(JavaWeb)
+
+* [XML和JSON](Javaee/XML.md) &nbsp;&nbsp;  [http协议](Javaee/http.md) &nbsp;&nbsp;  [Tomcat](Javaee/tomcat.md) &nbsp;&nbsp;  
+
+* [Servlet和JSP](Javaee/Servlet.md) &nbsp;&nbsp;  [MVC架构](Javaee/mvc.md) &nbsp;&nbsp;  
+
+
+
+<br/>
+
 
 ## 框架及中间件
 

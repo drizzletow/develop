@@ -195,3 +195,61 @@ end
 
 # 三 Ubuntu
 
+官网：https://ubuntu.com/
+
+## 1. vm tools
+[安装 Open VM Tools](https://docs.vmware.com/cn/VMware-Tools/11.3.0/com.vmware.vsphere.vmwaretools.doc/GUID-C48E1F14-240D-4DD1-8D4C-25B6EBE4BB0F.html) 
+
+```bash
+
+请确保已更新软件包索引：
+sudo apt-get update
+
+如果虚拟机具有 GUI（X11 等），请安装或升级 open-vm-tools-desktop：
+sudo apt-get install open-vm-tools-desktop
+
+否则，请使用以下命令安装 open-vm-tools：
+sudo apt-get install open-vm-tools
+
+```
+
+
+<br/>
+
+## 2. 语言和输入法
+
+
+<br/>
+
+
+
+
+
+
+
+## 3. 
+
+
+
+
+<br/>
+
+
+
+
+
+# 四 开发环境
+
+
+## 1. jdk
+
+##  2. mysql
+
+## 3. redis
+
+
+
+## n. 桌面软件
+
+
+<br/>
