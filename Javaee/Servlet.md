@@ -1,4 +1,16 @@
-#  一 Servlet
+#  一 Introduction
+
+官方文档：https://tomcat.apache.org/tomcat-8.5-doc/servletapi/
+
+A servlet is a small Java program that runs within a Web server. 
+
+Servlets receive and respond to requests from Web clients, usually across HTTP（the HyperText Transfer Protocol）
+
+Servlet是运行在服务器里面的一个程序，可以对客户端的请求做出响应。Servlet主要是用来生成动态web资源的
+
+<br>
+
+## 1. Servlet简介
 
  Servlet（Server Applet）全称Java Servlet （ Java服务器端程序 ）、主要功能在于：交互式地浏览和修改数据，⽣成动态Web内容
 
@@ -7,17 +19,21 @@
 
 ![image-20211031001649955](vx_images/image-20211031001649955.png)
 
-![image-20211031003242807](vx_images/image-20211031003242807.png)
-
-![image-20211031165350044](vx_images/image-20211031165350044.png)
+<br>
 
 
 
-## 1. Servlet使用步骤
+## 2. Servlet使用步骤
 
 - 建立一个JavaWeb Application项目并配置Tomcat服务器
 
-- 自定义类 `实现Servlet接口` 或 `继承HttpServlet类并重写service方法`（推荐后者）
+- 自定义类： `实现Servlet接口` 或 `继承HttpServlet类并重写 doXXX 方法`（推荐后者）
+
+  所有请求的入口都是service方法，HttpServlet 实现了 service 方法，通过继承HttpServlet的类也就有了service方法的实现，
+
+  service根据请求方法（get / post / ... ）来调用对应的 doXXX 方法，我们只需要实现 doXXX方法即可
+
+  如果非要自己实现 service 方法，请继承 GenericServlet 这个抽象类，或实现 Servlet 接口
 
   ```java
   @WebServlet(name = "LoginServlet", value = "/LoginServlet")
@@ -46,7 +62,12 @@
           }
       }
   }
+  
   ```
+
+  <br/>
+
+  
 
 - 配置访问路径：使用注解（如上） 或 将自定义类的信息配置到 `web.xml` 文件并启动项目，配置方式如下所示：
 
@@ -61,15 +82,21 @@
      <servlet-name>helloServlet</servlet-name>
      <url-pattern>/hello</url-pattern>
   </servlet-mapping>
+  
   ```
 
 - 启动Tomcat、浏览器上访问的路径为：`http://localhost:8080/工程路径/url-pattern的内容`   
 
 
 
+<br>
+
+## 3. Servlet编码问题
+
 Request和Response的乱码问题： （ *在service中使用的编码解码方式默认为：ISO-8859-1编码* ）
 
 ```java
+
 // Request乱码问题的解决方法
 request.setCharacterEncoding("UTF-8");                             // 解决post提交方式的乱码
 String name = request.getParameter("name");                        // 接收到get请求的中文字符串 
@@ -81,52 +108,485 @@ response.setHeader("Content-Type", "text/html;charset=utf-8");  // 通知浏览�
 
 // Response的乱码问题(解决方式二)
 response.setContentType("text/html;charset=utf-8");
+
 ```
 
 
 
-## 2. 请求和响应
+<br>
 
-当客户请求到来时，Servlet容器创建一个ServletRequest对象，封装请求数据，同时创建一个ServletResponse对象，封装响应数据
+## 4. Servlet生命周期
 
-**javax.servlet.ServletRequest** 接口主要用于：向servlet提供客户端请求信息，从中获取到请求信息 
+This interface defines methods to initialize a servlet, to service requests, and to remove a servlet from the server. These are known as life-cycle methods and are called in the following sequence:
 
-**javax.servlet.ServletResponse**接口用于定义一个对象来帮助Servlet向客户端发送响应  
+1. The servlet is constructed, then initialized with the `init` method.
+2. **Any calls from clients to the `service` method are handled.**
+3. The servlet is taken out of service, then destroyed with the `destroy` method, then garbage collected and finalized.
 
-| ServletRequest接口常用方法                                   | 说明                                                  |
-| ------------------------------------------------------------ | ----------------------------------------------------- |
-| `String getParameter(String name)`                           | 以字符串形式返回请求参数的值                          |
-| `public String[] getParameterValues(String name)`            | 返回请求中name参数所有的值                            |
-| `public void setAttribute(String name,Object o)`             | 保存名字为name的属性                                  |
-| `public void removeAttribute(String name)`                   | 移除请求中名字为name的属性                            |
-| `public void setCharacterEncoding(String env)`               | 设置字符编码（解决post提交方式的乱码）                |
-| `public RequestDispatcher getRequestDispatcher(String path)` | 返回RequestDispatcher对象，作为path所定位的资源的封装 |
+![image-20211031003242807](vx_images/image-20211031003242807.png)
 
-| ServletResponse接口常用方法                        | 说明                                                    |
-| -------------------------------------------------- | ------------------------------------------------------- |
-| `public ServletOutputStream getOutputStream()`     | 返回ServletOutputStream对象，用于在响应中写入二进制数据 |
-| `public PrintWriter getWriter()`                   | 返回PrintWriter对象，用于发送字符文本到客户端           |
-| `public void setCharacterEncoding(String charset)` | 设置发送到客户端的响应的字符编码                        |
-| `public void setContentType(String type)`          | 设置发送到客户端响应的内容类型                          |
+![image-20211031165350044](vx_images/image-20211031165350044.png)
+
+<br/>
+
+```java
+
+@WebServlet("/hello")
+public class HelloServlet extends HttpServlet {
+
+    // init默认情况下会在当前servlet第一次被调用之前调用
+    @Override
+    public void init() throws ServletException {
+        super.init();
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) 
+        throws ServletException, IOException {
+        resp.getWriter().println("hello");
+    }
+
+    // 当前应用被卸载、服务器被关闭 时调用
+    @Override
+    public void destroy() {
+        super.destroy();
+    }
+}
+
+```
+
+init、destroy方法有什么意义？
+
+这两个方法分别会在当前servlet被创建以及被销毁的时候调用，
+
+如果你的某个业务逻辑恰好也需要在该时间点去做一些操作，那么就可以把你的代码逻辑写在该方法中。
+
+<br>
+
+使用场景：统计每个servlet处理请求的次数，统计哪个servlet的访问量最高
+
+方式一：每当用户访问一次，那么我将本地访问操作写入数据库，最终统计数据库里面某个地址出现的次数（频繁交互）
+
+方式二：在servlet中定义一个成员变量，每当用户访问一次，变量值+1，destroy方法中将次数以及对应的地址写入数据库，重新上线之后，init方法中重新去读取数据库里面的值 
+
+<br>
+
+关于init方法，还有一个补充，默认情况下，是在**客户端第一次访问当前servlet之前被调用**，也可以设置一个参数
+
+`load-on-startup=非负数` ，servlet的init方法就会随着应用的启动而被调用
+
+```java
+
+// 注解方式
+@WebServlet(value = "/login",loadOnStartup = 1)
+
+```
+
+```xml
+
+<!-- xml配置文件 -->
+<servlet>
+    <servlet-name>first</servlet-name>
+    <servlet-class>com.xxxx.servlet.FirstServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+</servlet>
+
+```
 
 
 
-**javax.servlet.http.HttpServletRequest**接口是ServletRequest接口的子接口，主要用于提供HTTP请求信息的功能
-
-**javax.servlet.ServletResponse**接口用于定义一个对象来帮助Servlet向客户端发送响应 
-
-| HttpServletRequest接口常用方法              | 说明                                                         |
-| ------------------------------------------- | ------------------------------------------------------------ |
-| `public Cookie[] getCookies()`              | 返回客户端在此次请求中发送的所有Cookie对象                   |
-| `public voidaddCookie(Cookie cookie) `      | 添加一个Cookie到响应中                                       |
-| `public HttpSession getSession()`           | 返回和此次请求相关联的Session，如果没有给客户端分配Session，<br />则创建一个新的Session |
-| `public void sendRedirect(String location)` | 发送一个临时的重定向响应到客户端，让客户端访问新的URL        |
+<br>
 
 
 
-## 3. ServletConfig
+## 5. JavaToJavaWeb
+
+idea中将 javase 项目改造为 javaweb 项目：
+
+
+
+新建一个java普通项目，并在该项目根目录下新建一个 web 目录
+
+![image-20220408164426017](vx_images/image-20220408164426017.png)
+
+<br/>
+
+### 1) WEB-INF 
+
+将 web 目录设置为 资源目录：
+
+![image-20220408165257150](vx_images/image-20220408165257150.png)
+
+此时web目录下会新增 WEB-INF 目录，且WEB-INF 目录下有一个web.xml目录
+
+<br/>
+
+
+
+### 2) 项目配置修改
+
+此时还需设置 Artifacts：
+
+![image-20220408170425489](vx_images/image-20220408170425489.png)
+
+
+
+<br>
+
+配置本地Tomcat服务器：
+
+![image-20220408170030452](vx_images/image-20220408170030452.png)
+
+
+
+点击Fix，使用前面设置的 Artifacts ，再设置一下 Deployment ，如下：
+
+![image-20220408170637873](vx_images/image-20220408170637873.png)
+
+<br/>
+
+
+
+### 3) 访问静态资源
+
+这时已经可以启动项目访问静态资源了，先在 web 目录下新建一个 index.html, 再启动项目
+
+![image-20220408170941550](vx_images/image-20220408170941550.png)
+
+
+
+![image-20220408171156503](vx_images/image-20220408171156503.png)
+
+<br/>
+
+
+
+### 4) Servlet设置
+
+想要实现servlet 相关的功能，必须要是用其 jar包，由于是java普通项目，这里这能借助 Tomcat 下的库来使用
+
+![image-20220408173515405](vx_images/image-20220408173515405.png)
+
+<br>
+
+然后新建一个Servlet，如下：
+
+![image-20220408175403703](vx_images/image-20220408175403703.png)
+
+
+
+重新部署项目，访问：http://localhost:8080/se2ee/hello
+
+![image-20220408175600698](vx_images/image-20220408175600698.png)
+
+end~~
+
+
+
+<br/>
+
+
+
+## 6. url-pattern详解
+
+1、一个servlet可不可以设置多个url-pattern？ 可以
+
+```java
+
+@WebServlet(value = {"/hello","/helloServlet"},loadOnStartup = 1)
+
+```
+
+<br/>
+
+2、多个servlet可不可以映射到同一个url-pattern？ 不可以
+
+```java
+
+/* 会抛出异常
+Caused by: java.lang.IllegalArgumentException: 
+The servlets named [com.xxxxx.servlet.servlet.HelloServlet] and 			 
+                   [com.xxxxx.servlet.servlet.HelloServlet2] 
+are both mapped to the url-pattern [/hello] which is not permitted
+
+```
+
+<br/>
+
+3、url-pattern 的合法写法有哪些呢？
+
+```java
+
+/*
+url-pattern的合法写法只有两种:
+
+	/xxxxx    如 /user/login 、 /user/* 、 /* 、 /(DefaultServlet，下面会详细介绍) 等等
+	
+	*.xxxx    如 *.html	
+	
+常见错误写法：比如直接写 servletTest ( 没加 `/` )、  /hello*.do （ 中间加通配符 ）、 /user/*.do
+    
+Caused by: java.lang.IllegalArgumentException: Invalid <url-pattern> [servletTest] in servlet mapping
+
+```
+
+![image-20220408195921035](vx_images/image-20220408195921035.png)
+
+<br/>
+
+
+
+### 1) 优先级问题
+
+任何一个请求，最终都只会交给一个servlet来处理，
+
+如果使用了通配符、有多个servlet都可以处理该请求，那么需要去选出一个优先级最高的来处理
+
+```java
+
+/*
+1. /xxxx  优先级要高于  .xxxx    但 /(DefaultServlet，下面会详细介绍) 例外
+
+2. 如果都是/xxxxx, 那么匹配程度越高，优先级越高 
+
+	/user/login (精确匹配)  > /user/*  >  /*
+	
+总结： 精确路径 > 最长路径 > 后缀匹配 
+
+```
+
+<br/>
+
+示例 （ 特殊的 /* ）：
+
+![image-20220408203938810](vx_images/image-20220408203938810.png)
+
+值得注意的是 jsp 文件实际也是一个 servlet，Tomcat中有一个统一处理 jsp 的 Servlet
+
+```xml
+ 
+ <!--Tomcat的 conf\web.xml 文件 -->
+ 
+<servlet>
+    <servlet-name>jsp</servlet-name>
+    <servlet-class>org.apache.jasper.servlet.JspServlet</servlet-class>
+    <init-param>
+        <param-name>fork</param-name>
+        <param-value>false</param-value>
+    </init-param>
+    <init-param>
+        <param-name>xpoweredBy</param-name>
+        <param-value>false</param-value>
+    </init-param>
+    <load-on-startup>3</load-on-startup>
+</servlet>
+
+<!-- The mappings for the JSP servlet -->
+<servlet-mapping>
+    <servlet-name>jsp</servlet-name>
+    <url-pattern>*.jsp</url-pattern>
+    <url-pattern>*.jspx</url-pattern>
+</servlet-mapping>
+
+```
+
+但是由于 `/*` 的优先级大于 `*.jsp`，显然这里两个以jsp结尾的请求只能由我们自定义的 myServlet 来处理
+
+
+
+<br/>
+
+
+
+### 2) 缺省Servlet
+
+在上例的基础上，我们继续增加了一个 login.html 文件、和一个 MyDefaultServlet 
+
+先看看这两个请求（毫无疑问，由于 /* 的优先级在这儿最高，结果跟上面一样）
+
+![image-20220408205735576](vx_images/image-20220408205735576.png)
+
+<br/>
+
+现在 注释掉 `/*` ，再看看结果：
+
+![image-20220408210416290](vx_images/image-20220408210416290.png)
+
+a.jsp 匹配了 Tomcat 提供的 `*jsp` （如果非要比较  `*.jsp` 和 `/` 的优先级，想必结果已经不言而喻了）
+
+```xml
+
+<!-- 上面的请求即使我们不写 a.jsp， Tomcat的 conf/web.xml中也定义了默认的页面，所以并不会去匹配 我们定义的 / -->
+<welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+</welcome-file-list>
+
+```
+
+<br>
+
+可以得出如下结论：`/` 处理的是那些没有任何servlet可以处理的请求（一般为静态资源），故 `/` 又称为DefaultServlet（缺省Servlet）
+
+其实、如果我们不定义缺省的Servlet，Tomcat已经定义了一个，如下：
+
+```xml
+ 
+ <!--Tomcat的 conf\web.xml 文件 -->
+ 
+<servlet>
+    <servlet-name>default</servlet-name>
+    <servlet-class>org.apache.catalina.servlets.DefaultServlet</servlet-class>
+    <init-param>
+        <param-name>debug</param-name>
+        <param-value>0</param-value>
+    </init-param>
+    <init-param>
+        <param-name>listings</param-name>
+        <param-value>false</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+</servlet>
+
+<servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>/</url-pattern>
+</servlet-mapping>
+
+```
+
+DefaultServlet 会去寻找对应的静态资源，若存在则返回对应静态资源，否则返回404
+
+参照下图：
+
+![image-20220408212201594](vx_images/image-20220408212201594.png)
+
+<br>
+
+## 7. Servlet执行流程
+
+```bash
+
+Servlet的执行流程:
+
+1. 浏览器发起请求（域名解析，TCP连接建立，发送HTTP请求）
+
+2. 请求到达服务器主机，被监听80端口号的服务器程序接收到，实际是被Connector接收到，
+
+    将请求报文解析成为request对象，同时提供一个response对象
+
+3. Connector将这两个对象传给Engine，Engine进一步传给Host
+
+4. Host根据会去挑选一个合适的Context应用，如果找到，则交给该Context去处理，
+
+    如果没有找到，则会交给ROOT应用来处理
+
+5. Context 根据 url-pattern 和Servlet之间的映射关系，将请求交给 对应的Servlet 
+
+    若没有对应的Servlet，则交给 DefaultServlet 处理（返回静态资源或404）
+
+6. 对应的Servlet运行service方法（反射），运行service方法时需要传递两个参数，
+
+  使用一路传递过来的request、response恰好作为参数传递进去，执行方法
+
+7. Connector通过response里面的数据， 生成响应报文，发送回客户端
+
+```
+
+
+
+<br/>
+
+
+
+## 8. Servlet注解开发
+
+Servlet3.0的出现是servlet史上最大的变革，其中的许多新特性大大的简化了web应用的开发
+
+Servlet3.0提供的注解(annotation)，使得不再需要在web.xml文件中进行Servlet的部署描述，简化开发流程
+
+注解配置：` @WebServlet`   常⽤属性如下：
+
+| @WebServlet注解属性 | 类型           | 说明                                                         |
+| ------------------- | -------------- | ------------------------------------------------------------ |
+| asyncSupported      | boolean        | 指定Servlet是否⽀持异步操作模式                              |
+| displayName         | String         | 指定Servlet显示名称                                          |
+| initParams          | webInitParam[] | 配置初始化参数                                               |
+| loadOnStartup       | int            | 标记容器是否在应⽤启动时就加载这个 Servlet，等价于配置⽂件中的标签 |
+| name                | String         | 指定Servlet名称                                              |
+| urlPatterns/value   | String[]       | 这两个属性作⽤相同，指定Servlet处理的url                     |
+
+- `loadOnStartup`属性：
+
+  标记容器是否在启动应⽤时就加载Servlet、默认不配置或数值为负数时表示客户端第⼀次请求Servlet时再加载；
+
+  0或正数表示启动应⽤就加载，正数情况下，数值越⼩，加载该 Servlet的优先级越⾼
+
+- `name`属性：
+
+  可以指定也可以不指定，通过getServletName()可以获取到，若不指定，则为Servlet的 完整类名
+
+  如：`cn.edu.UserServlet ` 
+
+- `urlPatterns/value` 属性： String[]类型，可以配置多个映射、如：`urlPatterns={"/user/test", "/user/example"}` 
+
+<br/>
+
+```java
+
+@WebServlet(name = "myUserServlet", urlPatterns = "/user/test",    // 必须有斜杠
+ 			loadOnStartup = 1, 
+			initParams = {
+                 @WebInitParam(name="name", value="zhangsan"),
+                 @WebInitParam(name="pwd", value="123456")
+             }
+)
+public class UserServlet extends HttpServlet {
+    // ......
+}
+
+
+// 通常只需要设置访问路径即可
+@WebServlet("/user/test")
+public class UserServlet extends HttpServlet {
+    // ......
+}
+
+```
+
+<br>
+
+
+
+# 三 Servlet
+
+## 1. ServletConfig
 
 Servlet容器使用ServletConfig对象在Servlet初始化期间向它传递配置信息，一个Servlet只有一个ServletConfig对象 
+
+我们也可以通过该对象来获取一些servlet的**初始化参数**。
+
+```xml
+
+<!--xml中的初始化参数-->
+<servlet>
+    <servlet-name>default</servlet-name>
+    <servlet-class>org.apache.catalina.servlets.DefaultServlet</servlet-class>
+    <init-param>
+        <param-name>debug</param-name>
+        <param-value>0</param-value>
+    </init-param>
+    <init-param>
+        <param-name>listings</param-name>
+        <param-value>false</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+</servlet>
+
+```
+
+<br/>
 
 | ServletConfig接口方法                         | 说明                                      |
 | --------------------------------------------- | ----------------------------------------- |
@@ -135,19 +595,50 @@ Servlet容器使用ServletConfig对象在Servlet初始化期间向它传递配�
 | `public ServletContext getServletContext()`   | 返回Servlet上下文对象的引用               |
 | `public String getServletName()`              | 返回Servlet实例的名字                     |
 
-```java
-// 获取ServletConfig 对象的方法
-ServletConfig config = this.getServletConfig();
+<br>
 
-// 获取初始化的参数和值 （初始化参数可以在web.xml配置文件或注解中进行配置）
-String uname = config.getInitParameter("uname");
+```java
+
+public class ConfigServlet extends GenericServlet {
+    @Override
+    public void service(ServletRequest servletRequest, ServletResponse servletResponse) 
+        throws ServletException, IOException {
+        
+        //在程序运行时可以获取到该servlet初始化参数 init-param
+        // 1. 拿到ServletConfig对象
+        ServletConfig servletConfig = getServletConfig();
+        
+        // 2. 获取初始化的参数和值 （初始化参数可以在web.xml配置文件或注解中进行配置）
+        String name = servletConfig.getInitParameter("name");
+        System.out.println(name);
+    }
+}
+
 ```
 
+关于ServletConfig：了解即可 (如果看到别人的代码这么写，知道什么意思即可)
+
+<br>
 
 
-## 4. ServletContext
 
-Servlet容器在Web应用程序加载时创建ServletContext对象，在Web应用程序运行时，ServletContext对象可以被Web应用程序中所有的Servlet所访问
+## 2. ServletContext
+
+对象的生命周期基本上是和应用的生命周期是一一对应的，该对象就是应用的一个抽象。
+
+Servlet容器在Web应用程序加载时创建ServletContext对象，应用被销毁，该对象也会被销毁，
+
+SerletContext对象中封装了非常多的应用的信息。
+
+<br/>
+
+该对象在一个应用中有且只有唯一的一个、在Web应用程序运行时，ServletContext对象可以被Web应用程序中所有的Servlet所访问
+
+即SerletContext可以实现servlet之间的数据共享（数据共享还有其他方式如：数据库、序列化、Redis等）
+
+<br/>
+
+
 
 获取ServletContext对象的方法：
 
@@ -171,8 +662,11 @@ protected void doPost(HttpServletRequest req, HttpServletResponse resp)
     
     // 方法四：通过HttpSession获取
     ServletContext servletContext = req.getSession().getServletContext();
-}   
+} 
+
 ```
+
+<br>
 
 ServletContext属性属于共享属性（任何一个Servlet都可以设置、读取某个属性）， 读取、移除和设置共享属性的方法：
 
@@ -187,6 +681,192 @@ ServletContext属性属于共享属性（任何一个Servlet都可以设置、�
 | `public RequestDispatcher getRequestDispatcher(String path)` | 返回一个RequestDispatcher对象 |
 | `　public RequestDispatcher getNamedDispatcher(String name)` | 同上、但参数为 servlet-name   |
 
+<br>
+
+
+
+**Servlet下文件的路径问题**：
+
+```java
+
+public class PathServlet extends HttpServlet {
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+        throws ServletException, IOException {
+        
+        // 普通java项目的相对路径是用户的工作目录： src 下
+        // web项目（ee项目）的本质其实就是写了一些代码片段来供服务器调用
+        // 故在servlet中通过下面的方式获取路径，得到的是Tomcat的 bin 目录
+        File file = new File("1.txt");               
+        System.out.println(file.getAbsolutePath());  // D:\apache-tomcat-8.5.37\bin\1.txt
+        
+        
+        // 如何获取应用路径 docBase ---- 利用ServletContext可以获取应用的docBase
+        // 我们通过虚拟映射等配置应用的应用名、docBase，这些配置项是会被tomcat读取的
+        // 所以tomcat肯定可以知道某个应用的应用路径
+        // tomcat给开发者提供了一个获取应用路径的方式，那就是利用servletrContext来获取
+        ServletContext servletContext = getServletContext();
+        
+        //方式一：输入空字符串，返回docBase
+        String realPath = servletContext.getRealPath("");
+        System.out.println(realPath);
+        
+        //方式二：里面输入一个相对应用根目录的相对路径，可以返回文件的绝对路径
+        String realPath1 = servletContext.getRealPath("1.txt");
+        System.out.println(realPath1);
+    }
+}
+
+```
+
+
+
+<br/>
+
+
+
+## 3. ServletRequest
+
+当客户请求到来时，Servlet容器创建一个ServletRequest对象，封装请求数据，同时创建一个ServletResponse对象，封装响应数据
+
+**javax.servlet.ServletRequest** 接口主要用于：向servlet提供客户端请求信息，从中获取到请求信息 
+
+**javax.servlet.ServletResponse**接口用于定义一个对象来帮助Servlet向客户端发送响应  
+
+<br>
+
+| ServletRequest接口常用方法                                   | 说明                                                  |
+| ------------------------------------------------------------ | ----------------------------------------------------- |
+| `String getParameter(String name)`                           | 以字符串形式返回请求参数的值                          |
+| `public String[] getParameterValues(String name)`            | 返回请求中name参数所有的值                            |
+| `public void setAttribute(String name,Object o)`             | 保存名字为name的属性                                  |
+| `public void removeAttribute(String name)`                   | 移除请求中名字为name的属性                            |
+| `public void setCharacterEncoding(String env)`               | 设置字符编码（解决post提交方式的乱码）                |
+| `public RequestDispatcher getRequestDispatcher(String path)` | 返回RequestDispatcher对象，作为path所定位的资源的封装 |
+
+<br/>
+
+```java
+
+// ServletRequest 使用示例
+@WebServlet("/hello")
+public class HelloServlet extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) 
+        throws ServletException, IOException {
+
+        StringBuilder result = new StringBuilder();
+        
+        // 请求行信息
+        result.append("Method: ").append(req.getMethod()).append("\r\n");
+        result.append("RequestURI: ").append(req.getRequestURI()).append("\r\n");
+        result.append("RequestURL: ").append(req.getRequestURL()).append("\r\n");
+        result.append("Protocol: ").append(req.getProtocol()).append("\r\n\r\n");
+
+        // 请求头信息
+        Enumeration<String> headerNames = req.getHeaderNames();
+        while (headerNames.hasMoreElements()){
+            StringBuilder headerLine = new StringBuilder();
+
+            String headerName = headerNames.nextElement();
+            headerLine.append(headerName).append(": ").append(req.getHeader(headerName));
+
+            result.append(headerLine).append("\r\n");
+        }
+
+        // 用户信息
+        String remoteUser = req.getRemoteUser();
+        String remoteAddr = req.getRemoteAddr();
+        String remoteHost = req.getRemoteHost();
+        int remotePort = req.getRemotePort();
+
+        result.append("\r\n").append("User: ").append(remoteUser).append("\r\n");
+        result.append("User Addr: ").append(remoteAddr).append("\r\n");
+        result.append("User Host: ").append(remoteHost).append("\r\n");
+        result.append("User Port: ").append(remotePort).append("\r\n\r\n");
+
+        // 服务器信息
+        String localAddr = req.getLocalAddr();
+        String localName = req.getLocalName();
+        int localPort = req.getLocalPort();
+        result.append("Server Addr: ").append(localAddr).append("\r\n");
+        result.append("Server Name: ").append(localName).append("\r\n");
+        result.append("Server Port: ").append(localPort).append("\r\n\r\n");
+
+
+        // 获取表单请求参数
+        Enumeration<String> parameterNames = req.getParameterNames();
+        while(parameterNames.hasMoreElements()){
+            String paraName = parameterNames.nextElement();
+            String parameter = req.getParameter(paraName);
+
+            result.append("Parameter-").append(paraName).append(": ").append(parameter).append("\r\n");
+        }
+
+
+        // 将信息保存到 应用根目录下的 request.txt
+        ServletContext servletContext = getServletContext();
+
+        // InputStream inputStream = servletContext.getResourceAsStream("request.txt");
+
+        String path = servletContext.getRealPath("request.txt");
+        // FileWriter writer = new FileWriter(path);
+        // writer.write(String.valueOf(result));
+        FileOutputStream fileOutputStream = new FileOutputStream(path);
+        fileOutputStream.write(String.valueOf(result).getBytes());
+        fileOutputStream.close();
+
+        // 将信息响应给客户端
+        resp.getWriter().println(result);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) 
+        throws ServletException, IOException {
+        this.doGet(req, resp);
+    }
+
+}
+
+```
+
+<br>
+
+![image-20220409171505296](vx_images/image-20220409171505296.png)
+
+
+
+<br>
+
+
+
+## 4. ServletResponse
+
+| ServletResponse接口常用方法                        | 说明                                                    |
+| -------------------------------------------------- | ------------------------------------------------------- |
+| `public ServletOutputStream getOutputStream()`     | 返回ServletOutputStream对象，用于在响应中写入二进制数据 |
+| `public PrintWriter getWriter()`                   | 返回PrintWriter对象，用于发送字符文本到客户端           |
+| `public void setCharacterEncoding(String charset)` | 设置发送到客户端的响应的字符编码                        |
+| `public void setContentType(String type)`          | 设置发送到客户端响应的内容类型                          |
+
+<br>
+
+**javax.servlet.http.HttpServletRequest**接口是ServletRequest接口的子接口，主要用于提供HTTP请求信息的功能
+
+**javax.servlet.ServletResponse**接口用于定义一个对象来帮助Servlet向客户端发送响应 
+
+| HttpServletRequest接口常用方法              | 说明                                                         |
+| ------------------------------------------- | ------------------------------------------------------------ |
+| `public Cookie[] getCookies()`              | 返回客户端在此次请求中发送的所有Cookie对象                   |
+| `public voidaddCookie(Cookie cookie) `      | 添加一个Cookie到响应中                                       |
+| `public HttpSession getSession()`           | 返回和此次请求相关联的Session，如果没有给客户端分配Session，<br />则创建一个新的Session |
+| `public void sendRedirect(String location)` | 发送一个临时的重定向响应到客户端，让客户端访问新的URL        |
+
+<br>
+
+
+
 
 
 ## 5. 转发和重定向
@@ -198,7 +878,7 @@ ServletContext属性属于共享属性（任何一个Servlet都可以设置、�
 | `public void forward(ServletRequest request, ServletResponse response)` | 将请求从一个Servlet传递给服务器上的另外的Servlet、JSP页面或者是HTML文件 |
 | `public void include(ServletRequest request,ServletResponse response)` | 在响应中包含其他资源（Servlet、JSP页面或HTML文件）的内容     |
 
-
+<br>
 
 有三种方法可以得到RequestDispatcher对象：
 
@@ -219,7 +899,7 @@ getServletContext().getRequestDispatcher("/index.jsp").forward(request, response
 
 - ServletContext接口中的 `getRequestDispatcher() ` 方法的参数必须以斜杠（/）开始，被解释为相对于当前上下文根（context root）的路径、例如：`/myservlet` 是合法的路径，而 `../myservlet` 是不合法的路径
 
-  
+  <br>
 
 转发和重定向的区别：
 
@@ -238,7 +918,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
 
 
 
-
+<br>
 
 ## 6. Cookie和Session
 
@@ -268,18 +948,22 @@ cookie.setMaxAge(0);                           // 删除cookie的关键（设置
 response.addCookie(cookie);                    // 将有效时间为0的cookie发送给浏览器（达到删除cookie的目的）
 ```
 
-
+<br>
 
 Session是另⼀种记录客户状态的机制，不同的是Cookie保存在客户端浏览器中，⽽Session保存在服务器上、Session对象是在客户端第⼀次请求服务器的时候创建的
 
 ```java
+
 HttpSession session = request.getSession();    // 获取Session对象
 session.setAttribute("loginTime", new Date()); // 设置Session中的属性
 out.println("登录时间为：" +(Date)session.getAttribute("loginTime")); // 获取Session属性
 
 getMaxInactiveInterval();     // 获取Session的超时时间maxInactiveInterval属性
 setMaxInactiveInterval(longinterval);  // 修改Session的超时时间
+
 ```
+
+<br>
 
 | HttpSession接口方法                                 | 说明                                                |
 | --------------------------------------------------- | --------------------------------------------------- |
@@ -308,7 +992,7 @@ setMaxInactiveInterval(longinterval);  // 修改Session的超时时间
 </session-config>
 ```
 
-
+<br>
 
 在Servlet规范中，用于会话跟踪的Cookie的名字必须是JSESSIONID
 
@@ -317,6 +1001,7 @@ setMaxInactiveInterval(longinterval);  // 修改Session的超时时间
 - 如果客户端浏览器将Cookie功能禁用，或者不支持Cookie怎么办？Java Web提供了另一种解决方案：URL地址重写
 
 ```java
+
 // URL重写就是在URL中附加标识客户的Session ID
 // Servlet容器解释URL，取出Session ID，根据Session ID将请求与特定的Session关联
 
@@ -325,14 +1010,19 @@ HttpSession session=request.getSession();
 String path="sess;jsessionid="+session.getId();
 String path=response.encodeURL("sess");
 response.sendRedirect(path);
+
 ```
+
+<br>
 
 ```jsp
+
 // 页面中使用
 <a href="sess;jsessionid=${requestScope.id}">点击</a>
+
 ```
 
-
+<br>
 
 ## 7. 监听器和过滤器
 
@@ -376,7 +1066,7 @@ public class MyListener implements ServletContextListener, HttpSessionAttributeL
 }
 ```
 
-
+<br>
 
 过滤器（Filter）是从Servlet 2.3规范开始新增的功能，并在Servlet 2.4规范中得到增强。过滤器是一个驻留在服务器端的Web组件，它可以截取客户端和资源之间的请求与响应信息，并对这些信息进行过滤
 
@@ -416,58 +1106,7 @@ public class LoginFilter implements Filter {
 </filter-mapping>
 ```
 
-
-
-## 8. Servlet3.0-注解
-
-Servlet3.0的出现是servlet史上最大的变革，其中的许多新特性大大的简化了web应用的开发，主要新特性有以下几个：
-
-- 引入注解配置
-- 支持web模块化开发
-- 程序异步处理
-- 改进文件上传API
-- 非阻塞式IO读取流
-- Websocket实时通信
-
-Servlet3.0提供的注解(annotation)，使得不再需要在web.xml文件中进行Servlet的部署描述，简化开发流程
-
-注解配置Servlet 、`@WebServlet` 常⽤属性：
-
-| @WebServlet注解属性 | 类型           | 说明                                                         |
-| ------------------- | -------------- | ------------------------------------------------------------ |
-| asyncSupported      | boolean        | 指定Servlet是否⽀持异步操作模式                              |
-| displayName         | String         | 指定Servlet显示名称                                          |
-| initParams          | webInitParam[] | 配置初始化参数                                               |
-| loadOnStartup       | int            | 标记容器是否在应⽤启动时就加载这个 Servlet，等价于配置⽂件中的标签 |
-| name                | String         | 指定Servlet名称                                              |
-| urlPatterns/value   | String[]       | 这两个属性作⽤相同，指定Servlet处理的url                     |
-
-- `loadOnStartup`属性：标记容器是否在启动应⽤时就加载Servlet、默认不配置或数值为负数时表示客户端第⼀次请求Servlet时再加载；0或正数表示启动应⽤就加载，正数情况下，数值越⼩，加载该 Servlet的优先级越⾼
-
-- `name`属性：可以指定也可以不指定，通过getServletName()可以获取到，若不指定，则为Servlet的 完整类名
-
-  如：`cn.edu.UserServlet `
-
-- urlPatterns/value属性： String[]类型，可以配置多个映射、如：`urlPatterns={"/user/test", "/user/example"}`
-
-```java
-@WebServlet(name = "myUserServlet", urlPatterns = "/user/test", //斜杠必须
- 			loadOnStartup = 1, 
-			 initParams = {
-                 @WebInitParam(name="name", value="⼩明"),
-                 @WebInitParam(name="pwd", value="123456")
-             }
-)
-public class UserServlet extends HttpServlet {
-    // ......
-}
-
-// 通常只需要设置访问路径即可
-@WebServlet("/user/test")
-public class UserServlet extends HttpServlet {
-    // ......
-}
-```
+<br>
 
 
 
@@ -513,7 +1152,7 @@ public class FileUploadServlet extends HttpServlet {
 
 - FileUpload 是 Apache 组织提供的免费上传组件。可以从 Apache 网站下载。相比 SmartUpload 开发、FileUpload 稍微复杂一些。但SmartUpload 已经多年没更新了， 而FileUpload 有 Apache 的加持，框架开发如 Structs2 和 SpringMVC 整合的都是 FileUpload。
 
-  
+  <br>
 
 SmartUpload上传文件步骤：
 
@@ -554,6 +1193,7 @@ try {
 ```
 
 ```java
+
 // 文件下载代码：
 String filename = request.getParameter("filename");
 
@@ -566,11 +1206,12 @@ response.addHeader("Content-Disposition", "attachment;filename="+filename);
 
 request.getRequestDispatcher("file/"+filename).forward(request,response);
 response.flushBuffer();
+
 ```
 
 
 
-
+<br>
 
 FileUpload上传文件步骤：
 
@@ -592,7 +1233,7 @@ FileUpload上传文件步骤：
 
 
 
-
+<br>
 
 
 
@@ -617,6 +1258,8 @@ JSP全名为Java Server Pages，中⽂名叫java服务器⻚⾯，其根本是�
 <%-- JSP注释 --%>
 ```
 
+<br>
+
 
 
 ## 1. JSP运行机制
@@ -639,6 +1282,8 @@ Note：
 
 - 在JSP执行期间，JSP容器会检查JSP文件，看是否有更新或修改。如果有更新或修改，则JSP容器会再次编译JSP或Servlet；如果没有更新或修改，就直接执行前面产生的Servlet，这也是JSP相对于Servlet的好处之一
 
+<br>
+
 
 
 ## 2. JSP指令元素
@@ -660,6 +1305,8 @@ session：当前页面是否可以使用session，默认为false，表示在JSP�
 extends：指定JSP编译的servlet的父类！ 
 --%>
 ```
+
+<br>
 
 | page指令常用属性                             | 默认值 | 作用                                                         |
 | -------------------------------------------- | ------ | ------------------------------------------------------------ |
@@ -685,7 +1332,7 @@ prefix：指定标签前缀，这个东西可以随意起名
 uri：   指定第三方标签库的uri（唯一标识）
 ```
 
-
+<br>
 
 ## 3. JSP脚本元素
 
@@ -720,7 +1367,7 @@ Today is
 
 ```
 
-
+<br>
 
 ## 4. JSP动作元素
 
@@ -766,7 +1413,7 @@ public class TestBean {
 
 
 
-
+<br>
 
 ## 5. JSP隐含对象
 
@@ -784,7 +1431,7 @@ public class TestBean {
 | page        | java.lang.Object                       | 代表当前JSP的对象                        |
 | exception   | java.lang.Throwable                    | 页面中的异常                             |
 
-
+<br>
 
 ## 6. EL表达式语言
 
@@ -818,7 +1465,7 @@ public class TestBean {
 Box Perimeter is: ${2*box.width + 2*box.height}
 ```
 
-
+<br>
 
 | EL隐含对象       | **描述**                      |
 | :--------------- | :---------------------------- |
@@ -861,7 +1508,7 @@ ${applicationScope.address }
 2. EL表达式中的内容会显示到浏览器上
 3. 使用pageContext的getAttribute方法或者findAttribute方法从4个范围中取出数据的时候、如果指定的key不存在、会返回null，而使用el表达式取出的时候指定的key不存在，页面上什么都不会显示
 
-
+<br>
 
 ## 7. JSP标准标签库
 
@@ -883,7 +1530,7 @@ maven引入：
 <!--  jstl-1.2之后可不再使用standard.jar-->
 ```
 
-
+<br>
 
 | JSTL标签分类 | 引用语法                                                     |      |
 | ------------ | ------------------------------------------------------------ | ---- |
@@ -893,7 +1540,7 @@ maven引入：
 | XML标签      | <%@ taglib prefix="x" uri="http://java.sun.com/jsp/jstl/xml" %> |      |
 | JSTL函数     | <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %> |      |
 
-
+<br>
 
 ## 8. JSTL核心标签
 
@@ -904,7 +1551,7 @@ Core标签库主要包括了`一般用途的标签`、`条件标签`、`迭代�
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 ```
 
-
+<br>
 
 一般用途的标签有：`<c:out>`、`<c:set>`、`<c:remove>`和`<c:catch>` 
 
@@ -928,7 +1575,7 @@ Core标签库主要包括了`一般用途的标签`、`条件标签`、`迭代�
 <c:out value="exception: ${exception}" />
 ```
 
-
+<br>
 
 条件标签包括`<c:if>`、`<c:choose>`、`<c:when>`和`<c:otherwise>` 
 
@@ -953,7 +1600,7 @@ Core标签库主要包括了`一般用途的标签`、`条件标签`、`迭代�
 </c:choose>
 ```
 
-
+<br>
 
 迭代标签有`<c:forEach>`和`<c:forTokens>` 
 
@@ -980,7 +1627,7 @@ Core标签库主要包括了`一般用途的标签`、`条件标签`、`迭代�
 </c:forTokens>
 ```
 
-
+<br>
 
 超链接、页面的包含和重定向是Web应用中常用的功能，在JSTL中，也提供了相应的标签来完成这些功能，
 
@@ -1003,7 +1650,7 @@ Core标签库主要包括了`一般用途的标签`、`条件标签`、`迭代�
 <a href="${loginUrl}" >登录</a>
 ```
 
-
+<br>
 
 ## 9. JSTL其他标签
 
@@ -1016,7 +1663,7 @@ Core标签库主要包括了`一般用途的标签`、`条件标签`、`迭代�
 <fmt:formatDate value="${now}" pattern="yyyy-MM-dd HH:mm:ss"/> <br/>
 ```
 
-
+<br>
 
 
 

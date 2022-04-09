@@ -12,6 +12,8 @@ proxy: none
 node_mirror: http://npm.taobao.org/mirrors/node/ 
 npm_mirror: https://npm.taobao.org/mirrors/npm/
 ```
+
+
 <br/>
 
 3. 使用nvm安装管理多版本 [node](http://nodejs.cn/)/npm
@@ -37,7 +39,7 @@ nvm unalias awesome-version         #取消别名
 但问题来了，我们安装过的 npm 包，都要重新再装一次？幸运的是，我们有个办法来解决我们的问题，运行下面这个命令，可以从特定版本导入到我们将要安装的新版本 Node：
 
 ```shell
-nvm install 14.17.6 --reinstall-packages-from=12
+nvm install 14.19 --reinstall-packages-from=12
 ```
 <br/>
 

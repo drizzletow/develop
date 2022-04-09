@@ -16,7 +16,10 @@ ja-netfilter：https://zhile.io/2021/11/29/ja-netfilter-javaagent-lib.html
 - 
 
 
+
 <br>
+
+
 
 ## 2. 自动导包
 
@@ -103,8 +106,17 @@ groovyScript("def result=\"${_1}\"; if(result == \"void\"){return \"\";}else{ret
 
 <br>
 
-
 ## 2. 其他快捷键
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -151,7 +163,75 @@ vscode.cdn.azure.cn       # <--------就是左边这个 (国内的镜像)
 
 
 
+<br/>
 
+
+
+## 2. 控制台中文乱码
+
+控制台中文乱码最常见的应该就是在IDEA中通过Tomcat启动项目了，
+
+很多教程都只是随意处理一下Tomcat或是IDEA中的编码，但两者配合使用时，中间还要经过OS呢！
+
+想要`根治这个乱码问题，不如连系统编码一起统一了`，省得以后还有麻烦
+
+解决办法如下：
+
+```bash
+
+# 处理方法：全部编码统一为 UTF-8
+
+1. 修改Tomcat的编码 (目录位置参考下面)
+	`D:\Develop\env\tomcat\apache-tomcat-8.5.72\conf\logging.properties`
+	
+    java.util.logging.ConsoleHandler.encoding = UTF-8
+
+2. 修改操作系统的编码 （Windows）
+
+3. 修改idea的编码
+
+2018版：C:\Users\msdri\.IntelliJIdea2018.3\config\idea64.exe.vmoptions 
+
+2021版：C:\Users\msdri\AppData\Roaming\JetBrains\IntelliJIdea2021.3\idea64.exe.vmoptions 
+
+```
+
+<br>
+
+Tomcat：
+
+![image-20220408133835668](vx_images/image-20220408133835668.png)
+
+<br/>
+
+修改Windows的编码：
+
+设置 → 时间和语言 —— 语言 —— 管理语言设置 
+
+![image-20220408134259995](vx_images/image-20220408134259995.png)
+
+<br/>
+
+修改IDEA的编码：
+
+除非没有启动过IDEA，否则请在 help ——> Edit Custom VM Options 中打开修改，不然不会生效
+
+进行过（不明骚操作的）可以直接去C盘用户目录下寻找对应文件，参考路径如下：
+
+![image-20220408134742497](vx_images/image-20220408134742497.png)
+
+```bash
+
+-Dfile.encoding=UTF-8
+-Dconsole.encoding=UTF-8
+
+```
+
+<br/>
+
+IDEA设置中的编码修改：
+
+![image-20220408135025278](vx_images/image-20220408135025278.png)
 
 
 

@@ -120,7 +120,7 @@ java.util.logging.ConsoleHandler.encoding = GBK  （UTF-8）
 
 # 二 项目资源部署
 
-## 1. 直接部署
+## 1. 直接部署项目
 
 在tomcat中，最小的单元是应用，任何一个资源文件都必须属于某个应用（应用：tomcat的webapps下的一个目录）
 
@@ -150,7 +150,7 @@ java.util.logging.ConsoleHandler.encoding = GBK  （UTF-8）
 
 
 
-## 2. 虚拟映射
+## 2. 使用虚拟映射
 
 正常情况下，我们部署资源需要将资源文件放置在webapps目录下，如果其他目录下，则需要配置虚拟映射关系
 
@@ -232,9 +232,124 @@ Tomcat请求处理流程：
 
 
 
+<br>
 
 
 
+## 4. 默认应用和页面
+
+**设置默认监听端口**：
+
+当我们访问  https://www.jd.com 类似的网站时，并没有端口号 ，为什么请求会成功呢？
+
+其实不是没有使用端口号，而是使用的是当前协议的默认端口号。对于http协议来说，默认端口号是80 （HTTPS 443）
+
+
+
+如果我们希望我们的tomcat服务器，在访问时，也不需要携带端口号，该如何做？
+
+**tomcat需要去监听80端口号**、修改配置文件 conf/server.xml
+
+```xml
+
+<Connector port="80" protocol="HTTP/1.1" connectionTimeout="20000" redirectPort="8443" />
+
+```
+
+<br>
+
+**设置默认应用**：
+
+在tomcat中，任何一个文件都归属于某个应用，如果在访问时发现路径中没有应用名，只能当做默认应用处理
+
+```java
+
+/*
+每当我们访问一个地址的时候，tomcat首先到 conf/Catalina/localhost目录下去察看有没有存在主目录或虚拟目录的xml文件
+
+	如果有xml文件，就按xml里的路径进行访问，
+	
+	如果没有xml文件，就到server.xml文件里去察看是否配置context标签，
+		如：<Context path="" docBase="D:/Temp/demo" crossContext="true"/>
+		
+	  如果配置了context标签，则在conf/Catalina/localhost目录下生成一个对应的xml文件，
+		以便于下次直接验证而不再访问server.xml，与此同时打开context里指定的路径，
+		
+	  如果server.xml里没有配置context标签，则返回访问错误页面。
+
+```
+
+默认应用最明显的特征是应用名是ROOT（但是访问时，直接把应用名直接忽略即可）
+
+例如：如果ROOT应用下有一个hello.html，那么访问时通过http://localhost/hello.html,  不需要去携带应用名。
+
+
+
+如果我们希望访问资源文件时，也不带应用名，如何设置？
+
+```bash
+
+1. 将 webapps目录下的 ROOT项目 替换掉
+
+2. 在 conf/Catalina/localhost下新建 ROOT.xml 文件
+
+```
+
+<br/>
+
+
+
+**设置默认访问页面**：
+
+在没有写出具体的访问资源时，tomcat加载的就是默认访问页面
+
+```xml
+
+<welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+</welcome-file-list>
+
+```
+
+<br/>
+
+通过以上说明，我们明白了为什么启动Tomcat后，使用http://localhost:8080 访问到的页面是哪儿来的了
+
+
+
+<br>
+
+
+
+例：通过ip地址直接访问到图片，如何设置？
+
+```xml
+
+<!-- 1. conf/server.xml 文件中修改端口号 -->
+<Connector port="80" protocol="HTTP/1.1" connectionTimeout="20000" redirectPort="8443" />
+
+
+<!-- 2. conf\Catalina\localhost 下新建 ROOT.xml, 内容如下：表示将 demo 作为默认的ROOT应用 -->
+
+<?xml version="1.0" encoding="UTF-8"?>
+<Context docBase="D:/Temp/demo" />
+
+
+<!-- 3. conf/web.xml 文件末尾修改 添加 welcome-file -->
+<welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>a.jpg</welcome-file>
+</welcome-file-list>
+
+```
+
+<br/>
+
+![image-20220408221824913](vx_images/image-20220408221824913.png)
 
 
 
