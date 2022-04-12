@@ -487,7 +487,7 @@ public class UserServlet extends HttpServlet {
 
 
 
-# 三 Request和Response
+# 二 Request和Response
 
 当客户请求到来时，Servlet容器创建一个ServletRequest对象，封装请求数据，同时创建一个ServletResponse对象，封装响应数据
 
@@ -1351,7 +1351,7 @@ FileUpload上传文件步骤：
 
 
 
-# 四 创建JavaWeb项目
+# 三 创建JavaWeb项目
 
 ## 1. JavaToJavaWeb
 
@@ -1473,7 +1473,7 @@ end~~
 
 
 
-# 五 Java Server Pages
+# 四 Java Server Pages
 
 JSP全名为Java Server Pages，中⽂名叫java服务器⻚⾯，其根本是⼀个简化的Servlet设计
 
