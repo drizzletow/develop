@@ -70,7 +70,6 @@ brightWhite ： 目录箭头左边和中间的提示文字。
 ```
 
 
-
 <br/>
 
 
@@ -312,18 +311,114 @@ jv_sitecorian.omp.json
 GitHub：https://github.com/PowerShell/PowerShell/releases/
 
 
-
+<br>
 
 
 ## 1. SSH
 
+使用SSH连接到远程服务器，前提是服务器已安装并启用SSH服务
+
 ```shell
 
-ssh username@hostip
+# 命令格式：ssh username@hostip 如：
 
+ssh root@192.168.5.150          # 输入密码即可
+
+```
+
+<br>
+
+**利用WindowsTerminal实现ssh免密自动登陆**：
+
+
+```bash
+
+# 一、在本地生成SSH密钥对
+#  powershell中输入以下命令，根据提示设置密钥保存路径、密钥密码（默认为空），
+#    建议按默认设置，一直按回车成功生成密钥文件，生成的密钥文件共有两个，
+#    ssh_key对应私钥可存储在本地，ssh_key.pub对应公钥需要放在到远程服务器
+
+ssh-keygen -t rsa
+
+```
+![](vx_images/2652424100451.png)
+
+<br/>
+
+```bash
+
+# 二、在远程主机安装公钥
+# 1.在本地上传公钥文件
+
+sftp username@ip # 回车输入密码
+sftp> put 本地公钥文件 远程路径(默认为用户家目录)
+
+
+sftp itdrizzle@192.168.5.150                                                        pwsh
+itdrizzle@192.168.5.150's password:
+Connected to 192.168.5.150.
+sftp> put C:\Users\msdri\.ssh\id_rsa.pub /home/itdrizzle/.ssh/
+Uploading C:/Users/msdri/.ssh/id_rsa.pub to /home/itdrizzle/.ssh/id_rsa.pub
+C:/Users/msdri/.ssh/id_rsa.pub                                   100%  576   562.5KB/s   00:00
 
 
 ```
+![](vx_images/1105935118877.png)
+
+<br>
+
+
+```bash
+
+# 2.连接到远程主机，修改密钥及所在文件夹权限
+
+mkdir -m 700 ~/.ssh        #如此文件夹已存在，也要确保权限为700
+
+chmod 600 id_rsa.pub       #cd 密钥.pub所在目录，然后设置其权限
+
+sudo mv ~/.ssh/id_rsa.pub ~/.ssh/authorized_key_from_mywindows
+
+
+
+
+
+# 三、在远程主机打开密钥登陆功能 (编辑sshd配置文件)
+
+sudo vim /etc/ssh/sshd_config
+
+
+RSAAuthentication yes
+PubkeyAuthentication yes
+AuthorizedKeysFile .ssh/authorized_key_from_mywindows
+PermitRootLogin yes
+PasswordAuthentication no #此行会关闭密码登录功能，请确认密钥登陆功能设置好后再添加
+
+# 以上内容在配置文件里都有对应行，但被注释了起来，可通过删除注释符号设置，也可直接追加到文件末尾
+
+
+
+# 3.重启sshd
+
+systemctl restart sshd
+
+
+
+
+# 四、设置WindowsTerminal SSH快捷键
+# 在WindowsTerminal配置文件里增加内容，复制完之后更改配置如下，主要必须更改如下参数，其余按需修改
+
+ssh -i D:\WorkPlace\IOS\kali-linux-2021.1-vmware-amd64.vmwarevm\ssh_key root@192.168.110.120
+
+# 重启窗口打开即可使用（无需输入密码）
+
+```
+
+
+
+
+<br/>
+
+##  2. new-guid
 
 
 

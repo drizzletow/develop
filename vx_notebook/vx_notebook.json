@@ -3,9 +3,13 @@
     "config_mgr": "vx.vnotex",
     "created_time": "2021-09-11T13:57:39Z",
     "description": "",
+    "extra_configs": {
+    },
+    "history": [
+    ],
     "image_folder": "vx_images",
     "name": "Develop",
-    "next_node_id": "23",
-    "version": "1",
+    "tag_graph": "",
+    "version": 3,
     "version_controller": "dummy.vnotex"
 }

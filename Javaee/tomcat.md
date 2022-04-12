@@ -60,9 +60,9 @@ export JAVA_HOME=/usr/local/bin/jdk/jdk1.8.0_191
 
 Tomcat的⽬录简介： （ 通过url访问服务器示例: http://localhost:8080 ）
 
-- bin：该⽬录下存放的是⼆进制可执⾏⽂件（Windows下可通过该目录下的startup.bat启动Tomcat）
+- **bin**：该⽬录下存放的是⼆进制可执⾏⽂件（Windows下可通过该目录下的startup.bat启动Tomcat）
 
-- conf：配置文件的⽬录、这个⽬录下有四个很重要的⽂件：
+- **conf**：配置文件的⽬录、这个⽬录下有四个很重要的⽂件：
 
   - `server.xml`：配置整个服务器信息（主要的配置文件）
   - `tomcat-users.xml`：存储tomcat⽤户的⽂件
@@ -75,7 +75,7 @@ Tomcat的⽬录简介： （ 通过url访问服务器示例: http://localhost:80
 
 - temp：存放Tomcat的临时⽂件
 
-- webapps：存放web项⽬的⽬录，每个⽂件夹都是⼀个项⽬
+- **webapps**：存放web项⽬的⽬录，每个⽂件夹都是⼀个项⽬
 
   其中ROOT是⼀个特殊的项⽬，在地址栏中没有给出项⽬⽬录时，对 应的就是ROOT项⽬
 
@@ -85,13 +85,13 @@ Tomcat的⽬录简介： （ 通过url访问服务器示例: http://localhost:80
 
 ```xml
 
-<!-- Windows下启动信息乱码的处理方式： 在conf文件夹下的logging.properties文件修改如下语句： 
-	此方法可以让其在cmd窗口中不乱码，但很可能与idea的utf8冲突，导致idea中启动Tomcat乱码...
-	故而不推荐修改，使用默认的UTF-8即可
--->
+<!-- 控制台编码：在conf文件夹下的logging.properties文件修改如下语句： 
+	不推荐修改，使用UTF-8即可  -->
 java.util.logging.ConsoleHandler.encoding = GBK  （UTF-8）
 
 ```
+
+详见：
 
 <br/>
 
@@ -126,11 +126,15 @@ java.util.logging.ConsoleHandler.encoding = GBK  （UTF-8）
 
 所以，如果希望部署一个资源文件，那么就必须先设置一个应用，将该资源文件放置在该应用中。
 
-![image-20220407211249850](vx_images\image-20220407211249850.png)
+
+
+![image-20220407211249850](vx_images/image-20220407211249850.png)
 
 如图，Tomcat原本就包含了一些 项目， 例如 examples目录 就是代表一个 项目（或者说应用）
 
-![image-20220407211847918](vx_images\image-20220407211847918.png)
+
+
+![image-20220407211847918](vx_images/image-20220407211847918.png)
 
 <br>
 
@@ -173,7 +177,9 @@ java.util.logging.ConsoleHandler.encoding = GBK  （UTF-8）
 
 ~~~
 
-![QQ截图20220407195734](vx_images\QQ截图20220407195734-16493383899362.png)
+
+
+![QQ20220407195734-16493383899362](vx_images/QQ20220407195734-16493383899362.png)
 
 
 
@@ -194,7 +200,7 @@ java.util.logging.ConsoleHandler.encoding = GBK  （UTF-8）
 ```
 ~~~
 
-![QQ截图20220407195338](vx_images\QQ截图20220407195338-16493383807361.png)
+![QQ20220407195338-16493383807361](vx_images/QQ20220407195338-16493383807361.png)
 
 
 
@@ -206,37 +212,7 @@ java.util.logging.ConsoleHandler.encoding = GBK  （UTF-8）
 
 
 
-## 3. 请求处理流程
-
-Tomcat请求处理流程：
-
-```bash
-
-1. 浏览器地址栏输入网址，首先进行域名解析，其次进行TCP连接，发起HTTP请求
-
-2. HTTP请求到达目标机器，HTTP请求报文会被监听8080端口号的Connector接收到，
-   将其解析转换成request对象，同时还会提供一个response对象
-
-3. Connector将这两个对象传给engine，engine进一步将这两个对象传给host
-
-4. host会根据请求的资源路径，匹配一个Context应用（tomcat启动时，会将应用解析，形成映射关系），
-   根据请求资源路径中的 `应用名`，去寻找应用，找到则将这两个对象进一步传给该应用
-
-5. 该应用拿到有效路径，会将应用的路径和该路径进行拼接，形成硬盘上的绝对路径，再查找该文件是否存在，
-   如果存在，则往response里面写入文件的数据，以及写入200状态码；
-   如果文件不存在，则写入404状态码
-
-6. 最终程序返回，最终Connector读取response里面的数据，生成HTTP响应报文
-
-```
-
-
-
-<br>
-
-
-
-## 4. 默认应用和页面
+## 3. 默认应用和页面
 
 **设置默认监听端口**：
 
@@ -353,9 +329,124 @@ Tomcat请求处理流程：
 
 
 
+<br>
+
+
+
+# 三 Tomcat总体架构
+
+## 1. 连接器和容器
+
+HTTP服务器接收到请求之后把请求交给Servlet容器来处理，Servlet容器通过Servlet接口调用业务类。
+
+servlet接口和Servlet容器这一整套内容叫作Servlet规范。
+
+```java
+/*
+
+注意: Tomcat既按照Servlet规范的要求去实现了Servlet容器，同时它也具有HTTP服务器的功能。
+
+即 Tomcat 有两个重要身份：
+
+	1) 首先它是一个http服务器
+
+	2) Tomcat同时也是一个Servlet容器
+
+```
+
+![image-20220412084942012](vx_images/image-20220412084942012.png)
+
+Tomcat 设计了两个核心组件连接器(Connector)和容器(Container)来完成Tomcat 的两大核心功能。
+
+连接器，负责对外交流：处理Socket连接，负责网络字节流与Request和Response对象的转化;
+
+容器，负责内部处理︰加载和管理Servlet，以及具体处理Request请求
+
+
+
+<br/>
+
+
+
+## 2. 连接器组件Coyote
+
+Coyote 是Tomcat 中连接器的组件名称，是对外的接口。客户端通过Coyote与服务器建立连接、发送请求并接受响应。
+
+```java
+/*
+(1) Coyote封装了底层的网络通信(Socket请求及响应处理)
+
+(2) Coyote使Catalina容器（容器组件）与具体的请求协议及 IO操作方式完全解耦
+
+(3) Coyote将Socket输入转换封装为Request对象，进一步封装后交由Catalina容器进行处理，处理请求完成后,
+    catalina通过Coyote提供的Response对象将结果写入输出流
+    
+(4) Coyote负责的是具体协议（应用层) 和 IO(传输层)相关内容
+
+```
+
+<br>
+
+![image-20220412093229140](vx_images/image-20220412093229140.png)
+
+<br>
+
+| 组件            | 作用描述                                                     |
+| --------------- | ------------------------------------------------------------ |
+| EndPoint        | EndPoint是 Coyote通信端点，即通信监听的接口，是具体Socket接收和发送处理器，是对传输层的抽象，因此EndPoint用来实现TCP/IP协议的 |
+| Processor       | Processor 是Coyote协议处理接口，如果说EndPoint是用来实现TCP/IP协议的，那么Processor用来实现HTTP协议，Processor接收来自EndPoint的Socket，读取字节流解析成Tomcat Request和Response对象，并通过Adapter将其提交到容器处理，Processor是对应用层协议的抽象 |
+| ProtocolHandler | Coyote协议接口，通过Endpoint和 Processor ，实现针对具体协议的处理能力。Tomcat按照协议和I/O提供了6个实现类︰AjpNioProtocol ，AjpAprProtocol, AjpNio2Protocol , Http11NioProtocol , Http11Nio2Protocol ,Http11AprProtocol |
+| Adapter         | 由于协议不同，客户端发过来的请求信息也不尽相同，Tomcat定义了自己的Request类来封装这些请求信息。ProtocolHandler接口负责解析请求并生成Tomcat Request类。但是这个Request对象不是标准的ServletRequest，不能用Tomcat Request作为参数来调用容器。Tomcat设计者的解决方案是引入CoyoteAdapter，这是适配器模式的经典运用，连接器调用CoyoteAdapter的Sevice方法，传入的是Tomcat Request对象，CoyoteAdapter负责将Tomcat Request转成ServletAequest，再调用容器 |
+
+
+
+<br/>
+
+
+
+## 3. 容器组件Catalina
+
+Tomcat模块分层结构图及Catalina位置：
+
+Tomcat是一个由一系列可配置的组件构成的Web容器，而Catalina是Tomcat的servlet容器。
+
+从另一个角度来说，Tomcat 本质上就是一款Servlet容器，因为Catalina才是Tomcat 的核心，其他模块都是为Catalina提供支撑的。
+
+比如︰通过Coyote模块提供链接通信，Jasper模块提供JSP引擎，Naming提供JNDI服务，Juli提供日志服务。
+
+![image-20220412094032906](vx_images/image-20220412094032906.png)
 
 
 
 
 
+<br>
 
+
+
+## 请求处理流程
+
+Tomcat请求处理流程总结：
+
+```bash
+1. 浏览器地址栏输入网址，首先进行域名解析，其次进行TCP连接，发起HTTP请求
+
+2. HTTP请求到达目标机器，HTTP请求报文会被监听8080端口号的Connector接收到，
+   将其解析转换成request对象，同时还会提供一个response对象
+
+3. Connector将这两个对象传给engine，engine进一步将这两个对象传给host
+
+4. host会根据请求的资源路径，匹配一个Context应用（tomcat启动时，会将应用解析，形成映射关系），
+   根据请求资源路径中的 `应用名`，去寻找应用，找到则将这两个对象进一步传给该应用
+
+5. 该应用拿到有效路径，会将应用的路径和该路径进行拼接，形成硬盘上的绝对路径，再查找该文件是否存在，
+   如果存在，则往response里面写入文件的数据，以及写入200状态码；
+   如果文件不存在，则写入404状态码
+
+6. 最终程序返回，最终Connector读取response里面的数据，生成HTTP响应报文
+
+```
+
+
+
+<br>

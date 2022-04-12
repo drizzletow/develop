@@ -1,4 +1,4 @@
-#  一 Introduction
+# 一 Introduction
 
 官方文档：https://tomcat.apache.org/tomcat-8.5-doc/servletapi/
 
@@ -91,31 +91,9 @@ Servlet是运行在服务器里面的一个程序，可以对客户端的请求�
 
 <br>
 
-## 3. Servlet编码问题
-
-Request和Response的乱码问题： （ *在service中使用的编码解码方式默认为：ISO-8859-1编码* ）
-
-```java
-
-// Request乱码问题的解决方法
-request.setCharacterEncoding("UTF-8");                             // 解决post提交方式的乱码
-String name = request.getParameter("name");                        // 接收到get请求的中文字符串 
-parameter = newString(name.getbytes("iso8859-1"),"utf-8");         // 将字符重新编码，默认编码为ISO-8859-1 
-
-// Response的乱码问题(解决方式一)
-response.setCharacterEncoding("utf-8");  // 设置HttpServletResponse使用 utf-8 编码
-response.setHeader("Content-Type", "text/html;charset=utf-8");  // 通知浏览器使用 utf-8 解码
-
-// Response的乱码问题(解决方式二)
-response.setContentType("text/html;charset=utf-8");
-
-```
 
 
-
-<br>
-
-## 4. Servlet生命周期
+## 3. Servlet生命周期
 
 This interface defines methods to initialize a servlet, to service requests, and to remove a servlet from the server. These are known as life-cycle methods and are called in the following sequence:
 
@@ -199,95 +177,7 @@ init、destroy方法有什么意义？
 
 
 
-## 5. JavaToJavaWeb
-
-idea中将 javase 项目改造为 javaweb 项目：
-
-
-
-新建一个java普通项目，并在该项目根目录下新建一个 web 目录
-
-![image-20220408164426017](vx_images/image-20220408164426017.png)
-
-<br/>
-
-### 1) WEB-INF 
-
-将 web 目录设置为 资源目录：
-
-![image-20220408165257150](vx_images/image-20220408165257150.png)
-
-此时web目录下会新增 WEB-INF 目录，且WEB-INF 目录下有一个web.xml目录
-
-<br/>
-
-
-
-### 2) 项目配置修改
-
-此时还需设置 Artifacts：
-
-![image-20220408170425489](vx_images/image-20220408170425489.png)
-
-
-
-<br>
-
-配置本地Tomcat服务器：
-
-![image-20220408170030452](vx_images/image-20220408170030452.png)
-
-
-
-点击Fix，使用前面设置的 Artifacts ，再设置一下 Deployment ，如下：
-
-![image-20220408170637873](vx_images/image-20220408170637873.png)
-
-<br/>
-
-
-
-### 3) 访问静态资源
-
-这时已经可以启动项目访问静态资源了，先在 web 目录下新建一个 index.html, 再启动项目
-
-![image-20220408170941550](vx_images/image-20220408170941550.png)
-
-
-
-![image-20220408171156503](vx_images/image-20220408171156503.png)
-
-<br/>
-
-
-
-### 4) Servlet设置
-
-想要实现servlet 相关的功能，必须要是用其 jar包，由于是java普通项目，这里这能借助 Tomcat 下的库来使用
-
-![image-20220408173515405](vx_images/image-20220408173515405.png)
-
-<br>
-
-然后新建一个Servlet，如下：
-
-![image-20220408175403703](vx_images/image-20220408175403703.png)
-
-
-
-重新部署项目，访问：http://localhost:8080/se2ee/hello
-
-![image-20220408175600698](vx_images/image-20220408175600698.png)
-
-end~~
-
-
-
-<br/>
-
-
-
-## 6. url-pattern详解
+## 4. url-pattern详解
 
 1、一个servlet可不可以设置多个url-pattern？ 可以
 
@@ -464,7 +354,9 @@ DefaultServlet 会去寻找对应的静态资源，若存在则返回对应静�
 
 <br>
 
-## 7. Servlet执行流程
+
+
+## 5. Servlet执行流程
 
 ```bash
 
@@ -500,7 +392,7 @@ Servlet的执行流程:
 
 
 
-## 8. Servlet注解开发
+## 6. Servlet注解开发
 
 Servlet3.0的出现是servlet史上最大的变革，其中的许多新特性大大的简化了web应用的开发
 
@@ -559,7 +451,51 @@ public class UserServlet extends HttpServlet {
 
 
 
-# 三 Servlet
+## 7. 网络路径格式
+
+**网络路径：如浏览器地址栏、a标签的href、img标签的src、form标签的action等 **。 主要给浏览器去使用解析的。
+
+**1. 全路径(requestURL)**：完整的路径。访问协议:主机:端口号/地址      http://localhost/app/index.html
+
+可读性非常好。实际开发过程中推荐吗？不是特别的推荐。
+
+企业开发中涉及的环境：开发环境、测试环境、生产环境 ，切换环境是常见需求、所以全路径不是特别的推荐，但是如果实在想用，可以将可变的部分以配置文件的形式配置下来。在使用时，通过去读取配置文件来读取该数据。
+
+<br>
+
+**2. 相对路径**：相对当前页面的一个相对路径。
+
+比如当前页面：http://localhost/app/form.html
+
+需要提交的地址：http://localhost/app/login 
+
+相对路径就是：login，
+
+这种方法也不是特别推荐。过分依赖于当前页面，如果当前页面发生了路径变化，那么最终的提交地址也需要再次变化。
+
+<br>
+
+**3. /应用名/相对应用相对路径(requestURI)**，
+
+需要提交的地址：http://localhost/app/submit 
+
+==> ` /app/submit `  ( 只需要在全路径的基础上，把访问协议、主机、端口号去掉 ) 
+
+
+
+<br/>
+
+
+
+# 三 Request和Response
+
+当客户请求到来时，Servlet容器创建一个ServletRequest对象，封装请求数据，同时创建一个ServletResponse对象，封装响应数据
+
+**javax.servlet.ServletRequest** 接口主要用于：向servlet提供客户端请求信息，从中获取到请求信息 
+
+**javax.servlet.ServletResponse**接口用于定义一个对象来帮助Servlet向客户端发送响应  
+
+<br/>
 
 ## 1. ServletConfig
 
@@ -727,14 +663,6 @@ public class PathServlet extends HttpServlet {
 
 ## 3. ServletRequest
 
-当客户请求到来时，Servlet容器创建一个ServletRequest对象，封装请求数据，同时创建一个ServletResponse对象，封装响应数据
-
-**javax.servlet.ServletRequest** 接口主要用于：向servlet提供客户端请求信息，从中获取到请求信息 
-
-**javax.servlet.ServletResponse**接口用于定义一个对象来帮助Servlet向客户端发送响应  
-
-<br>
-
 | ServletRequest接口常用方法                                   | 说明                                                  |
 | ------------------------------------------------------------ | ----------------------------------------------------- |
 | `String getParameter(String name)`                           | 以字符串形式返回请求参数的值                          |
@@ -743,6 +671,17 @@ public class PathServlet extends HttpServlet {
 | `public void removeAttribute(String name)`                   | 移除请求中名字为name的属性                            |
 | `public void setCharacterEncoding(String env)`               | 设置字符编码（解决post提交方式的乱码）                |
 | `public RequestDispatcher getRequestDispatcher(String path)` | 返回RequestDispatcher对象，作为path所定位的资源的封装 |
+
+<br>
+
+**javax.servlet.http.HttpServletRequest**接口是ServletRequest接口的子接口，主要用于提供HTTP请求信息的功能
+
+| HttpServletRequest接口常用方法              | 说明                                                         |
+| ------------------------------------------- | ------------------------------------------------------------ |
+| `public Cookie[] getCookies()`              | 返回客户端在此次请求中发送的所有Cookie对象                   |
+| `public voidaddCookie(Cookie cookie) `      | 添加一个Cookie到响应中                                       |
+| `public HttpSession getSession()`           | 返回和此次请求相关联的Session，如果没有给客户端分配Session，<br />则创建一个新的Session |
+| `public void sendRedirect(String location)` | 发送一个临时的重定向响应到客户端，让客户端访问新的URL        |
 
 <br/>
 
@@ -816,6 +755,13 @@ public class HelloServlet extends HttpServlet {
         FileOutputStream fileOutputStream = new FileOutputStream(path);
         fileOutputStream.write(String.valueOf(result).getBytes());
         fileOutputStream.close();
+        
+        
+        // 获取请求体:一般情况下，不需要我们主动去获取请求体，即便浏览器以post请求方式提交请求参数
+        // tomcat也会帮我们把请求参数解析好，所以一般情况下是不需要开发者自己主动去获取请求体的
+        // 只有在进行文件上传时，才需要我们去操作请求体
+//        request.getInputStream();
+        
 
         // 将信息响应给客户端
         resp.getWriter().println(result);
@@ -835,6 +781,22 @@ public class HelloServlet extends HttpServlet {
 
 ![image-20220409171505296](vx_images/image-20220409171505296.png)
 
+<br>
+
+```
+
+ServletContext对象内部有一个map ( 即 Context域 )：
+	只要组件可以拿到同一个ServletContext对象的引用，那么就可以共享该内存空间。
+	context域空间比较大，因为ServletContext对象生命周期非常久。
+	一个应用下的任意web资源都可以拿到同一个servletContext对象引用。
+
+
+request对象中也有一个map（Request域）：哪些组件可以共享request对象？
+	只有转发的两个组件之间才可以共享
+	注意在浏览器地址栏输入一个地址，刷新多次，那么服务器解析处理时生成的是多个request对象
+
+```
+
 
 
 <br>
@@ -843,6 +805,16 @@ public class HelloServlet extends HttpServlet {
 
 ## 4. ServletResponse
 
+ServletResponse：Defines an object to assist a servlet in sending a response to the client。
+
+可以在开发的过程中，往response对象里面写入数据，Connector读取response里面的数据，生成响应报文。
+
+HttpServletResponse，专门用来给客户端发送HTTP响应报文
+
+<br>
+
+**javax.servlet.ServletResponse**接口用于定义一个对象来帮助Servlet向客户端发送响应 
+
 | ServletResponse接口常用方法                        | 说明                                                    |
 | -------------------------------------------------- | ------------------------------------------------------- |
 | `public ServletOutputStream getOutputStream()`     | 返回ServletOutputStream对象，用于在响应中写入二进制数据 |
@@ -850,35 +822,162 @@ public class HelloServlet extends HttpServlet {
 | `public void setCharacterEncoding(String charset)` | 设置发送到客户端的响应的字符编码                        |
 | `public void setContentType(String type)`          | 设置发送到客户端响应的内容类型                          |
 
+```java
+
+protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+    throws ServletException, IOException {
+        //设置响应报文
+        response.setStatus(404);
+    
+        //设置响应头
+        response.setHeader("Content-Type", "text/html");
+        response.setHeader("Server", "CServer");           // 自定义服务器名称
+    
+        //设置响应体
+        response.getWriter().println("<div style='color:red' align='center'>File Not Found</div>");
+    	
+    	// 把字符显示在浏览器主窗口界面上，其实本质就是往HTTP响应报文的响应体写入数据
+    
+    
+    
+    	response.setHeader("refresh", "1");  // 网页每个1秒自动刷新一次
+    
+    	// 设置一个refresh响应头，value值是数字;url=xxxx，表示的是经过指定秒数之后跳转至指定url
+    	response.setHeader("refresh", "2;url=http://www.baidu.com");
+    
+    }
+
+```
+
 <br>
 
-**javax.servlet.http.HttpServletRequest**接口是ServletRequest接口的子接口，主要用于提供HTTP请求信息的功能
+```java
 
-**javax.servlet.ServletResponse**接口用于定义一个对象来帮助Servlet向客户端发送响应 
+// 模拟DefaultServlet返回静态资源的功能 （即通过HttpServletResponse输出字节数据）
 
-| HttpServletRequest接口常用方法              | 说明                                                         |
-| ------------------------------------------- | ------------------------------------------------------------ |
-| `public Cookie[] getCookies()`              | 返回客户端在此次请求中发送的所有Cookie对象                   |
-| `public voidaddCookie(Cookie cookie) `      | 添加一个Cookie到响应中                                       |
-| `public HttpSession getSession()`           | 返回和此次请求相关联的Session，如果没有给客户端分配Session，<br />则创建一个新的Session |
-| `public void sendRedirect(String location)` | 发送一个临时的重定向响应到客户端，让客户端访问新的URL        |
+@WebServlet("/")
+public class MyDefaultServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) 
+        throws ServletException, IOException {
+        req.setCharacterEncoding("utf-8");
+
+        ServletContext servletContext = getServletContext(); 
+        String servletPath = req.getServletPath();           // 如: /cat.jpg
+        String realPath = servletContext.getRealPath("");    // 部署后的应用根目录
+
+        String path = realPath + servletPath.substring(1);
+        File file = new File(path);
+        
+        if (file.exists()) {
+            try(FileInputStream fis = new FileInputStream(file);
+                ServletOutputStream out = resp.getOutputStream();) {
+
+                byte[] bytes = new byte[1024];
+                int len;
+                while ((len = fis.read(bytes)) != -1) {
+                    out.write(bytes, 0, len);
+                }
+            }
+            System.out.println(servletPath + " -- End File Transfer~");
+
+        } else {
+            resp.setContentType("text/html;charset=utf-8");
+            resp.setStatus(404);
+            resp.getWriter().println("<h3>404 File Not Found</h3>");
+        }
+    }
+}
+
+```
+
+<br>
+
+```java
+
+// 下载文件：对于可以打开的文件，默认执行打开操作，对于无法打开的文件，默认执行下载操作，是无需服务器做出任何设置的。
+// 但如果某个文件是客户端可以打开的，但是我们希望客户端可以将其执行下载操作，而不是打开，那么设置一个响应头即可
+
+protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+    throws ServletException, IOException {
+    
+        response.setHeader("Content-Disposition", "attachment;filename=1.jpeg");
+    
+        ServletOutputStream outputStream = response.getOutputStream();
+        //输入流 应用根目录下1.jpeg(路径)文件输入流
+        String realPath = getServletContext().getRealPath("1.jpeg");
+        FileInputStream inputStream = new FileInputStream(new File(realPath));
+    
+        int length = 0;
+        byte[] bytes = new byte[1024];
+        while ((length = inputStream.read(bytes)) != -1){
+            outputStream.write(bytes, 0, length);
+        }
+        //关闭流 ServletOutputStream可以关，也可以不关，如果不关，那么tomcat会帮你关
+        outputStream.close();
+        inputStream.close();
+
+    }
+
+```
+
+
 
 <br>
 
 
 
+## 5. Servlet编码问题
+
+Request和Response的乱码问题： （ *在service中使用的编码解码方式默认为：ISO-8859-1编码* ）
+
+如果表单使用的是get请求方法，那么默认情况下，是没有乱码问题的、但如果使用post请求方法，中文可能会出现乱码。
+
+乱码的本质原因在于编解码不一致：
+
+```java
+
+如：请求参数从客户端发出时，使用的编码格式是啥：utf-8
+   服务器接收到数据之后，从request里面获取到的数据时乱码的，只能说明服务器解码有问题
+   
+// Request乱码问题的解决方法
+request.setCharacterEncoding("UTF-8");                             // 解决post提交方式的乱码
+String name = request.getParameter("name");                        // 接收到get请求的中文字符串 
+
+parameter = newString(name.getbytes("iso8859-1"),"utf-8");         // 将字符重新编码，默认编码为ISO-8859-1 
+
+```
+
+setCharacterEncoding：Overrides the name of the character encoding **used in the body of this request**. 
+
+This method must be called prior to reading request parameters or reading input using getReader().
+
+该方法的注意事项：1.只可以作用于请求体、 2.必须要在读取请求参数之前调用
+
+<br/>
 
 
-## 5. 转发和重定向
 
-利用RequestDispatcher对象，可以把请求转发给其他的Servlet或JSP页面。在RequestDispatcher接口中定义了两种方法
+```java
 
-| RequestDispatcher接口常用方法                                | 说明                                                         |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| `public void forward(ServletRequest request, ServletResponse response)` | 将请求从一个Servlet传递给服务器上的另外的Servlet、JSP页面或者是HTML文件 |
-| `public void include(ServletRequest request,ServletResponse response)` | 在响应中包含其他资源（Servlet、JSP页面或HTML文件）的内容     |
+// Response的乱码问题(解决方式一)
+response.setCharacterEncoding("utf-8");                         // 设置HttpServletResponse使用utf-8编码
+response.setHeader("Content-Type", "text/html;charset=utf-8");  // 通知浏览器使用 utf-8 解码
+
+// Response的乱码问题(解决方式二)
+response.setContentType("text/html;charset=utf-8");
+
+```
+
+
 
 <br>
+
+
+
+## 6. 转发和重定向
+
+利用RequestDispatcher对象，可以把请求转发给其他的Servlet或JSP页面
 
 有三种方法可以得到RequestDispatcher对象：
 
@@ -886,11 +985,13 @@ public class HelloServlet extends HttpServlet {
 - 另外两种是利用ServletContext接口中的 `getNamedDispatcher()` 和 `getRequestDispatcher()` 方法
 
 ```java
+
 // 1. 利用ServletRequest接口中的getRequestDispatcher()方法
 request.getRequestDispatcher("success.html").forward(request, response);
 
 // 2. 利用ServletContext接口
 getServletContext().getRequestDispatcher("/index.jsp").forward(request, response);	
+
 ```
 
 注意：
@@ -903,24 +1004,35 @@ getServletContext().getRequestDispatcher("/index.jsp").forward(request, response
 
 转发和重定向的区别：
 
-![image-20211031164106241](vx_images/image-20211031164106241.png)
+![](vx_images/386324416220452.png)
 
 ```java
+
 protected void doPost(HttpServletRequest request, HttpServletResponse response) 
     throws ServletException, IOException {
     response.setContentType("text/html;charset=utf-8");
+    
     // 转发
     request.getRequestDispatcher("success.html").forward(request, response);
+   
+    
     // 重定向
     response.sendRedirect("test.html");
+    
+    // 重定向还可以这样写: 301、302、307状态码 + Location响应头
+    response.setStatus(302);  
+    //访问当前页面时，将请求重定向到1.jpeg （ http://localhost/app/1.jpeg ）
+    response.setHeader("Location", request.getContextPath() + "/1.jpeg");  
+    
 }
+
 ```
 
 
 
 <br>
 
-## 6. Cookie和Session
+## 7. Cookie和Session
 
 Cookies是一种由服务器发送给客户的片段信息，存储在客户端浏览器的内存中或硬盘上，在客户随后对该服务器的请求中发回它
 
@@ -1024,7 +1136,7 @@ response.sendRedirect(path);
 
 <br>
 
-## 7. 监听器和过滤器
+## 8. 监听器和过滤器
 
 有时候你可能想要在Web应用程序启动和关闭时来执行一些任务（如数据库连接的建立和释放），或者你想要监控Session的创建和销毁，你还希望在ServletContext、HttpSession，以及ServletRequest对象中的属性发生改变时得到通知，那么你可以通过Servlet监听器来实现你的这些目的
 
@@ -1115,11 +1227,13 @@ public class LoginFilter implements Filter {
 上传页面示例：
 
 ```jsp
+
 <!-- 注意:(1)form标签中要添加enctype属性 (2)提交方式必须是post -->
 <form action="${pageContext.request.contextPath}/fileUpload" method="POST" enctype="multipart/form-data" >
  	<!-- input表单项 -->
     <input type="file" name="avatar"  />
 </form>
+
 ```
 
 使用IO流将文件返回
@@ -1237,7 +1351,129 @@ FileUpload上传文件步骤：
 
 
 
-# 三 JSP技术
+# 四 创建JavaWeb项目
+
+## 1. JavaToJavaWeb
+
+idea中将 javase 项目改造为 javaweb 项目：
+
+
+
+新建一个java普通项目，并在该项目根目录下新建一个 web 目录
+
+![image-20220408164426017](vx_images/image-20220408164426017.png)
+
+<br/>
+
+### 1) WEB-INF 
+
+将 web 目录设置为 资源目录：
+
+![image-20220408165257150](vx_images/image-20220408165257150.png)
+
+此时web目录下会新增 WEB-INF 目录，且WEB-INF 目录下有一个web.xml目录
+
+<br/>
+
+
+
+### 2) 项目配置修改
+
+此时还需设置 Artifacts：
+
+![image-20220408170425489](vx_images/image-20220408170425489.png)
+
+
+
+<br>
+
+配置本地Tomcat服务器：
+
+![image-20220408170030452](vx_images/image-20220408170030452.png)
+
+
+
+点击Fix，使用前面设置的 Artifacts ，再设置一下 Deployment ，如下：
+
+![image-20220408170637873](vx_images/image-20220408170637873.png)
+
+<br/>
+
+
+
+### 3) 访问静态资源
+
+这时已经可以启动项目访问静态资源了，先在 web 目录下新建一个 index.html, 再启动项目
+
+![image-20220408170941550](vx_images/image-20220408170941550.png)
+
+
+
+![image-20220408171156503](vx_images/image-20220408171156503.png)
+
+<br/>
+
+
+
+### 4) Servlet设置
+
+想要实现servlet 相关的功能，必须要是用其 jar包，由于是java普通项目，这里这能借助 Tomcat 下的库来使用
+
+![image-20220408173515405](vx_images/image-20220408173515405.png)
+
+<br>
+
+然后新建一个Servlet，如下：
+
+![image-20220408175403703](vx_images/image-20220408175403703.png)
+
+
+
+重新部署项目，访问：http://localhost:8080/se2ee/hello
+
+![image-20220408175600698](vx_images/image-20220408175600698.png)
+
+end~~
+
+
+
+<br/>
+
+## 2. MavenToJavaWeb
+
+将一个普通maven项目改造为一个JavaWeb项目
+
+
+
+
+
+
+
+
+
+
+
+
+
+找不到jar包的异常：**JAVAEE项目中jar包必须得放置在build后的 应用根目录/WEB-INF/lib目录中**。 
+
+
+
+<br>
+
+
+
+## 3. 新建JavaWeb项目
+
+
+
+
+
+<br/>
+
+
+
+# 五 Java Server Pages
 
 JSP全名为Java Server Pages，中⽂名叫java服务器⻚⾯，其根本是⼀个简化的Servlet设计
 
@@ -1432,6 +1668,10 @@ public class TestBean {
 | exception   | java.lang.Throwable                    | 页面中的异常                             |
 
 <br>
+
+
+
+# 六 EL表达式和JSTL
 
 ## 6. EL表达式语言
 
