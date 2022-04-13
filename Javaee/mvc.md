@@ -527,6 +527,16 @@ In sum, paradigm (范式) ＝ philosophy (理念) + methods (方法)＝主流认
 
 
 
+
+
+
+
+![image-20220412100928352](vx_images/image-20220412100928352.png)
+
+
+
+
+
 <br>
 
 

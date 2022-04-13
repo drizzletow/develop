@@ -21,6 +21,18 @@ Servlet是运行在服务器里面的一个程序，可以对客户端的请求�
 
 <br>
 
+tomcat10版本中，默认Servlet为5.0，官网对应信息：https://tomcat.apache.org/whichversion.html
+
+注意：
+
+**Apache Tomcat 10.0.x** builds on Tomcat 9.0.x and implements the **Servlet 5.0**, **JSP 3.0**, **EL 4.0**, **WebSocket 2.0** and **Authentication 2.0** specifications (the versions required by Jakarta EE 9 platform).
+
+Servlet5.0起全类名不再是javax开头了，而是变成了Jakarta  ，在Tomcat10 + Servlet5.0 的环境下，一些依赖低版本servlet的库不能正常了，如Apache的 fileUpload
+
+
+
+<br>
+
 
 
 ## 2. Servlet使用步骤
@@ -36,6 +48,7 @@ Servlet是运行在服务器里面的一个程序，可以对客户端的请求�
   如果非要自己实现 service 方法，请继承 GenericServlet 这个抽象类，或实现 Servlet 接口
 
   ```java
+  
   @WebServlet(name = "LoginServlet", value = "/LoginServlet")
   public class LoginServlet extends HttpServlet {
       @Override
@@ -762,6 +775,9 @@ public class HelloServlet extends HttpServlet {
         // 只有在进行文件上传时，才需要我们去操作请求体
 //        request.getInputStream();
         
+        // 而且值得注意的是，当我们先使用 getInputStream 获取了请求体，
+        // 再调用 getParameter 等方法时，无法再获取到参数 （......）
+        
 
         // 将信息响应给客户端
         resp.getWriter().println(result);
@@ -893,38 +909,6 @@ public class MyDefaultServlet extends HttpServlet {
 
 <br>
 
-```java
-
-// 下载文件：对于可以打开的文件，默认执行打开操作，对于无法打开的文件，默认执行下载操作，是无需服务器做出任何设置的。
-// 但如果某个文件是客户端可以打开的，但是我们希望客户端可以将其执行下载操作，而不是打开，那么设置一个响应头即可
-
-protected void doGet(HttpServletRequest request, HttpServletResponse response) 
-    throws ServletException, IOException {
-    
-        response.setHeader("Content-Disposition", "attachment;filename=1.jpeg");
-    
-        ServletOutputStream outputStream = response.getOutputStream();
-        //输入流 应用根目录下1.jpeg(路径)文件输入流
-        String realPath = getServletContext().getRealPath("1.jpeg");
-        FileInputStream inputStream = new FileInputStream(new File(realPath));
-    
-        int length = 0;
-        byte[] bytes = new byte[1024];
-        while ((length = inputStream.read(bytes)) != -1){
-            outputStream.write(bytes, 0, length);
-        }
-        //关闭流 ServletOutputStream可以关，也可以不关，如果不关，那么tomcat会帮你关
-        outputStream.close();
-        inputStream.close();
-
-    }
-
-```
-
-
-
-<br>
-
 
 
 ## 5. Servlet编码问题
@@ -1032,46 +1016,717 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
 
 <br>
 
-## 7. Cookie和Session
+
+
+## 7. 文件上传和下载
+
+上传页面示例：
+
+```jsp
+
+<!-- 注意: (1) form标签中要添加enctype属性 
+          (2) 提交方式必须是post   -->
+<form action="appName/fileUpload" method="POST" enctype="multipart/form-data" >
+    
+ 	<!-- input表单项 -->
+    <input type="file" name="avatar"  />
+    
+</form>
+
+```
+
+<br>
+
+
+
+### 1) enctype属性
+
+上传文件需要设置 ` enctype="multipart/form-data" ` ，如果不设置呢？会怎么样呢？ 参考下图抓包结果：
+
+![image-20220412142719112](vx_images/image-20220412142719112.png)
+
+结论：如果不设置 ` enctype="multipart/form-data" ` ，那么文件只会被当做一个普通参数（值为文件名）
+
+<br/>
+
+
+
+下面加上 ` enctype = "multipart/form-data"` , 再抓包看看：
+
+![image-20220412145009564](vx_images/image-20220412145009564.png)
+
+可以看到：文件倒是能上传了，但是多了一些 Boundary 的东西，包括普通表单项也是如此，
+
+此时 也无法通过 HttpServletRequest 的 getParameter() 来获取参数
+
+<br>
+
+如果我们通过 流 获得这个文件（请求体），那么必须先处理掉这些 Boundary ，自己解析各个表单项、分离文件并保存
+
+这个过程还是相当繁琐的，这里借助 Apache 的 FileUpload 即可
+
+
+
+<br>
+
+### 2) FileUpload
+
+Commons-FileUpload组件是Apache组织jakarta-commons项目组下的一个小项目，
+
+该组件可以方便地将multipart/form-data类型请求中的各种表单域解析出来，并实现一个或多个文件的上传，
+
+同时也可以限制上传文件的大小等内容
+
+官网：http://commons.apache.org/proper/commons-fileupload/ 
+
+<br>
+
+![image-20220413085811828](vx_images/image-20220413085811828.png)
+
+```java
+
+fileupload核心API:
+
+1. DiskFileItemFactory  
+    1) DiskFileItemFactory()        // 构造器  使用默认配置
+    2) DiskFileItemFactory(int sizeThreshold, File repository)
+      // sizeThreshold 内存缓冲区, 不能设置太大, 否则会导致JVM崩溃
+      // repository    临时文件目录
+
+2. ServletFileUpload
+  1) isMutipartContent(request) // 判断上传表单是否为multipart/form-data类型 true/false
+  2) parseRequest(request)      // 解析request, 返回值为List<FileItem>类型
+  3) setFileSizeMax(long)       // 上传文件单个最大值 fileupload内部通过抛出异常的形式处理, 
+    						    // 处理文件大小超出限制, 可以通过捕获这个异常, 提示给用户
+  4) setSizeMax(long)           // 上传文件总量最大值
+  5) setHeaderEncoding(String)  // 设置编码格式
+    
+  6) setProgressListener(ProgressListener)  // 设置监听器, 可以用于制作进度条
+
+```
+
+
+
+<br>
+
+```java
+/*
+
+一 中文乱码问题
+
+ 1). 表单数据中文乱码
+	fileItem.getString("utf-8");
+	
+ 2).上传的文件名有中文乱码问题
+ 	upload.setHeaderEncoding("utf-8");
+ 	
+ 	
+ 	
+二 目录内文件数过多的问题 -- 目录内文件数过多，会影响当前文件的加载查询效率(磁盘IO)
+
+    目录创建多个。 按照年、月、日。不稳定。文件分散不均匀。同时目录也不会特别多。
+
+    使用hash算法产生图片上传的随机目录 -- 为了防止一个目录中出现太多文件, 使用算法打散存储  */
+
+
+    public String generatePath(String savePath, String originFileName) {
+        String fileName = getFileName(originFileName);
+        
+        //文件名取 32 位的 hashcode
+        int hashCode = fileName.hashCode();
+        // 4位 对应一位 十六进制，--> 转换为一个八位的十六进制字符串
+        String hexString = Integer.toHexString(hashCode);
+        
+        // 生成目录结构
+        char[] chars = hexString.toCharArray();
+        String basePath = "file";              // 文件都放在应用根路径下的 file 目录下
+        for (char aChar : chars) {
+            basePath = basePath + "/" + aChar;
+        }
+		
+        String relativePath = basePath + "/" + fileName;
+    }
+    
+	/***
+     * 生成唯一的文件名
+     * @author itdrizzle
+     * @date 2022/4/12 20:08
+     * @return {@link File}
+     */
+    private static String getFileName(String originFileName) {
+        // 获取文件后缀名   新的文件名：当前日期(也可以使用用户id) + UUID + 文件后缀名
+        int index = originFileName.lastIndexOf(".");
+        String suffix = originFileName.substring(index);
+
+        String uuid = UUID.randomUUID().toString();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        String formatDate = sdf.format(new Date());
+
+        return formatDate + "-" + uuid + suffix;
+    }
+
+```
+
+<br>
+
+```java
+
+// 三 监听文件上传进度  （ 监听器要在request解析之前设置）
+
+ServletFileUpload upload = new ServletFileUpload(factory);
+upload.setProgressListener(new ProgressListener(){
+    
+    // pBytesRead      当前已上传大小
+    // pContentLength  文件总大小
+    // arg2            当前解析的item
+    public void update(long pBytesRead, long pContentLength, int arg2) {
+        System.out.println("文件大小为：" + pContentLength + ", 当前已处理：" + pBytesRead);
+    }
+    
+});
+
+```
+
+
+
+<br>
+
+```java
+/*
+
+新上传的图片文件要等至少5秒以后才能访问?
+
+在apache-tomcat-8.5 环境下遇到该问题，上传图片后第一次加载网络显示404，再次加载几次后图片正常显示，将tomcat更换成apache-tomcat-7能正常显示。
+
+好像是版本的问题，测试使用8.x以及9.x都出现了上传完无法立即访问需要等几秒的问题，但是换到tomcat7.0版本，却没有这个问题
+
+有这样一种说法：
+	这是因为Tomcat8起、其IO不再是传统的BIO，通过追踪 FileItem 的 write方法 发现，其底层复制文件的过程中使用了Channel
+	
+	但仅凭直觉都知道不对，为什么无论上传什么文件都是上传后5秒内无法访问，怎么可能呢？
+	严谨一点，通过追踪源码可以发现只有在上传文件大小超过内存缓冲区的情形下，才会涉及文件的复制（这时才会使用通道），
+	而一般的小文件，直接从内存写入硬盘。 参考下面部分源码：
+
+```
+
+<br>
+
+![image-20220413110945753](vx_images/image-20220413110945753.png)
+
+<br>
+
+![image-20220413100126581](vx_images/image-20220413100126581.png)
+
+<br>
+
+```java
+/**
+
+事实上，在此基本上可以确定这个问题与上传没有太大关系，可以通过自己实现 DefaultServlet （即 `/`）来验证
+
+或者不在IDEA中操作，直接启动本地的Tomcat，复制一个文件到webapp目录下的任何一个应用，5秒内快速访问该资源你就会明白了
+
+不知出于何种原因，Tomcat在部署资源后要5秒后才能访问到，个人有一些猜测：
+
+	Tomcat具备热部署的特性，在用户访问资源时，如果每次都去硬盘查询资源，效率肯定极低，
+	
+	想想自己实现一个Tomcat，你会让每次请求都去查询硬盘吗？
+	
+	通常的做法，应该会在内存中维护一些 servlet、文件资源 和 请求路径的对应关系，Tomcat接收到请求后，
+	先在内存中查询是否有对应资源，有的话再去获取该资源文件
+	
+	问题也许就在这儿，我们上传文件时、或者对Tomcat内应用的资源做了变动，不太可能做到实时修改Tomcat内存中的对应关系信息
+	常用的策略或许是有一个（或一些）扫描应用资源的线程，周期性的将资源变动信息同步到内存中，而5秒延迟，或许也是因此而来
+	以上纯属个人猜想，无任何依据，但这个答案应该比较接近事实了
+
+```
+
+
+
+<br>
+
+
+
+### 3) 文件上传示例
+
+FileUpload上传文件步骤：
+
+```xml
+
+<!--maven导入FileUpload依赖-->
+<dependency>
+    <groupId>commons-fileupload</groupId>
+    <artifactId>commons-fileupload</artifactId>
+    <version>1.4</version>
+</dependency>
+<dependency>
+    <groupId>commons-io</groupId>
+    <artifactId>commons-io</artifactId>
+    <version>2.6</version>
+</dependency>
+
+```
+
+<br>
+
+
+
+```java
+
+/**
+ * @Classname FileUploadUtil
+ * @Description TODO
+ * @Date 2022/4/12 19:41
+ * @Author idrizzle
+ */
+public class FileUploadUtil {
+
+    /**
+     * 利用 fileupload 处理文件上传相关业务
+     * 将各个表单项和文件上传后的网络路径 put 到 map 中
+     * @author itdrizzle
+     * @date 2022/4/12 19:42
+     */
+    public static void upload(HttpServletRequest request, Map<String, Object> map) throws Exception {
+        DiskFileItemFactory factory = new DiskFileItemFactory();
+        factory.setSizeThreshold(1024 * 1024 * 1024);              // 内存缓冲区大小
+        factory.setRepository(factory.getRepository());            // 设置存放临时文件的目录
+        ServletFileUpload upload = new ServletFileUpload(factory);
+        upload.setHeaderEncoding("utf-8");                         // 可以解决上传文件名中文乱码问题
+
+        // 通过parseRequest()方法获取的全部表单项将保存到List集合中，
+        // 并且保存到List集合中的表单项，不管是文件域还是普通表单域，都将当成FileItem对象处理
+        List<FileItem> fileItems = upload.parseRequest(request);
+
+        for (FileItem item : fileItems) {
+            // 判断是文件还是普通表单
+            if (item.isFormField()) {
+                // 普通表单域
+                map.put(item.getFieldName(), item.getString("utf-8"));
+            } else {
+                // 文件
+                String originFileName = item.getName();         // 文件名
+                // long fileSize = item.getSize();              // 文件大小
+                // String contentType = item.getContentType();  // 文件类型
+
+                String fileName = getFileName(originFileName);
+                String relativePath = "file/" + fileName;
+
+                String realPath = request.getServletContext().getRealPath(relativePath);
+                File file = new File(realPath);
+                if(!file.getParentFile().exists()){
+                    file.getParentFile().mkdirs();
+                }
+
+                // 上传文件
+                item.write(file);
+                map.put(item.getFieldName(), request.getContextPath() + "/" + relativePath);
+            }
+        }
+
+    }
+
+    /***
+     * 生成存放文件的目录、及唯一的文件名
+     * @author itdrizzle
+     * @date 2022/4/12 20:08
+     * @return {@link File}
+     */
+    private static String getFileName(String originFileName) {
+        // 获取文件后缀名   新的文件名：当前日期 + UUID + 文件后缀名
+        int index = originFileName.lastIndexOf(".");
+        String suffix = originFileName.substring(index);
+
+        String uuid = UUID.randomUUID().toString();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        String formatDate = sdf.format(new Date());
+
+        return formatDate + "-" + uuid + suffix;
+    }
+}
+
+```
+
+<br>
+
+```java
+
+@WebServlet("/user/*")
+public class UserServlet extends HttpServlet {
+
+    @SneakyThrows
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) {
+        String contextPath = request.getContextPath();  // contextPath = /app
+        String servletPath = request.getServletPath();  // servletPath = /user
+        String requestURI = request.getRequestURI();    // requestURI = /app/user/login
+
+        String path = requestURI.replace(contextPath + servletPath + "/", "");  // login
+
+        if ("login".equals(path)) {
+            // 登录
+            login(request, response);
+        } else if ("info".equals(path)) {
+            // 显示用户信息
+            info(request, response);
+        } else if ("update".equals(path)) {
+            // 修改用户信息
+            updateProfile(request, response);
+        }
+    }
+
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)  {
+        //
+        this.doPost(request, response);
+    }
+
+
+    /**
+     * 展示用户信息
+     * @author itdrizzle
+     * @date 2022/4/12 19:18
+     */
+    private void info(HttpServletRequest request, HttpServletResponse response) 
+        throws InvocationTargetException, IllegalAccessException, IOException {
+        Cookie[] cookies = request.getCookies();
+        User user = new User();
+        Map<String, Object> map = new HashMap<>();
+        for (Cookie cookie : cookies) {
+            map.put(cookie.getName(), cookie.getValue());
+        }
+        BeanUtils.populate(user, map);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("用户名：").append(user.getUsername()).append("<br>");
+        sb.append("密码：").append(user.getPassword()).append("<br>");
+        sb.append("性别：").append(user.getGender()).append("<br>");
+        sb.append("头像：").append("<br>").append("<img src= '" + user.getAvatar()  + "'/>");
+
+        response.setContentType("text/html;charset=utf-8");
+
+        response.getWriter().println(sb.toString());
+
+    }
+
+    /**
+     * 修改用户信息
+     * @author itdrizzle
+     * @date 2022/4/12 19:33
+     */
+    private void updateProfile(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        Map<String, Object> params = new HashMap<>();
+        FileUploadUtil.upload(request, params);
+
+        User user = new User();
+        BeanUtils.populate(user, params);
+
+        for (String key : params.keySet()) {
+            Cookie cookie = new Cookie(key, params.get(key).toString());
+            response.addCookie(cookie);
+        }
+        response.setHeader("refresh", "5;url=/app/user/info");
+        response.setContentType("text/html;charset=utf-8");
+        response.getWriter().println("上传成功，5秒后将跳转至info页面");
+    }
+}
+
+```
+
+<br>
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Profile</title>
+        <style type="text/css">
+
+            .container {
+                height: 500px;
+                margin-top: 100px;
+            }
+
+            .item {
+                width: 500px;
+                height: 50px;
+                padding: 5px 10px;
+                margin: 5px auto;
+            }
+
+            label {
+                display: inline-block;
+                width: 100px;
+                text-align: right;
+            }
+
+            input {
+                width: 200px;
+                height: 30px;
+            }
+
+            .button {
+                height: 40px;
+                margin-left: 105px;
+                background-color: #5c8abe;
+            }
+
+            .radio {
+                display: inline;
+                width: 20px;
+                height: 20px;
+            }
+
+        </style>
+    </head>
+    <body>
+
+        <div class="container">
+            <form method="post" action="/app/user/update" enctype="multipart/form-data">
+                <div class="item">
+                    <label for="username">UserName: </label>
+                    <input type="text" name="username" id="username"/>
+                </div>
+                <div class="item">
+                    <label for="password">Password: </label>
+                    <input type="password" name="password" id="password"/>
+                </div>
+
+                <div class="item">
+                    <label>Gender: </label>
+                    <input type="radio" name="gender" value="male" class="radio"/> male
+                    <input type="radio" name="gender" value="female" class="radio"/> female
+                </div>
+
+                <div class="item">
+                    <label for="avatar">Avatar: </label>
+                    <input type="file" name="avatar" id="avatar" />
+                </div>
+
+                <div class="item">
+                    <input type="submit" value="提交" class="button" />
+                </div>
+
+            </form>
+
+        </div>
+    </body>
+</html>
+```
+
+<br/>
+
+![image-20220412222936502](vx_images/image-20220412222936502.png)
+
+<br>
+
+![image-20220412223016441](vx_images/image-20220412223016441.png)
+
+
+
+<br>
+
+### 4) 文件的下载
+
+```java
+// 下载文件：对于可以打开的文件，默认执行打开操作，对于无法打开的文件，默认执行下载操作，是无需服务器做出任何设置的。
+// 但如果某个文件是客户端可以打开的，但是我们希望客户端可以将其执行下载操作，而不是打开，那么设置一个响应头即可
+
+protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+    throws ServletException, IOException {
+    
+        response.setHeader("Content-Disposition", "attachment;filename=1.jpeg");
+    
+        ServletOutputStream outputStream = response.getOutputStream();
+        //输入流 应用根目录下1.jpeg(路径)文件输入流
+        String realPath = getServletContext().getRealPath("1.jpeg");
+        FileInputStream inputStream = new FileInputStream(new File(realPath));
+    
+        int length = 0;
+        byte[] bytes = new byte[1024];
+        while ((length = inputStream.read(bytes)) != -1){
+            outputStream.write(bytes, 0, length);
+        }
+        //关闭流 ServletOutputStream可以关，也可以不关，如果不关，那么tomcat会帮你关
+        outputStream.close();
+        inputStream.close();
+
+    }
+
+```
+
+
+
+<br>
+
+
+
+## 8. Cookie和Session
+
+### 1) 浏览器Cookie
 
 Cookies是一种由服务器发送给客户的片段信息，存储在客户端浏览器的内存中或硬盘上，在客户随后对该服务器的请求中发回它
 
+```java
+
 Cookie的设置和获取：
 
-```java
 // 通过HttpServletResponse.addCookie的⽅式设置Cookie
 Cookie cookie = new Cookie("jieguo","true");
 response.addCookie(cookie);
 
-// 服务端获取客户端携带的cookie：通过HttpServletRequest获取 
+
+// 服务端获取客户端携带的cookie：同样通过HttpServletRequest获取 
 Cookie[] cookies = request.getCookies();
 if(cookies != null)
     for(Cookie c : cookies){
         String name = c.getName();          // 获取Cookie名称
-        if("jieguo".equals(name)){
+        if("zhangsan".equals(name)){
             String value = c.getValue();    // 获取Cookie的值
             bool = Boolean.valueOf(value);  // 将值转为Boolean类型
         }
     }
+}
+
+```
+
+<br>
+
+
+
+**cookie存活时间**：
+
+cookie默认情况下是存在于浏览器的内存中；浏览器开启时，cookie有效；浏览器关闭，cookie失效。
+
+如果希望cookie能够进行持久化保存，则可以设置一个正数，单位为秒的时间，表示cookie会在硬盘上存活多少秒。
+
+```java
+
+cookie.setMaxAge(180);      // 持久化保存 180 秒  
+
+
+// 设置负数表示的是cookie存在于浏览内存中
+
+// 如果设置0，表示的是删除cookie
+
 
 // 删除Cookie是指使浏览器不再保存Cookie，使Cookie⽴即失效
 Cookie cookie = new Cookie("username", "aaa"); // 创建⼀个name为username的Cookie
 cookie.setMaxAge(0);                           // 删除cookie的关键（设置Cookie的有效时间为0）
 response.addCookie(cookie);                    // 将有效时间为0的cookie发送给浏览器（达到删除cookie的目的）
+
 ```
 
-<br>
+<br/>
 
-Session是另⼀种记录客户状态的机制，不同的是Cookie保存在客户端浏览器中，⽽Session保存在服务器上、Session对象是在客户端第⼀次请求服务器的时候创建的
+
+
+**设置路径**：
+
+默认情况下，如果没有设置路径的时候，访问当前主机下任意资源时，都会携带cookie，如果希望仅访问指定路径时才携带cookie，那么可以设置一个path。
 
 ```java
 
-HttpSession session = request.getSession();    // 获取Session对象
-session.setAttribute("loginTime", new Date()); // 设置Session中的属性
-out.println("登录时间为：" +(Date)session.getAttribute("loginTime")); // 获取Session属性
+@WebServlet("/path1")
+public class PathServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+        throws ServletException, IOException {
+        
+        Cookie cookie = new Cookie("name", "zhangsan");
+        cookie.setPath(request.getContextPath() + "/path1"); // 只有访问当前路径时才会携带cookie
+        response.addCookie(cookie);
+    }
+}
 
-getMaxInactiveInterval();     // 获取Session的超时时间maxInactiveInterval属性
-setMaxInactiveInterval(longinterval);  // 修改Session的超时时间
+```
+
+使用场景：在访问html页面时，可以设置让其携带cookie，访问 js、css文件、图片文件等资源时，可以设置不让其携带cookie
+
+需要注意的是如果某个cookie设置了path，那么在删除cookie时，需要把当前cookie设置的path再写一遍，否则无法删除。
+
+<br>
+
+
+
+**设置域名**：
+
+cookie可以设置域名，表示的是访问指定域名时会携带cookie对象。
+
+这里的设置域名指的是设置多级父子域名的cookie。比如设置了一个cookie，域名是aaa.com,
+
+那么接下来，当我访问sub.aaa.com以及third.sub.aaa.com时，浏览器均会帮我们去携带cookie
+
+```java
+
+@WebServlet("/domain")
+public class DomainServlet extends HttpServlet {
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+        throws ServletException, IOException {
+        
+        Cookie cookie = new Cookie("key", "domain");
+        cookie.setDomain("aaa.com");
+        response.addCookie(cookie);
+    }
+}
+
+```
+
+浏览器针对cookie有一个大的原则：**不可以设置和当前域名无关的域名的cookie**，
+
+比如当前主机是localhost，想设置一个baidu.com域名的cookie，是不会设置成功的。浏览器会屏蔽该行为
+
+
+
+<br>
+
+
+
+**cookie优缺点**：
+
+优点
+
+   1.小巧轻便
+
+   2.减轻了服务器压力
+
+缺点：
+
+​    1.类型受限制，只可以存储字符串
+
+​    2.数据存储在客户端，安全性每没保障
+
+​    3.只可以存储一些非敏感数据
+
+
+
+<br>
+
+
+
+### 2) 服务器Session
+
+Session是另⼀种记录客户状态的机制，不同的是Cookie保存在客户端浏览器中，
+
+⽽Session保存在服务器上、Session对象应该在客户端第⼀次请求服务器的时候创建
+
+```java
+
+// 获取Session对象（有则返回session，没有则创建一个session对象）
+HttpSession session = request.getSession();   
+
+// 有则返回，没有并且create是true则创建一个session对象；
+// 如果没有，并且create是false，则返回null
+HttpSession getSession(boolean create);
+
+
+// 生成session对象：
+// 通过抓包可以发现，只有第一次访问ss1时，会有set-Cookie:JSESSIONID=xxx
+
+// 服务器是如何知道当前请求有没有关联的session对象的？
+// 根据请求头中是否携带了一个有效的Cookie:JSESSIOINID=xxx
+
 
 ```
 
@@ -1090,21 +1745,65 @@ setMaxInactiveInterval(longinterval);  // 修改Session的超时时间
 
 注意：
 
-- 虽然Session保存在服务器，对客户端是透明的，它的正常运行仍然需要客户端浏览器的支持。这是因为Session需要使用Cookie作为识别标志
+- 虽然Session保存在服务器，对客户端是透明的，它的正常运行仍然需要客户端浏览器的支持。
 
-- 为了获得更⾼的存取速度，服务器⼀般把Session放在内存⾥、每个⽤户都会 有⼀个独⽴的Session
+  这是因为Session需要使用Cookie作为识别标志
+
+- 为了获得更⾼的存取速度，服务器⼀般把Session放在内存⾥、每个⽤户都会有⼀个独⽴的Session
 
 - 如果Session内容过于复杂，当⼤量客户访问服务器时可能会导致内存溢出、因此，Session⾥的信息应该尽量精简
+
 - 为防⽌内存溢出，服务器会把⻓时间内没有活跃的Session从内存删除、这个时间就是Session的超时时间
 
 ```xml
+
 <!--Session的超时时间也可以在web.xml中修改(单位是分钟)-->
 <session-config> 
  <session-timeout>30</session-timeout>
 </session-config>
+
 ```
 
 <br>
+
+```java
+
+常见问题：
+
+1.关闭浏览器，session对象会销毁吗？还可以访问到数据吗？
+	
+  没有销毁(关闭浏览器没有进行任何请求，服务器甚至都不知道你关闭了浏览器)、
+  但默认情况下该浏览器访问不到这个session的数据了，因为cookie随着浏览器关闭而失效了
+  不过session超过其 MaxInactiveInterval 后，服务器会将其清除
+
+    
+2.关闭服务器，session对象会销毁吗？还可以访问到数据吗？
+  答案是销毁了。但服务器再次启动后依然可以访问到数据。为什么？
+
+  通过分析可以发现，应用被卸载前后，session的地址发生了变化，但是session的id没有变化。
+  意味着当应用即将被卸载时，将session的id、session里面的数据持久化到本地硬盘上了
+  应用重新被加载时，读取文件里面的信息，重新生成新的session对象，将之前的id赋值给新的session对象，
+  session域里面的数据也会恢复到新的session对象中
+    
+  注意： 不可以通过idea的tomcat重新部署、关闭重启来验证，idea的tomcat有混淆。
+        这里应该利用tomcat的应用管理器来将应用卸载、重新部署来验证。
+
+    设置：
+      1.保障本地tomcat的webapps目录下有manager应用
+      2.设置本地tomcat的conf/tomcat-users.xml文件
+    
+   		<role rolename="manager-gui"/>
+		<user username="tomcat" password="tomcat" roles="manager-gui"/>
+    
+    访问: http://localhost:8080/manager     输入账号密码即可
+
+```
+
+<br>
+
+
+
+### 3) JSESSIONID
 
 在Servlet规范中，用于会话跟踪的Cookie的名字必须是JSESSIONID
 
@@ -1115,12 +1814,12 @@ setMaxInactiveInterval(longinterval);  // 修改Session的超时时间
 ```java
 
 // URL重写就是在URL中附加标识客户的Session ID
-// Servlet容器解释URL，取出Session ID，根据Session ID将请求与特定的Session关联
+// Servlet容器解析URL，取出Session ID，根据Session ID将请求与特定的Session关联
 
 //当浏览器禁用Cookie时，每次访问都要手动添加jesessionid ，servlet中指定：
 HttpSession session=request.getSession();
-String path="sess;jsessionid="+session.getId();
-String path=response.encodeURL("sess");
+String path = "sess;jsessionid=" + session.getId();
+String path = response.encodeURL("sess");
 response.sendRedirect(path);
 
 ```
@@ -1136,7 +1835,9 @@ response.sendRedirect(path);
 
 <br>
 
-## 8. 监听器和过滤器
+
+
+## 9. 监听器和过滤器
 
 有时候你可能想要在Web应用程序启动和关闭时来执行一些任务（如数据库连接的建立和释放），或者你想要监控Session的创建和销毁，你还希望在ServletContext、HttpSession，以及ServletRequest对象中的属性发生改变时得到通知，那么你可以通过Servlet监听器来实现你的这些目的
 
@@ -1222,132 +1923,7 @@ public class LoginFilter implements Filter {
 
 
 
-## 9. 文件上传和下载
 
-上传页面示例：
-
-```jsp
-
-<!-- 注意:(1)form标签中要添加enctype属性 (2)提交方式必须是post -->
-<form action="${pageContext.request.contextPath}/fileUpload" method="POST" enctype="multipart/form-data" >
- 	<!-- input表单项 -->
-    <input type="file" name="avatar"  />
-</form>
-
-```
-
-使用IO流将文件返回
-
-```java
-@WebServlet("/fileUpload")
-public class FileUploadServlet extends HttpServlet {
-    @Override
-    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        resp.setContentType("text/html;charset=utf-8");
-        ServletInputStream inputStream = req.getInputStream();
-        PrintWriter out = resp.getWriter();
-        int len;
-        byte[] buffer = new byte[1024];
-        while ( (len = inputStream.read(buffer)) != -1){
-            String str = new String(buffer, 0, len);
-            out.print(str);
-        }
-    }
-}
-```
-
-![image-20211104145337478](vx_images/image-20211104145337478.png)
-
-
-
-**文件上传 SmartUpload和FileUpload**： 
-
-- smartUpload： 是 www.jspsmart.com 一套上传的组件包，可以轻松的实现文件的上传和下载。使用简单、可以轻松的实现上传文件类型的限制、也可以轻易的取得上传文件的名称、后缀、大小等
-
-- FileUpload 是 Apache 组织提供的免费上传组件。可以从 Apache 网站下载。相比 SmartUpload 开发、FileUpload 稍微复杂一些。但SmartUpload 已经多年没更新了， 而FileUpload 有 Apache 的加持，框架开发如 Structs2 和 SpringMVC 整合的都是 FileUpload。
-
-  <br>
-
-SmartUpload上传文件步骤：
-
-```java
-try {
-    // 实例化SmartUpload、并初始化
-    SmartUpload smartUpload = new SmartUpload();
-    PageContext pageContext = JspFactory.getDefaultFactory()
-        						.getPageContext(this, req, resp, null, false, 1024, true);
-    smartUpload.initialize(pageContext);
-    smartUpload.setCharset("utf-8");
-
-    // 上传文件、获取上传文件的 File 对象、及文件基本信息
-    smartUpload.upload();
-    File file = smartUpload.getFiles().getFile(0);
-    String fileName = file.getFileName();
-
-    // 保存文件到指定目录
-    String path = "file/" + fileName;
-    file.saveAs(path, SmartUpload.SAVE_VIRTUAL);
-
-    req.setAttribute("filename", fileName);
-
-    // 如果表单中有其他数据时，不能通过request直接获取，需要通过SmartUpload对象获取
-    String username = smartUpload.getRequest().getParameter("username");
-    System.out.println(username);
-
-    req.getRequestDispatcher("success.jsp").forward(req, resp);
-} catch (SmartUploadException e) {
-    e.printStackTrace();
-}
-```
-
-```jsp
-<!-- success.jsp -->
-<img src="file/${filename}">
-<a href="downloadImg?filename=${filename}">下载</a>
-```
-
-```java
-
-// 文件下载代码：
-String filename = request.getParameter("filename");
-
-// 将响应的内容设置为通用的二进制流
-response.setContentType("application/octet-stream");
-
-// attachment 告诉浏览器以附件的方式下载文件(弹出下载框)
-filename = URLEncoder.encode(filename, "utf-8");
-response.addHeader("Content-Disposition", "attachment;filename="+filename);
-
-request.getRequestDispatcher("file/"+filename).forward(request,response);
-response.flushBuffer();
-
-```
-
-
-
-<br>
-
-FileUpload上传文件步骤：
-
-```xml
-<!--maven导入FileUpload依赖-->
-<dependency>
-    <groupId>commons-fileupload</groupId>
-    <artifactId>commons-fileupload</artifactId>
-    <version>1.4</version>
-</dependency>
-<dependency>
-    <groupId>commons-io</groupId>
-    <artifactId>commons-io</artifactId>
-    <version>2.6</version>
-</dependency>
-```
-
-
-
-
-
-<br>
 
 
 
@@ -1558,6 +2134,7 @@ extends：指定JSP编译的servlet的父类！
 | trimDirectiveWhitespaces="true\|false"       | false  | 指示模板中的空白应该如何处理(默认值是false，即不删除空白)    |
 
 ```jsp
+
 <%--2. include指令 --%>
 <%--用于在JSP页面中静态包含一个文件，该文件可以是JSP页面、HTML网页、文本文件或一段Java代码--%>
 <%@include file="demo.jsp"%>
@@ -1566,6 +2143,7 @@ extends：指定JSP编译的servlet的父类！
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 prefix：指定标签前缀，这个东西可以随意起名
 uri：   指定第三方标签库的uri（唯一标识）
+
 ```
 
 <br>
@@ -1628,13 +2206,16 @@ Today is
 | jsp:text        | 在JSP页面和文档中使用写入文本的模板           |
 
 ```jsp
+
 <jsp:useBean id="test" class="com.example.main.TestBean" />
 
 <jsp:setProperty name="test" property="message" value="hehe..." />
 <jsp:getProperty name="test" property="message" />
+
 ```
 
 ```java
+
 public class TestBean {
    private String message;
  
@@ -1645,6 +2226,7 @@ public class TestBean {
       this.message = message;
    }
 }
+
 ```
 
 
@@ -1701,8 +2283,10 @@ public class TestBean {
 |    empty     |           测试是否空值           |
 
 ```jsp
+
 <!--使用表达式及操作符-->
 Box Perimeter is: ${2*box.width + 2*box.height}
+
 ```
 
 <br>
@@ -1724,6 +2308,7 @@ Box Perimeter is: ${2*box.width + 2*box.height}
 pageScope，requestScope，sessionScope，applicationScope变量用来访问存储在各个作用域层次的变量
 
 ```jsp
+
 <!-- 脚本元素和表达式取值对比 -->
 <%=pageContext.getAttribute("address1") %>
 <%=pageContext.getAttribute("address", PageContext.REQUEST_SCOPE) %>
@@ -1737,6 +2322,7 @@ ${applicationScope.address }
 
 <!-- 需求2: 通过el表达式 从不确定域中获取数据 -->
 <%=pageContext.findAttribute("address") %>
+
 ```
 
 当表达式没有指定变量或者对象的范围时， 那么容器会依次从 `pageContext—>request—>session—>application` 中查找该变量或对象
@@ -1787,8 +2373,10 @@ maven引入：
 Core标签库主要包括了`一般用途的标签`、`条件标签`、`迭代标签`和`与URL相关的标签 ` 
 
 ```jsp
+
 <!-- 在JSP页面中使用Core标签库，要使用taglib指令，指定引用的标签库 -->
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 ```
 
 <br>
@@ -1796,6 +2384,7 @@ Core标签库主要包括了`一般用途的标签`、`条件标签`、`迭代�
 一般用途的标签有：`<c:out>`、`<c:set>`、`<c:remove>`和`<c:catch>` 
 
 ```jsp
+
 <%-- 1. <c:out>: 类似于JSP的表达式<%=expression%>，或者EL表达式${el-expression} --%>
 <c:out value="hello"></c:out>
 
@@ -1813,6 +2402,7 @@ Core标签库主要包括了`一般用途的标签`、`条件标签`、`迭代�
     %>
 </c:catch>
 <c:out value="exception: ${exception}" />
+
 ```
 
 <br>
@@ -1820,6 +2410,7 @@ Core标签库主要包括了`一般用途的标签`、`条件标签`、`迭代�
 条件标签包括`<c:if>`、`<c:choose>`、`<c:when>`和`<c:otherwise>` 
 
 ```jsp
+
 <%-- 1. <c:if> 用于实现Java语言中if语句的功能 --%>
 <c:if test="${3 > 0}">
     显示: 3>0为true <br/>
@@ -1838,6 +2429,7 @@ Core标签库主要包括了`一般用途的标签`、`条件标签`、`迭代�
         ${username} 是一个临时访客！ <br/>
     </c:otherwise>
 </c:choose>
+
 ```
 
 <br>
@@ -1845,6 +2437,7 @@ Core标签库主要包括了`一般用途的标签`、`条件标签`、`迭代�
 迭代标签有`<c:forEach>`和`<c:forTokens>` 
 
 ```jsp
+
 <%-- 1. <c:forEach>用于对包含了多个对象的集合进行迭代 --%>
 <c:forEach var="i" begin="1" end="5">
     Item <c:out value="${i}"/><br/>
@@ -1865,6 +2458,7 @@ Core标签库主要包括了`一般用途的标签`、`条件标签`、`迭代�
 <c:forTokens items="zhangsan:lisi:wangwu" delims=":" var="name">
     ${name} <br/>
 </c:forTokens>
+
 ```
 
 <br>
@@ -1879,6 +2473,7 @@ Core标签库主要包括了`一般用途的标签`、`条件标签`、`迭代�
 - `<c:redirect>` 将客户端的请求重定向到另一个资源
 
 ```jsp
+
 <%-- 1. <c:import>标签类似于 <jsp:include>动作元素 --%>
 <c:import url="demo.jsp"/>
 
@@ -1888,6 +2483,7 @@ Core标签库主要包括了`一般用途的标签`、`条件标签`、`迭代�
     <c:param name="password" value="admin"/>
 </c:url>
 <a href="${loginUrl}" >登录</a>
+
 ```
 
 <br>
@@ -1897,10 +2493,12 @@ Core标签库主要包括了`一般用途的标签`、`条件标签`、`迭代�
 格式化标签包括`<fmt:timeZone>`、`<fmt:setTimeZone>`、`<fmt:formatNumber>`、`<fmt:parseNumber>`、`<fmt:formatDate>`和`<fmt:parseDate>`  
 
 ```jsp
+
 <%-- <fmt:formatDate>标签用于使用不同的方式格式化日期 --%>
 <c:set var="now" value="<%=new Date() %>"/>
 <fmt:formatDate value="${now}" type="both" dateStyle="long" timeStyle="long"/><br/>
 <fmt:formatDate value="${now}" pattern="yyyy-MM-dd HH:mm:ss"/> <br/>
+
 ```
 
 <br>

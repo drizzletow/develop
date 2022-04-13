@@ -25,7 +25,7 @@ Web服务器是运⾏及发布Web应⽤的容器，只有将开发的Web项⽬�
 
 ## 2. 安装Tomcat
 
-Tomcat官网：https://tomcat.apache.org/ 
+Tomcat官网：https://tomcat.apache.org/ 、https://dlcdn.apache.org/tomcat/
 
 开源⼩型web服务器 ，完全免费，主要⽤于中⼩型web项⽬。常用版本：8.5 和 9.0
 
@@ -106,9 +106,11 @@ java.util.logging.ConsoleHandler.encoding = GBK  （UTF-8）
 
 ```xml
 
-<!-- tomcat-users.xml文件用来配置管理Tomcat服务器的用户与权限 -->
+<!-- conf/tomcat-users.xml文件用来配置管理Tomcat服务器的用户与权限 -->
 <role rolename="manager-gui"/> 
 <user username="admin" password="123456" roles="manager-gui"/>
+
+访问地址：http://localhost:/manager
 
 ```
 
