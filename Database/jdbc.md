@@ -107,7 +107,11 @@ JDBC（Java DataBase Connectivity, java数据库连接）是一种用于执行SQ
 
 ## 1. JDBC使用步骤
 
-使用之前需要导入jdbc的驱动包， 普通java项目参照：[IDEA导入jar包说明](JavaSE/detail/jar包导入.md) ， maven项目导入：
+使用之前需要导入jdbc的驱动包， 版本说明：https://dev.mysql.com/doc/connector-j/5.1/en/connector-j-versions.html
+
+普通java项目参照：[IDEA导入jar包说明](JavaSE/detail/jar包导入.md) ， 
+
+maven项目导入：
 
 ```xml
 <dependency>

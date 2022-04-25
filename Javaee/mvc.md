@@ -2,7 +2,7 @@
 
 引言：
 现在有挺多人学完Java，可能都没怎么使用过jsp或jsp+Servlet开发过项目，
-就直接学习使用Spring、Spring Boot或者SpringMVC等框架进行开发。
+就直接学习使用Spring、SpringMVC或者Spring Boot等框架进行开发。
 
 但是如果没有经历一个逐步演进的过程，就很难体会到框架带给了我们什么样的好处，而且开发过程中遇到问题也难以理解，
 甚至会觉得现在的开发模式繁琐复杂，更别说去学习这些框架中的源码了。
@@ -13,7 +13,7 @@
 
 
 
-# 一 混沌时代
+# 一 JavaWeb发展历程
 
 ## 1. 静态网页时期
 
@@ -150,7 +150,7 @@ CGI每处理一个请求就会建立一个进程，大量的进程会占用大�
 
 
 
-## 4. Servlet诞生
+## 4. Servlet的诞生
 
 针对这样的需求，Microsoft有ASP标准，而Java则推出了Servlet技术
 
@@ -221,7 +221,7 @@ Servlet (Server Applet)：是运行在服务端的程序
 当Servlet引擎找到该请求指定的Servlet时，就会调用Servlet类中的service方法，并且将请求信息和响应信息传入service方法。
 所有的响应和请求的服务端逻辑都要写在service方法中。
 
-在service方法中，用户可以在处理完逻辑时给客户端返回相应的信息，当然，也可以什么都不返回。
+在service方法中，用可以在处理完逻辑时给客户端返回相应的信息，当然，也可以什么都不返回。
 从这一点可以看出，在客户端访问Servlet，就相当于发送一个远程调用服务端组件的方法的请求。
 
 ```
@@ -341,9 +341,9 @@ Web服务器以静态HTML网页的形式将HTTP response返回到您的浏览器
 
 用一句话来讲：**每个JSP都最终会变成对应的Servlet执行**  
 
+![image-20211101170023815](vx_images/image-20211101170023815.png)
+
 <br>
-
-
 
 虽然JSP可以实现网站的快速开发，但依然存在缺点：
 
@@ -379,34 +379,72 @@ Web服务器以静态HTML网页的形式将HTTP response返回到您的浏览器
 
 把一些业务逻辑、数据库操作的内容放到了JavaBean中，而JSP页面负责显示以及请求调度的工作。
 
-虽然好了些，但还让JSP做了过多的工作，JSP中把视图工作和请求调度（控制器）的工作耦合在一起了
-
-这个阶段JSP支持了语句块编写，如下所示：（这里的User类即JavaBean、过于简单就不再展示了）
+虽然好了些，但还让JSP做了过多的工作，JSP中把视图工作和请求调度（控制器）的工作耦合在一起了，如下所示：
 
 ```jsp
 
- 	<%
-        Connection connection = null;  // 这里省略了数据库连接
-        PreparedStatement preparedStatement = connection.prepareStatement("sql");
-        ResultSet resultSet = preparedStatement.executeQuery();
-        resultSet.next();
-    
-        User user = new User();
-        user.setId(1);
-        user.setNickname("zhangsan");
-        
-        pageContext.setAttribute("user",user);
-    %>
-
-    ${user.id}===${user.nickname}
-    <jsp:useBean id="user" type="com.xxx.bean.User" scope="page">
-        <jsp:getProperty name="user" property="id"/>
-        <jsp:getProperty name="user" property="nickname"/>
+<%@ page import="cn.itdrizzle.bean.UserBean" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>Register</title>
+</head>
+<body>
+    <%--获取 表单提交的 javabean --%>
+    <jsp:useBean id="user" type="cn.itdrizzle.bean.UserBean" scope="page">
+        <jsp:setProperty name="user" property="username"/>
+        <jsp:setProperty name="user" property="password"/>
     </jsp:useBean>
+
+    <%--展示数据--%>
+    <div>用户名：<jsp:getProperty name="user" property="username"/> </div>
+    <div>密码：  <jsp:getProperty name="user" property="password"/> </div>
+
+    <%--访问数据库--%>
+    <%
+        UserBean userBeanOp = new UserBean();
+        boolean res = userBeanOp.insert(user);
+
+        if (res) {
+            // 注册成功
+        } else {
+            // 注册失败，转发到表单页面
+            request.getRequestDispatcher("/form.jsp").forward(request, response);
+        }
+    %>
+</body>
+</html>
 
 ```
 
- jsp+JavaBean 模式技术实现了页面展示和业务逻辑分离。使用jsp技术中 HTML、css等可以非常容易地构建数据显示页面，
+<br>
+
+```java
+
+// javaBean -此时的javaBean 包含了一些和数据库进行交互的方法
+
+/**
+ * @Classname UserBean
+ * @Description TODO
+ * @Date 2022/4/14 13:38
+ * @Author idrizzle
+ */
+public class UserBean implements Serializable {
+    private String username;
+    private String password;
+    
+    // getter and setter ...
+    
+    // 数据库相关操作的方法
+    public boolean insert(UserBean user){
+        // database access
+        return true;
+    }
+}
+
+```
+
+ jsp + JavaBean 模式技术实现了页面展示和业务逻辑分离。使用jsp技术中 HTML、css等可以非常容易地构建数据显示页面，
 
 而对于数据处理可以交给JavaBean技术，如连接数据库代码、显示数据库代码等同时也可以达到重用的目的等
 
@@ -416,13 +454,51 @@ Web服务器以静态HTML网页的形式将HTTP response返回到您的浏览器
 
 （2）缺点：JSP 职责不单一，职责过重，不便于维护
 
-这种模式虽然在一定程度上实现了解耦，但 JSP 职责依旧不单一、此时MVC终于到来
+这种模式虽然在一定程度上实现了解耦，但 JSP 职责依旧不单一
 
 
 
 <br>
 
-## 7. 发展历程总结
+## 7. Model2开发模式
+
+JSP + JavaBean 的开发模式在JSP页面中嵌入了流程控制以及调用了JavaBean的方法，随着业务逻辑复杂度的增加，
+
+使用这种模式在开发及维护上都是非常复杂的，维护成本是非常高的
+
+<br>
+
+Model2开发模式是在 JSP + JavaBean （Model1第二代） 开发模式的基础上改进而来，具体就是将JSP中嵌入的调用JavaBean代码
+
+及部分流程控制程序抽取出来，放到单独的组件处理，这个组件就是控制器
+
+这样就从Model1模式升级到了Model2模式了（Model2模式符合MVC模型）
+
+<br>
+
+Model2的MVC思想：
+
+JSP(V)：将后端代码封装在标签中，通过使用大量标签避免JSP出现后台代码；（html+css+js+el+jstl）
+
+Servlet(C)：Servlet完成Controller的功能再加上部分代码逻辑；(Servlet, Fileter, Listener)
+
+Model(M)：Servlet将数据发送给Ｍodel，Ｍodel包括部分代码逻辑，同时代表着被组织好的用于返回的数据 ( jdbc )
+
+![image-20220414155659942](vx_images/image-20220414155659942.png)
+
+此后、Model层逐渐被拆分，从JavaBean开始：即分离出以前JavaBean中的义务逻辑代码（大多是操作数据库的代码），
+
+此后的 JavaBean 结构就更简单了，在项目中基本被作为数据的载体，不再承担多余的逻辑处理，基本等同于现在常用的pojo
+
+而拆分出来的部分单独作为一层 （dao / mapper ）, 后来随着业务逻辑代码的增多，该层代码逐渐变得臃肿，因此又增加了一层service层，专门处理复杂的业务逻辑
+
+
+
+<br>
+
+
+
+## 8. 发展历程小结
 
 第一阶段：静态网页
 
@@ -434,16 +510,31 @@ Web服务器以静态HTML网页的形式将HTTP response返回到您的浏览器
 
 第五阶段： JSP+JavaBean（ Model1第二代 )
 
-第六阶段：经典三层架构（ Model2、MVC ）
+第六阶段：Servlet + JSP + JavaBean（ Model2、MVC ）
+
+<br>
 
 
 
+在整个Model1模式阶段，整个Web应用几乎全部由JSP页面组成，JSP页面接受处理客户端请求，对请求处理后直接做出响应。
 
+最多就是用少量的JavaBean来处理数据库连接、数据库访问等操作。
 
-Servlet的发展
+优点：架构简单，比较适合小型项目开发。
 
-　Servlet　－>　Servlet1.1（JSP） （ JSP + JavaBean ）　－>　Servlet1.2（MVC思想）
+缺点：从工程化角度看，它的局限性非常明显；JSP的职责不单一，身兼View和Controller两种角色，将控制逻辑职和表现逻辑
 
+​           混杂在一起，职责过重，代码的可复用性低，不便于维护。
+
+<br>
+
+Model2下的JSP不在承担控制器的责任，它仅仅是表现层角色，仅仅用于将结果呈现给用户。
+
+浏览器发来的请求与Servlet(控制器)交互，而Servlet负责与后台的JavaBean通信。
+
+在Model2模型下，模型(Model)由JavaBean充当，视图(View)有JSP页面充当，而控制器(Controller)则由Servlet充当。
+
+项目职责清晰，各司其职，互不干扰，有利于组件的重用，适合大型的Web项目。
 
 
 <br>
@@ -488,52 +579,29 @@ In WebCenter Sites, a Controller is a standard asset instance. A presentation as
 
 Controllers can extend and import other Controllers. A BaseController provides convenient accessors, debugging, and much more. In addition, you can use Java APIs in a Controller, as described in Server-Side Java APIs.
 
-
 ```
 
+<br>
 
+不同历史阶段，不同的软件系统中，对于mvc的描述也许存在差异，但现阶段的开发模式（尤其在Java里面）是相对固定的，
 
-Servlet1.2的MVC思想：
-JSP(V)：将后端代码封装在标签中，通过使用大量标签避免JSP出现后台代码；
-Servlet(C)：Servlet完成Controller的功能再加上部分代码逻辑；
-Model(M)：Servlet将数据发送给Ｍodel，Ｍodel包括部分代码逻辑，同时代表着被组织好的用于返回的数据
+常见的Java单体服务端应用架构：
 
+![image-20220415175224513](vx_images/image-20220415175224513.png)
 
-
-
-
-
+<br>
 
 
 
+**关于JavaBean的一些说明：**
 
+来源（Sun）：https://www.oracle.com/java/technologies/javase/javabeans-spec.html
 
+JavaBean来源于 C/S 架构的桌面程序开发中，在Web时代初期其含义基本与以前一致，
 
+在model 1 开发模式下，JavaBean通常包含了数据库操作的代码，
 
-```
-
-Paradigm (范式) 是一个领域中主流的行事套路，它包括 philosophy (理念) 和 methods (方法)两部分。
-
-Philosophy (理念) 这个概念很好理解。比如，购物理念就是什么该买，什么不该买，怎么买。环保理念就是什么还保护，什么不该保护，以及怎么保护。时尚理念就是什么是时尚，什么不是，如何时尚。同理，穿衣理念就是什么该穿，什么不该穿，怎么穿。
-那么，某事的 philosophy (理念) 就是，做某事，什么该做，什么不该做，以及方式。
-
-理念说完了就是 methods (方法)。Methods (方法)就是继方式之后的具体的操作。
-举个例子：屠宰行业的杀猪的 paradigm (范式)是3岁以上的杀 (什么该做)，3岁以下的不杀 (什么不该做)，用电击的方法杀。
-具体该如何操作 (方法)。
-In sum, paradigm (范式) ＝ philosophy (理念) + methods (方法)＝主流认为什么事该做 ＋ 方式 ＋ 方法
-
-
-```
-
-
-
-
-
-
-
-![image-20220412100928352](vx_images/image-20220412100928352.png)
-
-
+但从 JSP + JavaBean + Servlet 的model2 开发模式起，JavaBean中的义务代码被逐步分离，到现在基本与pojo等同
 
 
 
@@ -547,17 +615,17 @@ In sum, paradigm (范式) ＝ philosophy (理念) + methods (方法)＝主流认
 
 ```java
 
-表现层（User Interface ）                        --  jsp + servlet
+表现层（User Interface ）                        
 
-业务逻辑层（Business Logic ）                     --  service
+业务逻辑层（Business Logic ）                    
 
-数据访问层/持久层（Data access ）                  --  JDBC...... 
+数据访问层/持久层（Data access ）                  
 
 ```
 
 <br>
 
-简单来说这只是一种分层思想，即为了 “**高内聚低耦合**” 的思想
+简单来说这只是一种分层思想，即为了 “**高内聚低耦合**” 的思想，但在不同的场景和技术体系下表现或许不尽相同
 
 在解决复杂的软件系统时，软件设计者用得最多的技术之一就是分层的设计思想
 
@@ -582,11 +650,13 @@ In sum, paradigm (范式) ＝ philosophy (理念) + methods (方法)＝主流认
 
 <br>
 
-**表现层（JSP）**：
+**表现层**：
 
 表现层也称为界面层，位于最外层（最上层），离用户最近。用于显示数据和接收用户输入的数据，为用户提供一种交互式操作的界面。
 
 <br>
+
+
 
 **业务层（逻辑层、service层）**：
 
@@ -610,6 +680,8 @@ In sum, paradigm (范式) ＝ philosophy (理念) + methods (方法)＝主流认
 
 <br>
 
+
+
 **持久层（DAO）**：
 
 持久层，有时候也称为是数据访问层，其功能主要是**负责数据库的访问**，可以访问数据库系统、二进制文件、文本文档或是XML文档。
@@ -624,7 +696,9 @@ In sum, paradigm (范式) ＝ philosophy (理念) + methods (方法)＝主流认
 
 <br/>
 
-关于三层架构介绍的一些网站：
+
+
+关于三层架构及其应用介绍的一些网站：
 
 IBM：https://www.ibm.com/cloud/learn/three-tier-architecture 
 
@@ -667,41 +741,62 @@ AWS: [*Architectural pattern for web application*](https://docs.aws.amazon.com/w
 
 
 
+## 3. 前后端分离
 
+在JSP参与开发的时代，由于返回给浏览器的页面都是在后端将数据处理完毕后，再写入到页面中，最后返回完整的  view，
 
-## 3 关于JavaBean
+浏览器直接显示页面即可，
 
-来源（Sun）：https://www.oracle.com/java/technologies/javase/javabeans-spec.html
+```java
 
+/*
+传统的Java Web开发过程中，大型项目的JSP不是由后端开发者来独立完成的
+前端会把页面先做出来，后端需要把前端页面嵌入到JSP中（或者使用其他的Thymeleaf模板也可以）把数据整合到页面中。
 
+开发中一直存在的问题就是：如何把我们后端返回的数据添加到页面中?
+如果后端在页面中遇到一些问题，需要把JSP发给前端开发，前端开发人员看不懂JSP。
+此时前端也不好解决，后端也不好解决。这样沟通和开发效率非常低！前后端耦合度太高，开发起来太麻烦！
 
+```
 
+![image-20220415174126500](vx_images/image-20220415174126500.png)
 
-
-
-
-
-
-
-# 前后端分离
-
-
-
-
-
-
-
+<br>
 
 
 
+```java
 
+/*
+前后端分离的开发模式：
+前端只需要独立编写客户端代码，后端也只需要独立编写服务端代码提供数据接口即可
+前端通过AJAX请求来访问后端的数据接口，将Model展示到View中即可
 
+前后端开发者只需要提前约定好接口文档（URL、参数、数据类型…），然后分别独立开发即可
+前端可以自己造假数据进行测试，完全不需要依赖于后端，最后完成前后端集成即可
+这种开发方式真正实现了前后端应用的解耦合！极大提升开发效率
 
+```
 
+![image-20220415174253487](vx_images/image-20220415174253487.png)
 
+当然、将前后端代码均部署到同一个服务器也可以，通过使用不同端口即可实现。
 
+前后端分离可以简单理解为将一个单体应用拆分成两个独立的应用：前端应用和后端应用，通常以JSON格式进行数据交互
 
+<br>
 
+```javascript
 
+/*
+关于Ajax和传统HTTP请求的区别：
 
+传统的web应用允许用户填写表单(form)，当提交表单时就向web服务器发送一个请求。
+服务器接收并处理传来的表单，然后返回一个新的网页
+
+Ajax相较于传统方式，最大的区别在于可以在不刷新页面的情况下，直接从服务器获取数据
+获得的数据经过js处理（dom操作、vue的双向绑定）后再显示到网页上
+这使得Web应用程序可以更为迅捷地回应用户动作，并避免了在网络上发送那些没有改变过的信息。
+
+```
 

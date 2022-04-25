@@ -1,13 +1,91 @@
-## 1. 正则表达式
+# 一 正则表达式
 
 正则表达式（Regular Expression）又称正规表示法、常规表示法，在代码中常简写为 regex、regexp 或 RE
 
-String 类里提供了如下几个特殊的方法：
+正则表达式定义了字符串的模式、可以用来搜索、编辑或处理文本。
+
+<br>
+
+## 1. Java regex
+
+java.util.regex 包下主要包括以下三个与正则表达式相关的类：
+
+- **Pattern** 类：
+
+  pattern 对象是一个正则表达式的编译表示。
+
+  Pattern 类没有公共构造方法。要创建一个 Pattern 对象，必须首先调用其公共静态编译方法，它返回一个 Pattern 对象。
+
+  <br>
+
+- **Matcher** 类：
+
+  Matcher 对象是对输入字符串进行解释和匹配操作的引擎。
+
+  与Pattern 类一样，Matcher 也没有公共构造方法。需要调用 Pattern 对象的 matcher 方法来获得一个 Matcher 对象。
+
+  <br>
+
+- **PatternSyntaxException**：
+
+  PatternSyntaxException 是一个非强制异常类，它表示一个正则表达式模式中的语法错误。
+
+<br>
+
+```java
+
+// java中正则表达式的简单使用示例
+
+@Test
+public void testMatches(){
+
+    String content = "lksdfldsfldsjavafhlsdkjfdlsf";
+
+    String pattern = ".*java.*";
+
+    boolean isMatch = Pattern.matches(pattern, content);
+
+    System.out.println(isMatch);  // true
+}
+
+```
+
+
+
+<br>
+
+
+
+## 2. 表达式语法
+
+在其他语言中，`\\` 表示：**在正则表达式中插入一个普通的（字面上的）反斜杠，没有任何特殊的意义** 
+
+在 Java 中，`\\`  表示：**插入一个正则表达式的反斜线，所以其后的字符具有特殊的意义**。
+
+所以，在其他的语言中（如 Perl），一个反斜杠 `\` 就足以具有转义的作用，而在 Java 中正则表达式中则需要有两个反斜杠才能被解析为其他语言中的转义作用。也可以简单的理解在 Java 的正则表达式中，两个 `\\*` 代表其他语言中的一个 `\` 
+
+如：Java中表示一位数字的正则表达式是 `\\d`， 而表示一个普通的反斜杠是 `\\`。
+
+
+
+
+
+
+
+Java中与正则表达式相关的几个特殊的方法：
 
 - `boolean matches(String regex)`：判断该字符串是否匹配指定的正则表达式。
 - `String replaceAll(String regex, String replacement)`：将该字符串中所有匹配 regex 的子串替换成 replacement。
 - `String replaceFirst(String regex, String replacement)`：将该字符串中第一个匹配 regex 的子串替换成 replacement。
 - `String[] split(String regex)`：以 regex 作为分隔符，把该字符串分割成多个子串。
+
+
+
+
+
+
+
+
 
 
 

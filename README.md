@@ -4,21 +4,29 @@ Gitee：https://gitee.com/itdrizzle/develop
 
 GitHub：https://github.com/itdrizzle/develop
 
+<br>
+
 # 一 开发实践篇
 
 ## Java基础
 
-* [开发环境](JavaSE/detail/history.md) &nbsp;&nbsp; [基础语法](JavaSE/base.md)  &nbsp;&nbsp; &nbsp;  [面向对象](JavaSE/oop.md)&nbsp;&nbsp; &nbsp; [常用类库](JavaSE/classlib.md) &nbsp;&nbsp; [数组和字符串](JavaSE/array.md) &nbsp;&nbsp; 
+* [Java开发环境](JavaSE/detail/history.md) &nbsp;&nbsp; [Java基础语法](JavaSE/base.md)  &nbsp;&nbsp; &nbsp;  [Java面向对象](JavaSE/oop.md)&nbsp;&nbsp; &nbsp; 
 
-* [Java IO流](JavaSE/javaIO.md) &nbsp;&nbsp; &nbsp;  [Java多线程](JavaSE/thread.md) &nbsp;&nbsp; &nbsp;  [Java网络编程](JavaSE/network.md) &nbsp;&nbsp;  [枚举、反射和注解](JavaSE/senior.md) &nbsp;&nbsp;  
+* [Java常用类库](JavaSE/classlib.md) &nbsp;&nbsp; [数组和字符串](JavaSE/array.md) &nbsp;&nbsp;   [正则表达式](JavaSE/regex.md) &nbsp;&nbsp; 
 
-* [泛型与集合类](JavaSE/collection.md) &nbsp;&nbsp;  [Lambda表达式和Stream流](JavaSE/lambda.md) &nbsp;&nbsp; [JavaSEAPI及文档](https://www.oracle.com/cn/java/technologies/java-se-api-doc.html)&nbsp;&nbsp; 
+<br>
 
-* [JVM内存管理](Jvm/Jvm内存管理.md)  &nbsp;&nbsp;  [JVM类加载机制](Jvm/Jvm类加载.md)  &nbsp;&nbsp;   [垃圾回收](Jvm/gc.md)  &nbsp;&nbsp;  
+* [Java IO流](JavaSE/javaIO.md) &nbsp;&nbsp; &nbsp;  [Java多线程](JavaSE/thread.md) &nbsp;&nbsp; &nbsp;  [Java网络编程](JavaSE/network.md) &nbsp;&nbsp;  [泛型与集合类](JavaSE/collection.md) &nbsp;&nbsp;  
 
-*  [Java虚拟机规范](Jvm/Specification.md)  &nbsp;&nbsp;  
+* [枚举、反射和注解](JavaSE/senior.md) &nbsp;&nbsp;  [Lambda表达式和Stream流](JavaSE/lambda.md) &nbsp;&nbsp;  
 
- * [正则表达式](JavaSE/regex.md) &nbsp;&nbsp;
+<br>
+
+* [JVM内存管理](Jvm/Jvm内存管理.md)  &nbsp;&nbsp;  [JVM类加载机制](Jvm/Jvm类加载.md)  &nbsp;&nbsp;   [垃圾回收](Jvm/gc.md)  &nbsp;&nbsp;   
+
+* [Java虚拟机规范](Jvm/Specification.md)  &nbsp;&nbsp;   [JavaSEAPI及文档](https://www.oracle.com/cn/java/technologies/java-se-api-doc.html)&nbsp;&nbsp; 
+
+<br>
 
 ## Java高并发
 * [IO底层原理]()  &nbsp;&nbsp;  [Java NIO]()  &nbsp;&nbsp; [Reactor模式]()  &nbsp;&nbsp;  [Netty核心原理]()  &nbsp;&nbsp; 
@@ -41,20 +49,18 @@ GitHub：https://github.com/itdrizzle/develop
 
 ## Web(Frontend)
 
-* [HTML](Web/HTML.md) &nbsp;&nbsp;   [CSS](Web/CSS.md) &nbsp;&nbsp;  [JavaScript](Web/JavaScript.md) &nbsp;&nbsp;   [DOM和BOM](Web/WebAPI.md) &nbsp;&nbsp;   [jQuery、Ajax等常用技术和框架](Web/frame.md) &nbsp;&nbsp;   
+* [HTML](Web/HTML.md) &nbsp;&nbsp;   [CSS](Web/CSS.md) &nbsp;&nbsp;  [JavaScript](Web/JavaScript.md) &nbsp;&nbsp;   [DOM和BOM](Web/WebAPI.md) &nbsp;&nbsp;   [jQuery及常用框架](Web/frame.md) &nbsp;&nbsp;   
 
 * [ECMAScript](Web/ES6.md) &nbsp;&nbsp;   [node和npm](Web/nodejs.md) &nbsp;&nbsp;     [Vue](Web/Vue.md) &nbsp;&nbsp;   [uniapp](Web/uniapp.md) &nbsp;&nbsp;   [小程序](Web/小程序.md) &nbsp;&nbsp;   
 
-
+* [Ajax技术](Web/ajax.md) &nbsp;&nbsp;  [XML和JSON](Web/json.md) &nbsp;&nbsp; 
 
 <br/>
 
 
 ## JavaEE(JavaWeb)
 
-* [XML和JSON](Javaee/XML.md) &nbsp;&nbsp;  [http协议](Javaee/http.md) &nbsp;&nbsp;  [Tomcat](Javaee/tomcat.md) &nbsp;&nbsp;  
-
-* [Servlet和JSP](Javaee/Servlet.md) &nbsp;&nbsp;  [MVC架构](Javaee/mvc.md) &nbsp;&nbsp;  
+*  [http协议](Javaee/http.md) &nbsp;&nbsp;  [Tomcat](Javaee/tomcat.md) &nbsp;&nbsp;   [Servlet和JSP](Javaee/Servlet.md) &nbsp;&nbsp;  [MVC架构](Javaee/mvc.md) &nbsp;&nbsp;  
 
 
 
@@ -63,9 +69,11 @@ GitHub：https://github.com/itdrizzle/develop
 
 ## 框架及中间件
 
+* [Spring Framework](Frame/spring.md) &nbsp;&nbsp;  [Spring MVC](Frame/springmvc.md) &nbsp;&nbsp;   [SpringBoot](Frame/springboot.md) &nbsp;&nbsp;  
 
+* [ElasticSearch](Frame/ElasticSearch.md) &nbsp;&nbsp; 
 
-* [ElasticSearch](Frame/ElasticSearch.md) &nbsp;&nbsp; [RabbitMQ](Frame/RabbitMQ.md) &nbsp;&nbsp; 
+* [RabbitMQ](Frame/RabbitMQ.md) &nbsp;&nbsp; 
 
 
 

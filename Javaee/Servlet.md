@@ -1194,17 +1194,16 @@ upload.setProgressListener(new ProgressListener(){
 ```java
 /*
 
-新上传的图片文件要等至少5秒以后才能访问?
+JavaEE项目中通过fileupload新上传的图片文件要等至少5秒以后才能访问? （使用Tomcat）
 
-在apache-tomcat-8.5 环境下遇到该问题，上传图片后第一次加载网络显示404，再次加载几次后图片正常显示，将tomcat更换成apache-tomcat-7能正常显示。
-
-好像是版本的问题，测试使用8.x以及9.x都出现了上传完无法立即访问需要等几秒的问题，但是换到tomcat7.0版本，却没有这个问题
+	有人说Tomcat7没有这个问题，但经过实际测试，结果是一样的（至少我亲自尝试了Tomcat7 - Tomcat10 ）
 
 有这样一种说法：
-	这是因为Tomcat8起、其IO不再是传统的BIO，通过追踪 FileItem 的 write方法 发现，其底层复制文件的过程中使用了Channel
+	这是因为Tomcat8起、其IO不再是传统的BIO，其底层复制文件的过程中使用了Channel
 	
 	但仅凭直觉都知道不对，为什么无论上传什么文件都是上传后5秒内无法访问，怎么可能呢？
-	严谨一点，通过追踪源码可以发现只有在上传文件大小超过内存缓冲区的情形下，才会涉及文件的复制（这时才会使用通道），
+	严谨一点，通过追踪fileupload源码（追踪 FileItem 的 write方法 发现）可以发现只有在上传文件大小超过内存缓冲区的情形下，
+	才会涉及文件的复制（这时才会使用通道），
 	而一般的小文件，直接从内存写入硬盘。 参考下面部分源码：
 
 ```
@@ -1222,11 +1221,12 @@ upload.setProgressListener(new ProgressListener(){
 ```java
 /**
 
-事实上，在此基本上可以确定这个问题与上传没有太大关系，可以通过自己实现 DefaultServlet （即 `/`）来验证
+事实上，在此基本上可以确定这个问题与上传没有太大关系，可以通过自己实现 DefaultServlet （即 `/`）
+直接用文件名获取文件来验证（使用IO流直接读硬盘文件）
 
 或者不在IDEA中操作，直接启动本地的Tomcat，复制一个文件到webapp目录下的任何一个应用，5秒内快速访问该资源你就会明白了
 
-不知出于何种原因，Tomcat在部署资源后要5秒后才能访问到，个人有一些猜测：
+不知出于何种原因，Tomcat在启动后部署资源后要5秒后才能访问到，个人有一些猜测：
 
 	Tomcat具备热部署的特性，在用户访问资源时，如果每次都去硬盘查询资源，效率肯定极低，
 	
@@ -1237,7 +1237,7 @@ upload.setProgressListener(new ProgressListener(){
 	
 	问题也许就在这儿，我们上传文件时、或者对Tomcat内应用的资源做了变动，不太可能做到实时修改Tomcat内存中的对应关系信息
 	常用的策略或许是有一个（或一些）扫描应用资源的线程，周期性的将资源变动信息同步到内存中，而5秒延迟，或许也是因此而来
-	以上纯属个人猜想，无任何依据，但这个答案应该比较接近事实了
+	以上纯属个人猜想，无任何依据，但这个答案应该比较接近事实了，有空只能通过调试Tomcat源码来验证了
 
 ```
 
@@ -1799,6 +1799,8 @@ HttpSession getSession(boolean create);
 
 ```
 
+
+
 <br>
 
 
@@ -1808,36 +1810,55 @@ HttpSession getSession(boolean create);
 在Servlet规范中，用于会话跟踪的Cookie的名字必须是JSESSIONID
 
 - HTTP协议是无状态的，Session不能依据HTTP连接来判断是否为同一客户，因此服务器向客户端浏览器发送一个名为JSESSIONID的Cookie，它的值为该Session的id（也就是HttpSession.getId()的返回值）、Session依据该Cookie来识别是否为同一用户
+
 - 该Cookie为服务器自动生成的，它的maxAge属性一般为–1，表示仅当前浏览器内有效，各浏览器间不共享，关闭浏览器就会失效
+
+  ```java
+  
+  // 若要求关闭浏览器之后，依然可以访问到原先session中的数据 
+  // （即将保存sessionID的cookie保存到硬盘, 或者说设置maxAge属性）
+  
+  HttpSession session = request.getSession();
+  session.setAttribute("user", user);
+  
+  Cookie jsessionid = new Cookie("JSESSIONID", session.getId());
+  jsessionid.setMaxAge(60*60*24*7);
+  response.addCookie(jsessionid);
+  
+  ```
+
+  <br>
+
 - 如果客户端浏览器将Cookie功能禁用，或者不支持Cookie怎么办？Java Web提供了另一种解决方案：URL地址重写
 
-```java
+  ```java
+  
+  // URL重写就是在URL中附加标识客户的Session ID
+  // Servlet容器解析URL，取出Session ID，根据Session ID将请求与特定的Session关联
+  
+  //当浏览器禁用Cookie时，每次访问都要手动添加jesessionid ，servlet中指定：
+  HttpSession session=request.getSession();
+  String path = "sess;jsessionid=" + session.getId();
+  String path = response.encodeURL("sess");
+  response.sendRedirect(path);
+  
+  
+  // 页面中的使用方式
+  <a href="sess;jsessionid=${requestScope.id}">点击</a>
+  
+  ```
 
-// URL重写就是在URL中附加标识客户的Session ID
-// Servlet容器解析URL，取出Session ID，根据Session ID将请求与特定的Session关联
-
-//当浏览器禁用Cookie时，每次访问都要手动添加jesessionid ，servlet中指定：
-HttpSession session=request.getSession();
-String path = "sess;jsessionid=" + session.getId();
-String path = response.encodeURL("sess");
-response.sendRedirect(path);
-
-```
-
-<br>
-
-```jsp
-
-// 页面中使用
-<a href="sess;jsessionid=${requestScope.id}">点击</a>
-
-```
+  
 
 <br>
 
 
 
 ## 9. 监听器和过滤器
+
+
+
+### 1) 监听器Listener
 
 有时候你可能想要在Web应用程序启动和关闭时来执行一些任务（如数据库连接的建立和释放），或者你想要监控Session的创建和销毁，你还希望在ServletContext、HttpSession，以及ServletRequest对象中的属性发生改变时得到通知，那么你可以通过Servlet监听器来实现你的这些目的
 
@@ -1846,7 +1867,8 @@ Servlet API中定义了8个监听器接口，可以用于监听ServletContext、
 ![image-20211101171958362](vx_images/image-20211101171958362.png)
 
 ```java
-@WebListener
+
+@WebListener 
 public class MyListener implements ServletContextListener, HttpSessionAttributeListener {
     public MyListener() {
     }
@@ -1877,19 +1899,29 @@ public class MyListener implements ServletContextListener, HttpSessionAttributeL
         /* This method is called when an attribute is replaced in a session. */
     }
 }
+
 ```
 
 <br>
 
-过滤器（Filter）是从Servlet 2.3规范开始新增的功能，并在Servlet 2.4规范中得到增强。过滤器是一个驻留在服务器端的Web组件，它可以截取客户端和资源之间的请求与响应信息，并对这些信息进行过滤
 
-<img src="vx_images/image-20211101174816515.png" alt="image-20211101174816515"  />
 
-在一个Web应用程序中，可以部署多个过滤器，这些过滤器组成了一个过滤器链。过滤器链中的每个过滤器负责特定的操作和任务，客户端的请求在这些过滤器之间传递，直到目标资源
+### 2) 过滤器Filter
+
+过滤器（Filter）是从Servlet 2.3规范开始新增的功能，并在Servlet 2.4规范中得到增强。
+
+过滤器是一个驻留在服务器端的Web组件，它可以截取客户端和资源之间的请求与响应信息，并对这些信息进行过滤
+
+
+
+在一个Web应用程序中，可以部署多个过滤器，这些过滤器组成了一个过滤器链。
+
+过滤器链中的每个过滤器负责特定的操作和任务，客户端的请求在这些过滤器之间传递，直到目标资源
 
 ```java
+
 // 登录拦截器示例
-@WebFilter(filterName = "LoginFilter", urlPatterns = "*")
+@WebFilter(filterName = "LoginFilter", urlPatterns = "/*")
 public class LoginFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) 
@@ -1904,11 +1936,15 @@ public class LoginFilter implements Filter {
         }
     }
 }
+
 ```
+
+<br>
 
 除了使用注解，还可以在web.xml中配置：
 
 ```xml
+
 <filter>
     <filter-name>LoginFilter</filter-name>
     <filter-class>com.example.filter.LoginFilter</filter-class>
@@ -1917,13 +1953,24 @@ public class LoginFilter implements Filter {
     <filter-name>LoginFilter</filter-name>
     <url-pattern>/*</url-pattern>
 </filter-mapping>
+
 ```
 
 <br>
 
 
 
+## 10. Servlet三大域
 
+**context域：可以用来存放一些和用户无关的数据，比如全局性的数据。比如当前应用的配置文件、某个电商网站商品的分类等**
+
+**session域：一般用来存放用户所特有的行为。比如登录之后用户名、购物车、浏览记录等。**
+
+**request域：非常小，只有转发的两个组件之间可以进行共享。**
+
+
+
+<br>
 
 
 
@@ -2009,6 +2056,10 @@ idea中将 javase 项目改造为 javaweb 项目：
 
 ![image-20220408175600698](vx_images/image-20220408175600698.png)
 
+<br>
+
+找不到jar包的异常：**JAVAEE项目中jar包必须得放置在build后的 应用根目录/WEB-INF/lib目录中**。 
+
 end~~
 
 
@@ -2017,21 +2068,38 @@ end~~
 
 ## 2. MavenToJavaWeb
 
-将一个普通maven项目改造为一个JavaWeb项目
+将一个普通maven项目改造为一个JavaWeb项目 
 
+```
 
+1. 新建一个maven项目、并在 src/main 下 新建webapp目录
 
+2. 设置idea中的项目结构的Facets，注意要修改path，具体见图示
 
+3. 在pom.xml文件中添加 war 打包方式
 
+```
 
+![image-20220416100121860](vx_images/image-20220416100121860.png)
 
+<br>
 
+![image-20220416095505054](vx_images/image-20220416095505054.png)
 
+<br>
 
+```xml
 
+<!--最后导入相关依赖即可：(provided: 这里是因为项目最后会打包到Tomcat中运行，会使用Tomcat中的servlet ) -->
 
+<dependency>
+    <groupId>javax.servlet</groupId>
+    <artifactId>javax.servlet-api</artifactId>
+    <version>3.1.0</version>
+    <scope>provided</scope>
+</dependency>
 
-找不到jar包的异常：**JAVAEE项目中jar包必须得放置在build后的 应用根目录/WEB-INF/lib目录中**。 
+```
 
 
 
@@ -2041,7 +2109,19 @@ end~~
 
 ## 3. 新建JavaWeb项目
 
+IDEA2018创建JavaWeb项目：
 
+![image-20220416101821267](vx_images/image-20220416101821267.png)
+
+2018版IDEA创建的项目默认不支持maven，建议使用先创建Maven项目的方式，具体参照 MavenToJavaWeb
+
+<br>
+
+
+
+新版本IDEA中，可以一步到位：
+
+![image-20220416101520444](vx_images/image-20220416101520444.png)
 
 
 
@@ -2335,6 +2415,8 @@ ${applicationScope.address }
 3. 使用pageContext的getAttribute方法或者findAttribute方法从4个范围中取出数据的时候、如果指定的key不存在、会返回null，而使用el表达式取出的时候指定的key不存在，页面上什么都不会显示
 
 <br>
+
+
 
 ## 7. JSP标准标签库
 

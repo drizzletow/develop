@@ -2,6 +2,20 @@
 
 XML（*EX*tensible *M*arkup *L*anguage） 是一种*标记语言*，是被设计用来传输和存储数据的。 [XML详细教程](https://www.w3school.com.cn/xml/xml_intro.asp)
 
+XML 是一种标记语言，很类似 HTML、但其主要用于是传输数据，而非显示数据、XML 标签没有被预定义、需要自行定义标签。
+
+```java
+
+随着AJax（以前叫XMLHTTP，2005年后才叫Ajax）技术的流行，XML的弊端也愈来愈显现
+(XML实现是基于DOM树实现的，而DOM在各类浏览器中的实现细节不尽相同) 因此XML的跨浏览器兼容性并很差，
+因此急需一种新的数据负载格式集成到HTML页面中以满足Ajax的要求！ -- json
+
+此后，xml常见的使用场景是用作应用程序的配置文件
+
+```
+
+<br>
+
 ## 1. 语法格式
 
 - XML文档声明
@@ -413,6 +427,17 @@ public class ObjectToXML {
 **JSON（JavaScript Object Notation）**： JS对象符号（或表示法） , 是一种轻量级的数据交换格式，类似 XML
 
 但它比 XML 更小、更快，更易解析。
+
+```html
+
+前面咱们说了随着Ajax的流行，而各类浏览器对DOM的实现细节不尽相同，因此会出现兼容性问题。
+
+如何才能将数据整合到HTML中又解决浏览器兼容性问题呢？
+答案就是：利用全部主流浏览器中的一种通用组件——JavaScript引擎。
+这样只要创造一种JavaScript引擎能识别的数据格式就能够啦！
+2001 年 4 月，首个 JSON 格式的消息被发送出来。2005 年，JSON 有了一次大爆发。。
+
+```
 
 <br>
 

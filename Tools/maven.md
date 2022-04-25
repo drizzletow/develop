@@ -23,8 +23,21 @@ Maven仓库地址：https://mvnrepository.com/
 <br/>
 
 ```shell
+
+# Linux下的环境变量配置：
+
+sudo vim /etc/profile
+
+export MAVEN_HOME=/usr/maven/apache-maven-3.8.5
+export PATH=$MAVEN_HOME/bin:$PATH
+
+source /etc/profile
+
+# 测试是否安装成功
+
 mvn -v
 mvn -version
+
 ```
 
 

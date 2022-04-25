@@ -1,4 +1,4 @@
-# 一 Introduction
+# 	一 Introduction
 
 ## 1. Web服务器
 
@@ -25,7 +25,9 @@ Web服务器是运⾏及发布Web应⽤的容器，只有将开发的Web项⽬�
 
 ## 2. 安装Tomcat
 
-Tomcat官网：https://tomcat.apache.org/ 、https://dlcdn.apache.org/tomcat/
+Tomcat官网：https://tomcat.apache.org/ 、https://dlcdn.apache.org/tomcat/ 
+
+包含老版本的Tomcat下载地址：https://archive.apache.org/dist/
 
 开源⼩型web服务器 ，完全免费，主要⽤于中⼩型web项⽬。常用版本：8.5 和 9.0
 
@@ -128,13 +130,13 @@ java.util.logging.ConsoleHandler.encoding = GBK  （UTF-8）
 
 所以，如果希望部署一个资源文件，那么就必须先设置一个应用，将该资源文件放置在该应用中。
 
-
+<br>
 
 ![image-20220407211249850](vx_images/image-20220407211249850.png)
 
 如图，Tomcat原本就包含了一些 项目， 例如 examples目录 就是代表一个 项目（或者说应用）
 
-
+<br>
 
 ![image-20220407211847918](vx_images/image-20220407211847918.png)
 
@@ -179,11 +181,11 @@ java.util.logging.ConsoleHandler.encoding = GBK  （UTF-8）
 
 ~~~
 
-
+<br>
 
 ![QQ20220407195734-16493383899362](vx_images/QQ20220407195734-16493383899362.png)
 
-
+<br>
 
 **总而言之，一定要知道该资源文件在硬盘中路径，才有后续** 。 
 
@@ -222,7 +224,7 @@ java.util.logging.ConsoleHandler.encoding = GBK  （UTF-8）
 
 其实不是没有使用端口号，而是使用的是当前协议的默认端口号。对于http协议来说，默认端口号是80 （HTTPS 443）
 
-
+<br>
 
 如果我们希望我们的tomcat服务器，在访问时，也不需要携带端口号，该如何做？
 
@@ -408,7 +410,7 @@ Coyote 是Tomcat 中连接器的组件名称，是对外的接口。客户端通
 
 ## 3. 容器组件Catalina
 
-Tomcat模块分层结构图及Catalina位置：
+Tomcat模块分层结构图及Catalina的地位：
 
 Tomcat是一个由一系列可配置的组件构成的Web容器，而Catalina是Tomcat的servlet容器。
 
@@ -420,17 +422,72 @@ Tomcat是一个由一系列可配置的组件构成的Web容器，而Catalina是
 
 
 
+<br>
+
+
+
+**Servlet容器Catalina的结构**：
+
+![image-20220421101830928](vx_images/image-20220421101830928.png)
+
+一般可以认为整个Tomcat就是一个Catalina实例，Tomcat启动的时候会初始化这个实例，Catalina实例通过加载server.xml完成其他实例的创建，创建并管理（1个）Server，Server创建并管理多个服务，每个服务又可以有多个Connector和一个Container。
+
+
+
+- Catalina
+
+  负责解析Tomcat的配置文件，以此来创建服务器Server组件并进行管理
+
+- Server
+
+  服务器表示整个Catalina Servlet容器以及其它组件，负责组装并启动Servlaet引擎,Tomcat连接器。
+
+  Server通过实现Lifecycle接口，提供了一种优雅的启动和关闭整个系统的方式
+
+- service
+
+  服务是Server内部的组件，一个Server包含多个Service。它将若干个Connector组件绑定到一个Container. 
+
+- Container
+
+  容器，负责处理用户的servlet请求，并返回对象给web用户的模块
+
+<br>
+
+**Container组件的具体结构**：
+
+Container组件下有几种具体的组件，分别是 Engine、Host、Context和Wrapper。这4种组件（容器）是父子关系。
+
+Tomcat通过一种分层的架构，使得Servlet容器具有很好的灵活性。
+
+- Engine
+
+  表示整个Catalina的Servlet引擎，用来管理多个虚拟站点，一个Service最多只能有一个Engine，但是一个引擎可包含多个Host
+
+- Host
+
+  代表一个虚拟主机，或者说一个站点，可以给Tomcat配置多个虚拟主机地址，而一个虚拟主机下可包含多个Context
+
+- Context
+
+  表示一个Web应用程序，一个Web应用可包含多个Wrapper
+
+- Wrapper
+
+  表示一个Servlet，Wrapper作为容器中的最底层，不能包含子容器上述组件的配置其实就体现在`conf/server.xml`中
+
 
 
 <br>
 
 
 
-## 请求处理流程
+## 4. 请求处理流程
 
 Tomcat请求处理流程总结：
 
 ```bash
+
 1. 浏览器地址栏输入网址，首先进行域名解析，其次进行TCP连接，发起HTTP请求
 
 2. HTTP请求到达目标机器，HTTP请求报文会被监听8080端口号的Connector接收到，
@@ -452,3 +509,218 @@ Tomcat请求处理流程总结：
 
 
 <br>
+
+
+
+# 四 Tomcat源码剖析
+
+## 1. 构建Tomcat源码
+
+先去tomcat官网下载源码（这里选择的版本是8）
+
+sourceCode下载 地址为：https://tomcat.apache.org/download-80.cgi
+
+<br>
+
+
+
+**Maven和Ant** —— 两种构建Tomcat源码的方式：
+
+- 通过ant进行构建  （需要下载 1.9.8以上版本）
+
+  下载 ant ：https://ant.apache.org/bindownload.cgi  （解压配置环境变量即可）
+
+- 转换为maven的项目进行构建
+
+<br>
+
+下面主要介绍maven构建的方式：
+
+1. 将源码导入idea中 并在根目录创建pom.xml 和catalina_home目录 
+
+```xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.apache.tomcat</groupId>
+    <artifactId>apache-tomcat-8.5.50-src</artifactId>
+    <name>Tomcat8.5</name>
+    <version>8.5</version>
+    <build>
+        <!--指定源目录-->
+        <finalName>Tomcat8.5</finalName>
+        <sourceDirectory>java</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>java</directory>
+            </resource>
+        </resources>
+        <plugins>
+            <!--引入编译插件-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <!--tomcat 依赖的基础包-->
+    <dependencies>
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>3.4</version>
+        </dependency>
+        <dependency>
+            <groupId>ant</groupId>
+            <artifactId>ant</artifactId>
+            <version>1.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>wsdl4j</groupId>
+            <artifactId>wsdl4j</artifactId>
+            <version>1.6.2</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml</groupId>
+            <artifactId>jaxrpc</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jdt.core.compiler</groupId>
+            <artifactId>ecj</artifactId>
+            <version>4.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.soap</groupId>
+            <artifactId>javax.xml.soap-api</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+    </dependencies>
+</project>
+
+```
+
+再pom.xml文件上右击，选择 `add as maven project` ，转化为maven工程项目
+
+<br>
+
+
+
+2. 配置启动类、添加一些VM运行参数。主要是构建项目的目标路径 catalina-home相关内容
+
+![image-20220421194737923](vx_images/image-20220421194737923.png)
+
+```bash
+
+-Dcatalina.home=catalina-home
+-Dcatalina.base=catalina-home
+-Djava.endorsed.dirs=catalina-home/endorsed
+-Djava.io.tmpdir=catalina-home/temp
+-Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+-Djava.util.logging.config.file=catalina-home/conf/logging.properties
+-Dfile.encoding=UTF-8
+
+```
+
+同时将Tomcat项目的 webapps 和 conf 目录 复制到 catalina-home 目录下
+
+
+
+<br>
+
+
+
+3. 添加 JSP解析器初始化代码后，执行maven clean 、install
+
+```java
+
+// JSP解析器初始化 （org.apache.catalina.startup.ContextConfig类的configureStart() 方法下）
+
+context.addServletContainerInitializer(new JasperInitializer(), null);
+
+```
+
+![image-20220421194951023](vx_images/image-20220421194951023.png)
+
+<br>
+
+```bash
+
+一些不必要的设置（可以减少一些项目启动报错信息）：
+
+1. 修改： catalina-home/conf/catalina.properties  ( 添加 *.jar )
+
+	tomcat.util.scan.StandardJarScanFilter.jarsToSkip=*.jar,\
+	
+2. 在 catalina-home 下新建一个 lib 目录
+
+```
+
+<br>
+
+启动项目、访问 ：http://localhost:8080/
+
+
+
+<br>
+
+
+
+## 2. Tomcat启动流程
+
+
+
+
+
+
+
+
+
+<br>
+
+
+
+
+
+## 3. 请求处理机制分析
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

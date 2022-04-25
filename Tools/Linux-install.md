@@ -235,10 +235,59 @@ sudo apt-get install open-vm-tools
 <br/>
 
 
+# 四 Manjaro
+
+## 1. vm tools
+Manjaro原版中的open-vm-tools与VMware不匹配
+
+Github地址：https://github.com/rasa/vmware-tools-patches
+
+```bash
+
+1、卸载open-vm-tools
+sudo pacman -R open-vm-tools
+
+2、下载vmwaretools补丁
+git clone https://github.com/rasa/vmware-tools-patches.git
+
+3、进入vmware-tools-patches目录
+cd vmware-tools-patches
+
+4、运行补丁
+sudo ./patched-open-vm-tools.sh
+
+5、重启
+reboot
+
+```
+
+<br>
+
+## 2. AUR助手
+Yay (Yet another Yogurt) 是一个 AUR 助手，它允许用户在 Manjaro 上安装和管理软件包系统。
+在安装过程中，它会自动从 PKGBUIDS 安装软件包。Yay 取代了早已停产的 Aurman 和 Yaourt。
+自发布以来，Yay 已被证明是出色的帮手，并且是原生 Pacman 包管理器的完美替代品。
+
+```bash
+
+sudo pacman -Syu                      # 更新系统
+
+sudo pacman -S yay                    # 下载yay
 
 
+yay -S 软件名                          # 安装软件
+yay -R 软件名                          # 卸载软件
+yay -Ss 软件模糊名（或者精确的名字）     # 搜索软件
 
-# 四 开发环境
+
+yay -S google-chrome                  # 安装Chrome
+
+```
+
+
+<br>
+
+# 五 开发环境
 
 
 ## 1. jdk
