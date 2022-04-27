@@ -79,7 +79,7 @@ This process is fundamentally the inverse (hence the name, Inversion of Control)
 
 5个核心包+1个日志包
 
-<font color='red'>**spring-context **</font>\ aop \ beans \ core \ expression  + spring-jcl
+<font color='red'>**spring-context **</font>\ aop \ beans \ core \ expression  + spring-jcl
 
 ```xml
 
@@ -353,7 +353,8 @@ public class ServiceProxyFactoryBean implements FactoryBean<Object> {
         Object obj = cls.newInstance();
         return Enhancer.create(cls, new MethodInterceptor() {
             @Override
-            public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
+            public Object intercept(Object o, Method method, Object[] objects, 
+                                    MethodProxy methodProxy) throws Throwable {
                 SqlSession sqlSession = MyBatisUtil.getSqlSession();
                 Field[] declaredFields = cls.getDeclaredFields();
                 for (Field field : declaredFields) {
@@ -364,8 +365,7 @@ public class ServiceProxyFactoryBean implements FactoryBean<Object> {
                         field.set(obj, mapper);
                     }
                 }
-                 Object invoke = method.invoke(obj, objects);
-                // Object invoke = methodProxy.invoke(obj, objects);
+                Object invoke = method.invoke(obj, objects);
                 sqlSession.commit();
                 sqlSession.close();
                 return invoke;
@@ -426,13 +426,765 @@ public class MyTest {
 
 ## 5. 作用域scope
 
+singleton：单例  → 每一次取出组件都是同一个实例 → <font color='red'> 绝大多数场景用的都是默认的作用域singleton</font>
+
+prototype：原型 → 每一次取出组件都是新的实例
+
+不管取出组件的方式是按照id还是按照类型取出
+
+```xml
+
+<!--scope属性：作用域-->
+<bean id="default" class="com.xxx.bean.DefaultBean"/>
+<bean id="singleton" class="com.xxx.bean.SingletonBean" scope="singleton"/>
+<bean id="prototype" class="com.xxx.bean.PrototypeBean" scope="prototype"/>
+
+```
+
+
+
+<br>
+
+
+
+## 6. Spring生命周期
+
+Spring容器中的组件的生命周期 :  在组件可用状态之前可以使用哪一些方法，在组件可用之后可以使用哪一些方法
+
+```bash
+
+1. Bean的实例化
+
+2. 设置参数（set方法）
+
+3. Aware 
+   1). BeanNameAware → setBeanName
+   2). BeanFactoryAware → setBeanFactory
+   3). ApplicationContextAware → setApplicationContext
+   
+4. BeanPostProcessor的before
+
+5. init-method、InitializingBean提供的afterPropertiesSet
+
+6. BeanPostProcessor的after
+
+7. Bean作为容器中的组件是可用的
+
+
+# 组件到达可用状态之前一定会执行的：Bean的实例化
+
+# 当前组件实现接口才会执行的：Aware的3个方法、InitializingBean的afterPropertiesSet方法
+
+# 单独指定：init-method
+
+# 通用的（不仅仅针对当前组件）：BeanPostProcessor的before和after
+
+
+
+容器关闭之前: 
+
+ 👉 destory-method、
+ 
+ 👉 DisposableBean提供的destroy
+
+```
+
+<br>
+
+
+
+**BeanPostProcessor**：
+
+<font color='red'>**如果容器中有组件实现了BeanPostProcessor接口，那么其他的所有的组件都会执行BeanPostProcessor的方法**</font> . 
+
+```java
+
+public class CommonBeanPostProcessor implements BeanPostProcessor {
+    
+    @Override
+    public Object postProcessBeforeInitialization(Object bean, String beanName) 
+        throws BeansException {
+
+        //如果我传入的是LifecycleBean，我能不能给他替换成代理对象呢？
+        //返回的时候能不能换成动态代理的对象呢？
+
+        return bean;
+    }
+
+    // 和before一摸一样，只有执行顺序不同
+    @Override
+    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        // 返回值如果写的是return null 👉 相当于return bean
+        return null;
+    }
+}
+
+```
+
+<br>
+
+生命周期及相关接口示例：
+
+```java
+
+public class LifeCycleBean implements BeanNameAware, BeanFactoryAware, ApplicationContextAware,
+        InitializingBean,DisposableBean {
+
+    private String name;
+
+    private String beanName;
+    private BeanFactory beanFactory;
+    private ApplicationContext applicationContext;
+
+    // 无参构造，Bean实例化时调用
+    public LifeCycleBean() {
+        System.out.println("Constructor");
+    }
+
+    // setter
+    public void setName(String name) {
+        this.name = name;
+        System.out.println("Setter");
+    }
+
+    // BeanNameAware
+    @Override
+    public void setBeanName(String name) {
+        this.beanName = name;
+        System.out.println("BeanNameAware——setBeanName(), beanName = " + beanName);
+    }
+
+    // BeanFactoryAware
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        this.beanFactory = beanFactory;
+        System.out.println("BeanFactoryAware——setBeanFactory, beanFactory = " + beanFactory);
+    }
+
+    // ApplicationContextAware
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+        System.out.println("ApplicationContextAware——setApplicationContext");
+    }
+
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        System.out.println("afterPropertiesSet() of InitializingBean");
+    }
+    
+    @PostConstruct
+    public void customInit(){
+        System.out.println("customInit");
+    }
+
+    @PreDestroy
+    public void customDestroy() {
+        System.out.println("customDestroy");
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        System.out.println("destroy() of DisposableBean");
+    }
+
+}
+
+```
+
+spring配置文件：
+
+```xml
+
+<bean id="lifeCycleBean" class="cn.itdrizzle.bean.LifeCycleBean">
+    <property name="name" value="zhangsan111"/>
+</bean>
+
+```
+
+<br>
+
+
+
+## 7. Spring单元测试
+
+为了在测试类中使用注解注入组件，可以使用spring-test：
+
+引入依赖：
+
+```xml
+
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-test</artifactId>
+    <version>5.2.15.RELEASE</version>
+    <scope>test</scope>
+</dependency>
+
+```
+
+<br>
+
+使用注解：
+
+```java
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("classpath:application.xml")
+public class OrderServiceTest {
+
+    @Autowired
+    OrderService orderService;
+
+    @Test
+    public void testHello(){
+        orderService.sayHello();
+    }
+
+    @Test
+    public void testInsertOrder(){
+        Order order = new Order();
+        order.setProductName("Iphone18");
+        order.setUsername("zhangshan233");
+        order.setPrice(999);
+
+        orderService.insertOrder(order);
+    }
+}
+
+```
+
+
+
+<br>
+
+
+
+# 二 动态代理和工厂
+
+## 1. JDK动态代理
+
+
+
+<br>
+
+## 2. CGLIB动态代理
+
+
+
+<br>
+
+## 3. 工厂设计模式
+
+
+
+<br>
+
+# 三 AOP with Spring
+
+Spring AOP defaults to using standard JDK dynamic proxies for AOP proxies.
+
+Spring AOP can also use CGLIB proxies. This is necessary to proxy classes rather than interfaces.
+
+ By default, CGLIB is used if a business object does not implement an interface. 
+
+<br>
+
+## 1. AOP Concepts
+
+<span style='color:yellow;background:red;font-size:文字大小;font-family:字体;'>**AOP就是对容器中的组件的特定方法做一个特定的增强**</span>
+
+**核心术语**：
+
+Target：目标类、委托类（目标类组件、委托类组件）
+
+Proxy：新产生的代理类
+
+<font color='gray'>**Weaver：织入 → 右委托类对象生成代理对象的过程**</font> .
+
+<font color='red'>**Pointcut**</font>：切入点 → 指定增强哪些方法 
+
+<font color='red'>**Advice**</font>：通知 → 方法按照什么样的方式来增强 → <span style='color:yellow;background:red;font-size:文字大小;font-family:字体;'>**特定的增强**</span> → when do what
+
+<font color='red'>**Aspect**</font>：切面 = 切入点(pointcut) + 通知(advice)
+
+JoinPoint：连接点 →  增强过程中提供的对象 → 通过该对象提供的方法可以获得增强过程中的一些值
+
+<br>
+
+
+
+## 2. Spring AOP
+
+半自动的 SpringAOP：
+
+通知组件需要实现接口： <span style='color:yellow;background:red;font-size:文字大小;font-family:字体;'>**MethodInterceptor**</span> 
+
+Advice（通知组件）做的事情 和 JDK动态代理的InvocationHandler相似：
+
+```java
+
+@Component
+public class CountExecutionTimeAdvice implements MethodInterceptor {
+    @Override
+    public Object invoke(MethodInvocation methodInvocation) throws Throwable {
+        long start = System.currentTimeMillis();
+        //执行委托类的方法 → method.invoke(target,args)
+        Object proceed = methodInvocation.proceed();
+        long over = System.currentTimeMillis();
+        System.out.println(methodInvocation.getMethod().getName() + "方法的执行时间：" + (over - start));
+        
+        return proceed;
+    }
+}
+
+```
+
+<br>
+
+Spring配置文件：application.xml
+
+```xml
+
+<bean id="userServiceProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+    <property name="target" ref="userServiceImpl"/>
+    <property name="interceptorNames" value="countExecutionTimeAdvice"/>
+</bean>
+
+```
+
+<br>
+
+测试示例：
+
+```java
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("classpath:application.xml")
+public class MyTest {
+
+    @Autowired
+    @Qualifier("userServiceProxy")
+    UserService userService;
+
+    @Test
+    public void mytest1() {
+        userService.sayHello();
+    }
+}
+
+```
+
+
+
+<br>
+
+
+
+## 3. Full AspectJ
+
+全自动的 AspectJ
+
+导入依赖：
+
+```xml
+
+<dependency>
+    <groupId>org.aspectj</groupId>
+    <artifactId>aspectjweaver</artifactId>
+    <version>1.9.7</version>
+</dependency>
+
+```
+
+<br>
+
+
+
+### Pointcut切入点
+
+官方文档：https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#aop-schema-pointcuts
+
+划定增强范围，即指定增强哪些方法
+
+<span style='color:blue;font-size:24px;font-family:字体;'>**注意：增强的方法的范围不能超过容器中的组件里的方法的范围，不是容器中的组件里的方法，就不能指定**</span> . 
+
+<font color='red'>**最大范围：容器中的组件里的所有方法**</font>
+
+```xml
+
+<aop:config>
+    <aop:pointcut id="mypointcut" expression=""/>
+</aop:config>
+
+```
+
+标准的Aspectj Aop的pointcut的表达式类型是很丰富的，但是Spring Aop只支持其中的9种，外加Spring Aop自己扩充的一种一共是10种类型的表达式，分别如下
+
+```bash
+
+1. execution：一般用于指定方法的执行，用的最多。
+2. within：指定某些类型的全部方法执行，也可用来指定一个包。
+3. this：Spring Aop是基于代理的，生成的bean也是一个代理对象，this就是这个代理对象，
+         当这个对象可以转换为指定的类型时，对应的切入点就是它了，Spring Aop将生效。
+4. target：当被代理的对象可以转换为指定的类型时，对应的切入点就是它了，Spring Aop将生效。
+5. args：当执行的方法的参数是指定类型时生效。
+6. @target：当代理的目标对象上拥有指定的注解时生效。
+7. @args：当执行的方法参数类型上拥有指定的注解时生效。
+8. @within：与@target类似，看官方文档和网上的说法都是@within只需要目标对象的类或者父类上有指定的注解，
+            则@within会生效，而@target则是必须是目标对象的类上有指定的注解。
+            这两者都是只要目标类或父类上有指定的注解即可。
+9. @annotation：当执行的方法上拥有指定的注解时生效。
+10. bean：当调用的方法是指定的bean的方法时生效。
+
+```
+
+<br>
+
+
+
+**execution** 
+
+```bash
+
+execution（ <修饰符模式>？ <返回值类型模式>  <方法名模式>（<参数模式> ）<异常模式>？）
+
+# 除了返回类型模式，方法名模式和参数模式外，其它项都是可选的
+
+```
+
+<br>
+
+| 模式 | 描述 |
+| - | - |
+| 修饰符 | public 表示public 级别方法。 可以不写，不写表示匹配所有的方法（public,private,protected等级别的方法） |
+| 返回值类型 | 表示方法返回值的类型，  * 表示全部 （注意：类名要写全限定类名） |
+| 包名 + 方法名 | 表示具体的包名，可以使用通配符，中间可以使用 `两个点`  省略，但包名开头和方法名不能省略 |
+| 方法参数 | 省略不写代表无参方法，`*` 代表单个任意类型的参数, `..`  代表任意数量的任意类型的参数 |
+| 异常 | 表示全部 |
+
+**execution表达式的局限性**：
+
+如果要增强的这些方法之间没有啥联系，如果强行建立联系，有可能把不需要增强的方法也划定到范围了
+
+这是可以考虑使用 下面的 `@annotation` 的方式
+
+<br>
+
+
+
+**@annotation** 
+
+需要自定义注解，直接将切入点和要增强的方法耦合起来 ，这是一种更精细的切入点的管理 → 指哪打哪
+
+注解增加在组件中的哪一个方法上，哪一个方法就被增加到切入点的范围
+
+使用示例：
+
+```java
+
+// 自定义一个新的注解
+@Target(ElementType.METHOD)           // 注解可以出现在什么位置 → 方法上
+@Retention(RetentionPolicy.RUNTIME)   // 注解在何时生效 → 运行时
+public @interface CountTime {
+    
+}
+
+
+// 在需要增强的方法上使用该注解即可
+@CountTime
+@Override
+public String serviceMethod(User user) {
+	// logic
+}
+
+```
+
+<br>
+
+当然，不要忘记在配置文件中 配置 该注解为 pointcut
+
+```xml
+
+<aop:config>
+
+    <!--annotation-->
+    <aop:pointcut id="mypointcut" expression="@annotation(com.xxx.anno.CountTime)"/>
+
+    <aop:advisor advice-ref="countExecutionTimeAdvice" pointcut-ref="mypointcut"/>
+    
+</aop:config>
+
+```
+
+
+
+<br>
+
+### Advice通知/增强
+
+**方式一：通常配合Advisor使用**：
+
+```java
+
+@Component
+public class CountExecutionTimeAdvice implements MethodInterceptor {
+    @Override
+    public Object invoke(MethodInvocation methodInvocation) throws Throwable {
+        long start = System.currentTimeMillis();
+        //执行委托类的方法 → 类似于method.invoke(target,args)
+        Object proceed = methodInvocation.proceed();
+        long over = System.currentTimeMillis();
+        System.out.println(methodInvocation.getMethod().getName() + "方法的执行时间：" + (over - start));
+
+        return proceed;
+    }
+}
+
+```
+
+<br>
+
+**方式二：通常配合Aspect使用**：
+
+```java
+
+@Component
+public class CustomAspect {
+
+    //切面类中的方法名任意写
+
+    public void mybefore(JoinPoint joinPoint) {
+        System.out.println("before targetMethod");
+    }
+
+    public void myafter() {
+        System.out.println("after targetMethod");
+    }
+
+    //around通知方法类似于InvocationHandler的invoke方法、类似于MethodInterceptor的invoke
+    public Object around(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+        
+        // 从此处开始到调用 proceed() 方法，相当于 before 部分
+        System.out.println("around的前半部分");
+        
+        Object proceed = null;
+        try {
+            proceed = proceedingJoinPoint.proceed(args);
+            
+            // ... 次处的代码相当于 afterReturning
+            
+        } catch (Throwable e) {
+            // ... 次处的代码相当于 afterThrowing
+        } finally {
+            // .. 次处的代码相当于 after
+        }
+        
+        
+        System.out.println("around的后半部分");
+
+        return proceed;
+    }
+
+    //委托类方法的返回值以形参的方式传入AfterReturning通知方法里
+    public void afterReturning(Object result) {
+        System.out.println("委托类方法执行的结果：" + result);
+    }
+
+    //委托类方法抛出的异常以形参的方式传入AfterThrowing通知方法里
+    public void afterThrowing(Exception exception) {
+        System.out.println("afterThrowing接收到的异常：" + exception.getMessage());
+    }
+}
+
+```
+
+
+
+<br>
+
+### Advisor和Aspect
+
+advisor —— advice + pointcut ：
+
+```xml
+
+<aop:config>
+    <aop:pointcut id="mypointcut" expression="@annotation(com.xxx.anno.CountTime)"/>
+
+    <aop:advisor advice-ref="countExecutionTimeAdvice" pointcut-ref="mypointcut"/>
+    
+</aop:config>
+
+```
+
+<br>
+
+Aspect —— advice + point ：
+
+```xml
+
+<aop:config>
+    <aop:pointcut id="servicePointcut" expression="execution(* com..service..*(..))"/>
+    
+    <!-- advice + pointcut -->
+    <aop:aspect ref="customAspect">
+        <aop:before method="mybefore" pointcut-ref="servicePointcut"/>
+        <aop:after method="myafter" pointcut-ref="servicePointcut"/>
+        <aop:around method="around" pointcut-ref="servicePointcut"/>
+        
+        <!--returning属性：method属性对应的方法中的哪一个形参接收到委托类方法的返回值-->
+        <aop:after-returning method="afterReturning" pointcut-ref="servicePointcut"
+                             returning="result"/>
+
+        <!--throwing属性：method属性对应的方法中的哪一个形参接收到委托类方法抛出的异常-->
+        <aop:after-throwing method="afterThrowing" pointcut-ref="servicePointcut"
+                            throwing="exception"/>
+    </aop:aspect>
+    
+</aop:config>
+
+```
+
+
+
+<br>
+
+### JoinPoint连接点
+
+JoinPoint出现在Before通知或Around通知里 → 直接在形参里写JoinPoint
+
+通过joinPoint可以拿到增强过程中的各种参数：
+
+- 委托类对象
+- 代理对象
+- 方法
+- 参数
+
+```java
+
+public void mybefore(JoinPoint joinPoint) {
+    System.out.println("before");
+    Object proxy = joinPoint.getThis();      //代理类对象
+    Object target = joinPoint.getTarget();   //委托类对象
+    System.out.println("代理类：" + proxy.getClass());
+    System.out.println("委托类："+ target.getClass());
+
+    String methodName = joinPoint.getSignature().getName();
+    System.out.println("方法名：" + methodName);
+
+    Object[] args = joinPoint.getArgs();
+    System.out.println("参数：" + Arrays.asList(args));
+}
+
+public Object around(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+    System.out.println("around通知的前半部分");
+    // 通过连接点获取方法参数，并进行修改
+    Object[] args = proceedingJoinPoint.getArgs();
+    if ("add".equals(proceedingJoinPoint.getSignature().getName())) {
+        args[0] = 2;
+        args[1] = 10;
+    }
+    Object proceed = proceedingJoinPoint.proceed(args);
+    System.out.println("around通知的后半部分");
+
+    return proceed;
+}
+
+```
+
+<br>
+
+## 4. AspectJ注解
+
+开启注解支持：
+
+Enabling @AspectJ Support with Java Configuration
+
+```java
+@Configuration
+@EnableAspectJAutoProxy
+public class AppConfig {
+
+}
+
+```
+
+To enable @AspectJ support with XML-based configuration：
+
+```xml
+
+<aop:aspectj-autoproxy/>
+
+```
+
+<br>
+
+```java
+
+@Component
+@Aspect                       // 指定组件为切面组件
+public class CustomAspect {
+
+    // 切入点 pointcut 以方法的形式体现出来
+    // 方法名作为切入点(point)id、@Pointcut注解的value属性里写的是切入点表达式
+    @Pointcut("execution(* com..service..*(..))")
+    public void mypointcut() {
+    }
+    
+    // 引用切入点方法
+    @After("mypointcut()")
+    public void myafter() {
+        // 
+    }
+    
+    // 也可以直接写切入点表达式
+    @Before("execution(* com..service..*(..))")
+	public void mybefore(JoinPoint joinPoint) {
+        // 
+    }
+    
+}
+
+```
+
+
+
+<br>
+
+# 四 Spring+Mybatis
+
+
+
+## 1. mybatis-spring
+
+mybatis-spring文档介绍：http://mybatis.org/spring/zh/index.html 
+
+```xml
+<dependency>
+    <groupId>org.mybatis</groupId>
+    <artifactId>mybatis-spring</artifactId>
+    <version>2.0.6</version>
+</dependency>
+
+```
 
 
 
 
 
 
-## 6. 生命周期
+
+## 2. sm的整合流程
+
+
+
+
+
+
+
+## 3. Spring事务管理
 
 
 
@@ -442,20 +1194,10 @@ public class MyTest {
 
 
 
-# 二 AOP
+<br>
 
 
 
-
-
-
-
-
-
-
-
-
-
-# 四 常见问题
+# 五 Spring常见问题
 
 ## 1. BeanFactory和FactoryBean
