@@ -1477,6 +1477,16 @@ public class ApplicationInitializer extends AbstractAnnotationConfigDispatcherSe
     protected String[] getServletMappings() {
         return new String[]{"/"};
     }
+    
+    // 配置过滤器 Fileter(implements OncePerRequestFilter) （ web.xml → AACDSI ）
+    @Override
+    protected Filter[] getServletFilters() {
+        CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
+        characterEncodingFilter.setEncoding("utf-8");
+        characterEncodingFilter.setForceEncoding(true);
+        return new Filter[]{characterEncodingFilter};
+    }
+    
 }
 
 ```
@@ -1504,11 +1514,29 @@ public class MvcConfiguration implements WebMvcConfigurer {
         return new CommonsMultipartResolver();
     }
 
-    // 配置过滤器
+    // 自定义converter（类型转换器配置）
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addConverter(new String2DateConverter());
+    }
+
+    // 静态资源映射的配置
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        //                   mapping属性                      location属性
+        registry.addResourceHandler("/pic/**").addResourceLocations("file:d:/tmp/");
+    }
+
+    // HandlerInterceptor过滤器配置
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new CustomInterceptor()).addPathPatterns("/hello");
-        WebMvcConfigurer.super.addInterceptors(registry);
+        
+        //默认作用范围是全局，书写顺序就是顺序
+        registry.addInterceptor(new CustomInterceptor1());
+        registry.addInterceptor(new CustomInterceptor2());
+        
+        //addPathPatterns指定作用范围
+        registry.addInterceptor(new CustomInterceptor3()).addPathPatterns("/user/**");
     }
 }
 

@@ -39,7 +39,7 @@ GitHub：https://github.com/itdrizzle/develop
 
 *  [MySQL基础](Database/mysql-1.md) &nbsp;&nbsp;   [MySQL索引及查询优化](Database/mysql-2.md) &nbsp;&nbsp; [InnoDB存储引擎](Database/innodb.md) &nbsp;&nbsp;   [MySQL-JDBC](Database/jdbc.md) &nbsp;&nbsp;  
 
-*   [mybatis-introduction](Database/mybatis.md) &nbsp;&nbsp;    [mybatis-源码剖析](Database/mybatis源码.md) &nbsp;&nbsp;   
+*   [mybatis-introduction](Database/mybatis.md) &nbsp;&nbsp;    [mybatis-源码剖析](Database/mybatis源码.md) &nbsp;&nbsp;    [mybatis-plus](Database/mybatis-plus.md) &nbsp;&nbsp;    [mybatis-generaotor](Database/generator.md) &nbsp;&nbsp;   
 
 * [Redis缓存技术](Database/Redis.md) 
 
@@ -58,18 +58,16 @@ GitHub：https://github.com/itdrizzle/develop
 <br/>
 
 
-## JavaEE(JavaWeb)
+## JavaEE及常用框架
 
 *  [http协议](Javaee/http.md) &nbsp;&nbsp;  [Tomcat](Javaee/tomcat.md) &nbsp;&nbsp;   [Servlet和JSP](Javaee/Servlet.md) &nbsp;&nbsp;  [MVC架构](Javaee/mvc.md) &nbsp;&nbsp;  
 
-
-
-<br/>
-
-
-## 框架及中间件
-
 * [Spring Framework](Frame/spring.md) &nbsp;&nbsp;  [Spring MVC](Frame/springmvc.md) &nbsp;&nbsp;   [SpringBoot](Frame/springboot.md) &nbsp;&nbsp;  [Spring Security And Shiro](Frame/security.md) &nbsp;&nbsp;  
+
+* [跨域安全机制详解](Frame/crossDomain.md) &nbsp;&nbsp; 
+
+
+<br>
 
 * [ElasticSearch](Frame/ElasticSearch.md) &nbsp;&nbsp; 
 
