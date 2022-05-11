@@ -73,11 +73,13 @@ GitHub：https://github.com/itdrizzle/develop
 
 * [RabbitMQ](Frame/RabbitMQ.md) &nbsp;&nbsp; 
 
+<br>
 
+## 版本控制和项目部署
 
+* [Linux-install](Tools/Linux-install.md) &nbsp;&nbsp;  [Linux常用命令](Tools/Linux.md) &nbsp;&nbsp;  [VIM使用技巧](Tools/vim.md) &nbsp;&nbsp;  
 
-
-
+* [Git版本控制](Tools/Git.md) &nbsp;&nbsp;  [Maven](Tools/maven.md) &nbsp;&nbsp; [Docker](Tools/Docker.md) &nbsp;&nbsp; [Kubernetes](Tools/kubernetes.md) &nbsp;&nbsp; [项目部署](Tools/deployment.md) &nbsp;&nbsp;
 
 
 
@@ -90,10 +92,6 @@ GitHub：https://github.com/itdrizzle/develop
 ## 常用开发工具
 
 * [IDEA和Eclipse](Tools/idea.md)    &nbsp;&nbsp;   [Windows命令和工具](Tools/windows.md)    &nbsp;&nbsp;  
-
-* [Linux-install](Tools/Linux-install.md) &nbsp;&nbsp;  [Linux常用命令](Tools/Linux.md) &nbsp;&nbsp;  [VIM使用技巧](Tools/vim.md) &nbsp;&nbsp;  
-
-* [Git版本控制](Tools/Git.md) &nbsp;&nbsp;  [Maven](Tools/maven.md) &nbsp;&nbsp; [Docker](Tools/Docker.md) &nbsp;&nbsp; [Kubernetes](Tools/kubernetes.md) &nbsp;&nbsp; [项目部署](Tools/deployment.md) &nbsp;&nbsp;
 
 
 <br/> <br/>

@@ -404,6 +404,8 @@ public class String2DateConverter implements Converter<String, Date> {
 
 
 
+### 数据源和扫描包配置
+
 配置 datasource 相关信息：
 
 ```properties
@@ -435,6 +437,83 @@ public class Application {
         //第一个参数：当前的类
         //第二个参数：当前main方法传入的参数
         SpringApplication.run(Application.class, args);
+    }
+}
+
+```
+
+<br>
+
+
+
+### 类型转换TypeHandler
+
+TypeHandler 接口提供的方法，可以完成类型的转换
+
+
+
+自定义实现TypeHandler的接口 的类（指定TypeHandler处理的转换类型）：
+
+例：String 和 Integer[] 之间的转换：
+
+```java
+
+@MappedTypes(Integer[].class)
+@MappedJdbcTypes(JdbcType.VARCHAR)
+public class IntegerArrayTypeHandler implements TypeHandler<Integer[]> {
+
+    ObjectMapper objectMapper = new ObjectMapper();
+    
+    /**
+     * @param preparedStatement  jdbc的对象
+     * @param index 预编译sql语句的占位符的序号 → ？的序号
+     * @param integers 输入映射传入的值 → #{}写法提供的值
+     * @throws SQLException
+     */
+    @SneakyThrows
+    @Override
+    public void setParameter(PreparedStatement preparedStatement, int index, Integer[] integers, JdbcType jdbcType) throws SQLException {
+        // Integer[] → String
+        //→ 将Integer[]转换成json字符串
+        String value = objectMapper.writeValueAsString(integers);
+        //序号为几，提供的值是什么
+        preparedStatement.setString(index, value);
+    }
+
+    //先获得结果集中的查询结果
+    //再将查询结果转换为指定类型
+    @Override
+    public Integer[] getResult(ResultSet resultSet, String columnName) throws SQLException {
+        String result = resultSet.getString(columnName);
+        return transfer(result);
+    }
+
+    @Override
+    public Integer[] getResult(ResultSet resultSet, int index) throws SQLException {
+        String result = resultSet.getString(index);
+        return transfer(result);
+    }
+
+    @Override
+    public Integer[] getResult(CallableStatement callableStatement, int index) throws SQLException {
+        String result = callableStatement.getString(index);
+        return transfer(result);
+    }
+
+    //使用jackson提供的方法完成字符串转换为Integer数组
+    private Integer[] transfer(String result) {
+        if (result == null || "".equals(result)) {
+            return new Integer[0];
+        }
+        Integer[] integers = new Integer[0];
+        try {
+            integers = objectMapper.readValue(result, Integer[].class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return integers;
     }
 }
 
@@ -1001,11 +1080,183 @@ beanFactory.getBeansOfType(Class<T>)
 
 
 
-
-
 # 四 SpringBoot应用实践
 
-## 
+## 1. Hibernate Validator
+
+官方文档：https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/
+
+
+
+Hibernate Validator 的作用：
+
+- 验证逻辑与业务逻辑之间进行了分离，降低了程序耦合度；
+- 统一且规范的验证方式，无需你再次编写重复的验证代码；
+
+
+
+引入依赖：
+
+```xml
+
+<dependency>
+    <groupId>org.hibernate.validator</groupId>
+    <artifactId>hibernate-validator</artifactId>
+    <version>7.0.4.Final</version>
+</dependency>
+
+```
+
+
+
+注意：
+
+**某些版本的`spring-boot-starter-web`包里面有`hibernate-validator`包，不需要再次引用hibernate validator依赖**. 
+
+
+
+<br>
+
+
+
+### 请求参数校验配置
+
+通常情况下，验证请求参数时，在 `@RequestBody DemoModel demo` 之间加注解 `@Valid`，然后后面加BindindResult即可；
+
+多个参数的，可以加多个@Valid和BindingResult，如：
+
+```java
+
+@RequestMapping("/demo2")
+public void demo2()(@RequestBody @Valid DemoModel demo, BindingResult result,
+                    @RequestBody @Valid DemoModel demo2, BindingResult result2){
+    if(result1.hasErrors()){
+        for (ObjectError error : result.getAllErrors()) {
+            System.out.println(error.getDefaultMessage());
+        }
+    }
+    
+    // ...
+}
+
+```
+
+<br>
+
+GET参数校验(@RequestParam参数校验)：
+
+使用校验bean的方式，没有办法校验RequestParam的内容，处理Get请求(或参数比较少)的时候，例如下面的代码：
+
+```java
+
+@RequestMapping(value = "/demo3", method = RequestMethod.GET)
+public void demo3(@RequestParam(name = "grade", required = true) int grade,
+                  @RequestParam(name = "classroom", required = true) int classroom) {
+    System.out.println(grade + "," + classroom);
+}
+
+```
+
+此时使用@Valid注解，对RequestParam对应的参数进行注解，是无效的，
+
+需要使用@Validated注解来使得验证生效。如下所示：
+
+
+
+
+
+<br>
+
+
+
+### 快速失败返回模式
+
+Hibernate Validator有以下两种验证模式：
+
+```bash
+
+1、普通模式（默认是这个模式）：会校验完所有的属性，然后返回所有的验证失败信息
+
+2、快速失败返回模式 : 只要有一个验证失败，则返回
+　　
+```
+
+
+
+true 快速失败返回模式  false 普通模式
+
+```java
+
+@Configuration
+public class ValidatorConfiguration {
+    @Bean
+    public Validator validator(){
+        ValidatorFactory validatorFactory = Validation.byProvider( HibernateValidator.class )
+                .configure()
+                .addProperty( "hibernate.validator.fail_fast", "true" )
+                .buildValidatorFactory();
+        Validator validator = validatorFactory.getValidator();
+
+        return validator;
+    }
+}
+
+```
+
+
+
+两种验证模式配置方式参考官方文档：
+
+https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/#section-provider-specific-settings
+
+
+
+<br>
+
+
+
+### 注解使用示例
+
+
+
+```java
+
+import lombok.Data;
+import org.hibernate.validator.constraints.Range;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+
+@Data
+public class RegisterDTO {
+
+    @NotBlank(message = "用户名不能为空")
+    private String userName;
+
+    @NotBlank(message = "密码不能为空")
+    private String password;
+
+    @NotBlank(message = "真实姓名不能为空")
+    private String realName;
+
+    @Range(min = 0, max = 99, message = "年龄应该在0到99之间")
+    private Integer age;
+
+    @Pattern(regexp = "男|女", message = "必须是男或女")
+    private String sex;
+
+    @Pattern(regexp = "\\d{3}-\\d{8}|\\d{4}-\\d{7}|\\d{11}", message = "号码不正确")
+    private String telephone;
+
+}
+
+```
+
+
+
+
+
+### 配合统一异常处理
 
 
 
