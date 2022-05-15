@@ -74,7 +74,7 @@ GitHub：https://github.com/itdrizzle/develop
 
 * [Nginx + LVS + Keepalived](microservice/nginx.md) &nbsp;&nbsp; 
 
-* [Microservice](microservice/microservice.md) &nbsp;&nbsp; [Service Registration/Discovery](microservice/discovery.md) &nbsp;&nbsp; 
+* [Microservice](microservice/microservice.md) &nbsp;&nbsp; [服务注册/发现](microservice/discovery.md) &nbsp;&nbsp; [服务通信](microservice/communication.md) &nbsp;&nbsp; [服务配置](microservice/config.md) &nbsp;&nbsp; [服务网关](microservice/gateway.md) &nbsp;&nbsp; [熔断与降级](microservice/broker.md) &nbsp;&nbsp; 
 
 
 
