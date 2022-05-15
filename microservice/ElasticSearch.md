@@ -1,9 +1,13 @@
+# 一 Elasticsearch
+
+Elasticsearch 是一个基于 JSON 的分布式搜索和分析引擎。
 
 ## 1. 下载与安装
 
 &nbsp; &nbsp; 在服务器安装[elasticsearch](https://www.elastic.co/cn/downloads/elasticsearch)后，可以在本地浏览器（chrome）安装 `ElasticSearch Head` 插件，通过浏览器访问ES
 
 ```shell
+
 cd /home/software/
 wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.12.1-linux-x86_64.tar.gz
 
@@ -12,14 +16,16 @@ mv elasticsearch-7.12.1 /usr/local/
 
 cd /usr/local/elasticsearch-7.12.1/
 mkdir data
+
 ```
 
-- elasticsearch初步配置
+
+
+elasticsearch初步配置
 
 ```shell
 vim /usr/local/elasticsearch-7.12.1/config/elasticsearch.yml
-```
-```
+
 path.data: /usr/local/elasticsearch-7.12.1/data
 path.logs: /usr/local/elasticsearch-7.12.1/logs
 
@@ -31,24 +37,26 @@ cluster.initial_master_nodes: ["node-1"]
 #开启跨域
 http.cors.enable:true          
 http.cors.allow-origin:"*"
+
 ```
 
-- 根据服务器内存规格设置合适的内存大小
+
+根据服务器内存规格设置合适的内存大小
 
 ```shell
 vim /usr/local/elasticsearch-7.12.1/config/jvm.options
-```
-```
+
 -Xms512m
 -Xmx512m
+
 ```
 
-- 设置elasticsearch使用其自带的jdk版本
+
+设置elasticsearch使用其自带的jdk版本
 
 ```shell
 vim /usr/local/elasticsearch-7.12.1/bin/elasticsearch
-```
-```
+
 # 指定jdk11
 export ES_JAVA_HOME=/usr/local/elasticsearch-7.12.1/jdk
 export PATH=$ES_JAVA_HOME/bin:$PATH
@@ -59,13 +67,14 @@ if [ -x "$ES_JAVA_HOME/bin/java" ]; then
 else
         JAVA=`which java`
 fi
+
 ```
 
-&nbsp;
-```shell
+
+```bash
+
 vim /etc/security/limits.conf  #添加如下配置：
-```
-```
+
 * soft nofile 100001
 * hard nofile 100002
 root soft nofile 100001
@@ -76,11 +85,14 @@ root hard nofile 100002
 ```
 
 ```shell
+
 vim /etc/sysctl.conf     #添加如下配置：
-```
-```
+
 vm.max_map_count=444444
+
 ```
+
+
 ```shell
 # 修改后要记得刷新一下
 sysctl -p
@@ -88,9 +100,10 @@ sysctl -p
 
 &nbsp;
 
-- elasticsearch启动和运行（不能使用root用户运行）
+elasticsearch启动和运行（不能使用root用户运行）
 
 ```shell
+
 useradd esuser
 chown -R esuser:esuser /usr/local/elasticsearch-7.12.1/
 su esuser
@@ -101,21 +114,29 @@ cd /usr/local/elasticsearch-7.12.1/bin
 ps -ef|grep elasticsearch  #查看进程，有较多的数据 用jps试试
 jps
 kill 9318
+
 ```
+
+
 
 ## 2. 中文分词器—ik
 
-- 安装ik分词器（[github地址](https://github.com/medcl/elasticsearch-analysis-ik/releases)，注意需要与elasticsearch版本一致）
+安装ik分词器（[github地址](https://github.com/medcl/elasticsearch-analysis-ik/releases)，注意需要与elasticsearch版本一致）
 
 ```shell
+
 cd /home/software/
 
 unzip elasticsearch-analysis-ik-7.12.1.zip -d /usr/local/elasticsearch-7.12.1/plugins/ik  #需要重启es
+
 ```
 
-- 自定义中文词库
+
+
+自定义中文词库
 
 ```shell
+
 vim /usr/local/elasticsearch-7.12.1/plugins/ik/config/IKAnalyzer.cfg.xml
 
 #配置自己的词库文件名
@@ -123,16 +144,23 @@ vim /usr/local/elasticsearch-7.12.1/plugins/ik/config/IKAnalyzer.cfg.xml
 
 #添加，修改词库
 vim /usr/local/elasticsearch-7.12.1/plugins/ik/config/custom.dic
+
 ```
+
+
 
 ## 3. dsl搜索
 
 
 
 
+
+
 ## 4. SpringBoot整合ES
-   [官方文档](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/7.12/java-rest-high.html)
-- 引入ElasticSearch的依赖 ，注意版本一致
+官方文档：https://www.elastic.co/guide/en/elasticsearch/client/java-rest/7.12/java-rest-high.html
+
+引入ElasticSearch的依赖 ，注意版本一致
+
 ```xml
 <dependency>
     <groupId>org.springframework.boot</groupId>
@@ -141,19 +169,25 @@ vim /usr/local/elasticsearch-7.12.1/plugins/ik/config/custom.dic
 </dependency>
 ```
 
-- 配置`application.yaml`文件 （自动注入）
+
+
+配置`application.yaml`文件 （自动注入）
 
 ```yaml
+
 spring:
   elasticsearch:
     rest:
       uris: http://139.155.174.119:9200
+      
 ```
 ```java
 @Autowired
 private RestHighLevelClient client;
 ```
-&nbsp;
+
+
+
 **（1）Index API**
 
 ```java
@@ -294,8 +328,15 @@ public void searchDocument() throws IOException {
 }
 ```
 
-## 5. LogStash数据同步
-- 下载安装 （ [logstash官网](https://www.elastic.co/cn/downloads/logstash) ）
+
+
+<br>
+
+
+
+# 二 LogStash数据同步
+
+下载安装 （ [logstash官网](https://www.elastic.co/cn/downloads/logstash) ）
 
 ```shell
 wget https://artifacts.elastic.co/downloads/logstash/logstash-7.12.1-linux-x86_64.tar.gz
@@ -305,7 +346,9 @@ tar -zxvf logstash-7.12.1-linux-x86_64.tar.gz
 mv logstash-7.12.1 /usr/local/
 ```
 
-- [mysql-connector](https://downloads.mysql.com/archives/c-j/)
+
+
+[mysql-connector](https://downloads.mysql.com/archives/c-j/)
 
 ```shell
 wget https://cdn.mysql.com/archives/mysql-connector-java-8.0/mysql-connector-java-8.0.23.tar.gz
@@ -315,7 +358,9 @@ tar -zxvf mysql-connector-java-8.0.23.tar.gz
 cp mysql-connector-java-8.0.23/mysql-connector-java-8.0.23.jar /usr/local/logstash-7.12.1/sync/
 ```
 
-- 同步数据配置
+
+
+同步数据配置
 
 ```shell
 cd /usr/local/logstash-7.12.1/
@@ -401,3 +446,16 @@ WHERE
 ```
 
 - 启动运行和关闭
+
+
+
+
+
+<br>
+
+
+
+# 三 kibana
+
+Kibana 是一个可扩展的用户界面，您可以借助它对数据进行可视化分析。
+

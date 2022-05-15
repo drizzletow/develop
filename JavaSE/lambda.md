@@ -119,7 +119,7 @@ interface IA{
 
 **Lambda表达式的进阶使用**: (Lambda表达式的简化)
 
-<font color=red> **Lambda表达式能够简化的前提是：它是功能接口的子类对象，而功能接口中有且只有一个必须要实现的抽象方法！**  </font> 
+<font color=red> **Lambda表达式能够简化的前提是：它是功能接口的子类对象，而功能接口中有且只有一个必须要实现的抽象方法！**  </font> 
 
 - <font color=blue>形参列表</font>：
 
@@ -1350,8 +1350,34 @@ Map<String, List<Student>> gradeStudentMap = students.stream()
 <br/>
 
 
+## 5. 使用操作记录
 
-## 5. 函数式思维
+### 1. 去重和排序
+
+```java
+
+// 根据商品ID去重
+List<FootprintVO> collect = footprintVOList.stream().collect(
+        Collectors.collectingAndThen(
+            Collectors.toCollection(
+                    () -> new TreeSet<>(Comparator.comparing(FootprintVO::getGoodsId))
+            ),
+            ArrayList::new
+        )
+);
+
+// 按时间降序排序
+collect.sort(Comparator.comparing(FootprintVO::getAddTime).reversed());
+
+```
+
+<br>
+
+### 2. 
+
+<br>
+
+## 6. 函数式思维
 
 函数式数据处理思维：使用Stream API处理数据集合，与直接使用容器类API处理数据的思路是完全不一样的。
 

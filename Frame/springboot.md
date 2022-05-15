@@ -377,6 +377,41 @@ public class String2DateConverter implements Converter<String, Date> {
 
 
 
+### CharacterEncodingFilter
+
+SpringMVC中有这样一个Filter专门处理编码问题的，它是`CharacterEncodingFilter`。
+
+比如默认给response返回设定编码格式为：UTF-8，则可以通过配置CharacterEncodingFilter实现
+
+SpringBoot对`CharacterEncodingFilter`也有支持，只需如下配置：
+
+```properties
+
+# 设置的编码，默认为：UTF-8
+spring.http.encoding.charset=UTF-8
+ 
+# 是否启用CharacterEncodingFilter，如果不配置也代表true
+spring.http.encoding.enabled=true
+ 
+# 是否强制设置请求和响应的编码格式为设置的编码格式
+spring.http.encoding.force=
+ 
+# 是否强制设置请求的编码格式为设置的编码格式
+spring.http.encoding.force-request=
+ 
+# 是否强制设置响应的编码格式为设置的编码格式
+spring.http.encoding.force-response=
+
+```
+
+SpringBoot会自动配置CharacterEncodingFilter，默认字符集就是 UTF-8 ，一般情况下无需配置
+
+
+
+<br>
+
+
+
 ## 2. MyBatis相关配置
 
 - 引入依赖 `mybatis-spring-boot-starter` 
@@ -400,6 +435,8 @@ public class String2DateConverter implements Converter<String, Date> {
 
 ```
 
+
+
 <br>
 
 
@@ -419,6 +456,8 @@ mybatis.type-aliases-package=com.xxx.bean
 #mybatis.configuration.lazy-loading-enabled=true
 
 ```
+
+
 
 <br>
 
@@ -441,6 +480,8 @@ public class Application {
 }
 
 ```
+
+
 
 <br>
 
@@ -523,6 +564,8 @@ public class IntegerArrayTypeHandler implements TypeHandler<Integer[]> {
 
 <br>
 
+
+
 ## 3. SpringBoot常见问题
 
 ### 扫描包目录配置
@@ -537,6 +580,8 @@ SpringBoot帮我们提供了<span style='color:red;font-size:文字大小;font-f
 @ComponentScan("cn.itdrizzle")
 
 ```
+
+
 
 <br>
 
@@ -559,6 +604,8 @@ SpringBoot应用通常整合一个框架，通常是需要引入其starter依赖
 - 功能上
 
   - 会帮我们引入这个框架所必须的一些依赖
+
+
 
 <br>
 
@@ -600,6 +647,8 @@ mybatis:
   type-aliases-package: com.xxx.bean
 
 ```
+
+
 
 <br>
 
@@ -811,6 +860,8 @@ public class DataSourceConfiguration {
 
 ```
 
+
+
 <br>
 
 
@@ -905,6 +956,8 @@ org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration,
 
 ```
 
+
+
 <br>
 
 
@@ -992,6 +1045,8 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 
 ```
 
+
+
 <br>
 
 
@@ -1023,6 +1078,8 @@ public class MybatisAutoConfiguration implements InitializingBean {
     }
 }
 ```
+
+
 
 <br>
 
@@ -1056,7 +1113,6 @@ public void addFormatters(FormatterRegistry registry) {
         Formatter<?> formatter = (Formatter)var2.next();
         registry.addFormatter(formatter);
     }
-
 }
 
 ```
@@ -1143,6 +1199,8 @@ public void demo2()(@RequestBody @Valid DemoModel demo, BindingResult result,
 
 <br>
 
+
+
 GET参数校验(@RequestParam参数校验)：
 
 使用校验bean的方式，没有办法校验RequestParam的内容，处理Get请求(或参数比较少)的时候，例如下面的代码：
@@ -1160,8 +1218,6 @@ public void demo3(@RequestParam(name = "grade", required = true) int grade,
 此时使用@Valid注解，对RequestParam对应的参数进行注解，是无效的，
 
 需要使用@Validated注解来使得验证生效。如下所示：
-
-
 
 
 
