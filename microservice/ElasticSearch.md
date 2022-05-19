@@ -1,10 +1,8 @@
-# 一 Elasticsearch
+# 一 ELK的部署与配置
 
-Elasticsearch 是一个基于 JSON 的分布式搜索和分析引擎。
+## 1. ES的安装与配置
 
-## 1. 下载与安装
-
-&nbsp; &nbsp; 在服务器安装[elasticsearch](https://www.elastic.co/cn/downloads/elasticsearch)后，可以在本地浏览器（chrome）安装 `ElasticSearch Head` 插件，通过浏览器访问ES
+elasticsearch: https://www.elastic.co/cn/downloads/elasticsearch
 
 ```shell
 
@@ -19,11 +17,13 @@ mkdir data
 
 ```
 
+<br>
 
-
-elasticsearch初步配置
+启动ES前需要注意的相关配置：
 
 ```shell
+
+# 1. elasticsearch初步配置
 vim /usr/local/elasticsearch-7.12.1/config/elasticsearch.yml
 
 path.data: /usr/local/elasticsearch-7.12.1/data
@@ -34,27 +34,21 @@ network.host: 0.0.0.0
 node.name: node-1
 cluster.initial_master_nodes: ["node-1"]
 
-#开启跨域
+ #开启跨域
 http.cors.enable:true          
 http.cors.allow-origin:"*"
 
-```
 
-
-根据服务器内存规格设置合适的内存大小
-
-```shell
+# 2. 根据服务器内存规格设置合适的内存大小
 vim /usr/local/elasticsearch-7.12.1/config/jvm.options
 
 -Xms512m
 -Xmx512m
 
-```
 
 
-设置elasticsearch使用其自带的jdk版本
+# 3. 设置elasticsearch使用其自带的jdk版本
 
-```shell
 vim /usr/local/elasticsearch-7.12.1/bin/elasticsearch
 
 # 指定jdk11
@@ -68,10 +62,8 @@ else
         JAVA=`which java`
 fi
 
-```
 
-
-```bash
+# 4. 其他配置
 
 vim /etc/security/limits.conf  #添加如下配置：
 
@@ -82,23 +74,20 @@ root hard nofile 100002
 
 * soft nproc 4096
 * hard nproc 4096
-```
 
-```shell
+
 
 vim /etc/sysctl.conf     #添加如下配置：
 
 vm.max_map_count=444444
 
-```
 
-
-```shell
 # 修改后要记得刷新一下
 sysctl -p
+
 ```
 
-&nbsp;
+<br>
 
 elasticsearch启动和运行（不能使用root用户运行）
 
@@ -117,6 +106,12 @@ kill 9318
 
 ```
 
+在服务器安装 后，可以在本地浏览器（chrome）安装 `ElasticSearch Head` 插件，通过浏览器访问ES
+
+
+
+<br>
+
 
 
 ## 2. 中文分词器—ik
@@ -124,7 +119,6 @@ kill 9318
 安装ik分词器（[github地址](https://github.com/medcl/elasticsearch-analysis-ik/releases)，注意需要与elasticsearch版本一致）
 
 ```shell
-
 cd /home/software/
 
 unzip elasticsearch-analysis-ik-7.12.1.zip -d /usr/local/elasticsearch-7.12.1/plugins/ik  #需要重启es
@@ -136,7 +130,6 @@ unzip elasticsearch-analysis-ik-7.12.1.zip -d /usr/local/elasticsearch-7.12.1/pl
 自定义中文词库
 
 ```shell
-
 vim /usr/local/elasticsearch-7.12.1/plugins/ik/config/IKAnalyzer.cfg.xml
 
 #配置自己的词库文件名
@@ -149,7 +142,153 @@ vim /usr/local/elasticsearch-7.12.1/plugins/ik/config/custom.dic
 
 
 
-## 3. dsl搜索
+<br>
+
+
+
+## 4. Docker部署ELK
+
+### elasticsearch
+
+```bash
+
+# 下载镜像
+docker search elasticsearch
+docker pull elasticsearch:7.16.3
+
+# 创建数据、数据和日志的挂载目录
+sudo mkdir -p /docker/data/elk/es/{config,data,logs}
+
+
+# 赋予权限, docker中elasticsearch的用户UID是1000.
+sudo chown -R 1000:1000 /docker/data/elk/es
+
+
+# 创建配置文件
+cd /docker/data/elk/es/config
+sudo vim elasticsearch.yml
+#-----------------------配置内容----------------------------------
+cluster.name: "my-es"
+network.host: 0.0.0.0
+http.port: 9200
+
+
+# 运行elasticsearch
+通过镜像，启动一个容器，并将9200和9300端口映射到本机（elasticsearch的默认端口是9200，我们把宿主环境9200端口映射到Docker容器中的9200端口）。此处建议给容器设置固定ip，我这里没设置。
+
+sudo docker run -it -d -p 9200:9200 -p 9300:9300 --name es --restart=always -e ES_JAVA_OPTS="-Xms2g -Xmx2g" -e "discovery.type=single-node"  -v /docker/data/elk/es/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml -v /docker/data/elk/es/data:/usr/share/elasticsearch/data -v /docker/data/elk/es/logs:/usr/share/elasticsearch/logs elasticsearch:7.16.3
+
+```
+
+验证安装是否成功：浏览器访问 http://localhost:9200 ，或者命令行：`curl http://localhost:9200` . 
+
+
+
+IK分词器：
+
+```bash
+
+# 将Linux 中的 ik 目录复制到es容器中
+sudo docker cp /home/drizzle/Software/elk/ik es:/usr/share/elasticsearch/plugins/
+
+# 重启容器即可
+sudo docker restart es
+
+```
+
+<br>
+
+
+
+### 部署kibana
+
+```bash
+
+# 下载镜像
+sudo docker pull kibana:7.16.3
+
+# 获取elasticsearch容器ip: 172.17.0.6
+sudo docker inspect --format '{{ .NetworkSettings.IPAddress }}' es
+
+# 新建配置文件
+sudo mkdir /docker/data/elk/kibana
+sudo touch /docker/data/elk/kibana/kibana.yml
+sudo vim /docker/data/elk/kibana/kibana.yml
+
+#Default Kibana configuration for docker target
+server.name: kibana
+server.host: "0"
+elasticsearch.hosts: ["http://172.17.0.6:9200"]
+xpack.monitoring.ui.container.elasticsearch.enabled: true
+
+
+# run kibana
+sudo docker run -d --restart=always --log-driver json-file --log-opt max-size=100m --log-opt max-file=2 --name kibana -p 5601:5601 -v /docker/data/elk/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml kibana:7.16.3
+
+```
+
+浏览器上输入：http://localhost:5601，如无法访问进容器检查配置是否生效
+
+<br>
+
+
+
+### 部署logstash
+
+```bash
+
+# 获取logstash镜像
+sudo docker pull logstash:7.16.3
+
+# 新建logstash.yml、logstash.conf等配置文件 （此处先配置logstash直接采集本地数据发送至es）
+sudo mkdir /docker/data/elk/logstash
+sudo mkdir /docker/data/elk/logstash/conf.d
+
+sudo vim /docker/data/elk/logstash/logstash.yml
+
+http.host: "0.0.0.0"
+xpack.monitoring.elasticsearch.hosts: [ "http://172.17.0.6:9200" ]
+xpack.monitoring.elasticsearch.username: elastic
+xpack.monitoring.elasticsearch.password: changeme
+path.config: /docker/data/elk/logstash/conf.d/*.conf
+path.logs: /var/log/logstash
+
+sudo vim /docker/data/elk/logstash/conf.d/syslog.conf 
+
+input {
+  syslog {
+    type => "system-syslog"
+    port => 5044
+  }
+}
+output {
+  elasticsearch {
+    hosts => ["192.168.5.106:9200"]           # 定义es服务器的ip
+    index => "system-syslog-%{+YYYY.MM}"       # 定义索引
+  }
+}
+
+
+# run logstash
+docker run -d --restart=always --log-driver json-file --log-opt max-size=100m --log-opt max-file=2 -p 5044:5044 --name logstash -v /docker/data/elk/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml -v /docker/data/elk/logstash/conf.d/:/data/docker/logstash/conf.d/ logstash:7.16.3
+
+```
+
+
+
+
+
+<br>
+
+
+
+# 二 Elasticsearch
+
+Elasticsearch 是一个基于 JSON 的分布式搜索和分析引擎。
+
+
+
+## 2. dsl搜索
 
 
 

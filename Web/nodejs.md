@@ -127,3 +127,20 @@ npm update lodash --save                               #更新模块的同时将
 （3）package.json 中包版本 ~ 与 ^ 说明
 - `~1.4.0`表示：`>=1.4.0 && < 1.5.0` 说明：小版本不变，补丁号可以取最大值
 - `^1.4.0`表示：`>=1.4.0 && < 2.0.0` 说明：大版本号不变，小版本号可以取最大值
+
+
+<br>
+
+## 3. python
+
+部分npm组件在安装时只支持python2版本，如果本地python环境变量是设置的python3，则会导致错误。
+
+解决方法，安装时执行，指定python版本
+
+npm install --python=python2
+
+或者直接修改npm的python版本设置
+
+npm config set python python2
+
+这样npm install时，如果需要调用node-gyp编译，会使用指定的python执行。

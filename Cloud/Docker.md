@@ -353,6 +353,8 @@ logs 用于保存日志
 
 <br>
 
+
+
 下载镜像，先随便启动一个容器，复制相关配置文件：
 
 ```bash
@@ -400,6 +402,7 @@ sudo docker run --name nginx -p 80:80 \
 注意服务器内存不足，启动后内存溢出问题（单机standalone模式默认服务器堆大小512M）[nacos官方文档](https://nacos.io/zh-cn/docs/what-is-nacos.html)
 
 ```shell
+
 docker pull nacos/nacos-server
 
 # 创建本地的映射文件：custom.properties
@@ -409,6 +412,7 @@ touch /docker/data/nacos/init.d/custom.properties
 cat > /docker/data/nacos/init.d/custom.properties << EOF
 management.endpoints.web.exposure.include=*
 EOF
+
 ```
 
 <br>
@@ -416,6 +420,7 @@ EOF
 创建数据库 `nacos_config` :  创建nacos数据库后，然后执行下面的Sql 。 [nacos官网的Sql](https://github.com/alibaba/nacos/blob/master/config/src/main/resources/META-INF/nacos-db.sql) . 
 
 ```shell
+
 # 创建容器并启动(开机自启动)
 docker run -d -p 8848:8848 --name nacos --restart always \
 -e MODE=standalone \

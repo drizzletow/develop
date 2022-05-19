@@ -227,7 +227,7 @@ sudo apt-get install open-vm-tools
 
 
 
-## 3. 
+
 
 
 
@@ -284,8 +284,45 @@ yay -S google-chrome                  # 安装Chrome
 
 ```
 
+<br>
+
+
+
+## 3. 安装deb包
+
+arch 系列如果要安装 dep 软件包，需要通过 deptap 工具转换后才能安装
+
+```bash
+
+1、安装debtap：使用yay安装debtap，
+
+sudo pacman -S yay   # 如果没有yay，需要使用pacman安装yay：
+
+sudo yay -S debtap   # 安装debtap：
+
+
+2、deb包转换arch包，需要先运行下述命令，否则会出错：
+
+sudo debtap -u
+
+sudo debtap -q xxxxx.deb   #使用debtap将deb包转换为arch包
+
+# 在转换过程中会提示是否需要编辑相关信息，直接按回车即可，转换完成后，将会生成一个后缀为.pkg.tar.rst的文件。
+
+
+3、安装，使用pacman安装转换的arch包：
+
+sudo pacman -U xxxx.pkg.tar.rst
+
+```
+
+
+
+
 
 <br>
+
+
 
 # 五 开发环境
 
@@ -333,13 +370,63 @@ source /etc/profile
 ```
 <br>
 
-##  2. mysql
-
-## 3. redis
 
 
+## 2. http proxy
 
-## n. 桌面软件
+Windows + Linux虚拟机的 代理设置：
 
+- 为避免Linux配置`clash`的一些麻烦，只在Windows上装有`clash`，并已有可用的服务
+- 虚拟机采用桥接模式（似乎也有不采用桥接模式而成功的例子，但是我没有成功）
+- `clash`开启`allow LAN`，并开启代理
+
+<br>
+
+linux下通过图形界面设置的代理，终端和浏览器一般不使用该代理，需要分别设置
+
+```bash
+
+# 终端设置(Linux 终端设置 HTTP 代理、注意只对当前终端有效)：
+$ export http_proxy=http://192.168.5.79:7890
+$ export https_proxy=http://192.168.5.79:7890
+
+$ export http_proxy=socks5://127.0.0.1:1080
+$ export https_proxy=socks5://127.0.0.1:1080
+
+$ export ALL_PROXY=http://192.168.5.79:7890
+
+
+# Linux 终端中取消代理设置：
+$ unset http_proxy
+$ unset https_proxy
+$ unset ALL_RPOXY
+
+```
+
+注意：ping 使用的是 ICMP 协议，不支持代理。可以执行 `curl -vv https://www.google.com ` 看看有没有走代理。
+
+永久代理设置：将代理命令写入配置文件 ~/.profile 或 ~/.bashrc 或 ~/.zshrc 中
+
+<br>
+
+```bash
+
+# Git 设置代理：
+git config --global http.proxy http://192.168.5.79:7890
+git config --global https.proxy http://192.168.5.79:7890
+
+# Git 取消代理设置：
+git config --global --unset http.proxy
+git config --global --unset https.proxy
+
+```
+
+
+
+<br>
+
+
+
+## n. desktop
 
 <br/>

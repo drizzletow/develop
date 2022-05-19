@@ -39,7 +39,9 @@ GitHub：https://github.com/itdrizzle/develop
 
 *  [MySQL基础](Database/mysql-1.md) &nbsp;&nbsp;   [MySQL索引及查询优化](Database/mysql-2.md) &nbsp;&nbsp; [InnoDB存储引擎](Database/innodb.md) &nbsp;&nbsp;   [MySQL-JDBC](Database/jdbc.md) &nbsp;&nbsp;  
 
-*   [mybatis-introduction](Database/mybatis.md) &nbsp;&nbsp;    [mybatis-源码剖析](Database/mybatis源码.md) &nbsp;&nbsp;    [mybatis-plus](Database/mybatis-plus.md) &nbsp;&nbsp;    [mybatis-generaotor](Database/generator.md) &nbsp;&nbsp;   
+*   [mybatis-introduction](Database/mybatis.md) &nbsp;&nbsp;    [mybatis-源码剖析](Database/mybatis源码.md) &nbsp;&nbsp;   [tk-mybatis](Database/tk-mybatis.md) &nbsp;&nbsp;   [mybatis-plus](Database/mybatis-plus.md) &nbsp;&nbsp;    
+
+* [mybatis-generaotor](Database/generator.md) &nbsp;&nbsp;   
 
 * [Redis缓存技术](Database/Redis.md) 
 
@@ -80,9 +82,7 @@ GitHub：https://github.com/itdrizzle/develop
 
 * [ElasticSearch(ELK)](microservice/ElasticSearch.md) &nbsp;&nbsp;   [RabbitMQ](microservice/RabbitMQ.md) &nbsp;&nbsp;  [RocketMQ](microservice/RocketMQ.md) &nbsp;&nbsp; 
 
-* [JWT与单点登录](microservice/jwt.md) &nbsp;&nbsp;  [分布式事务](microservice/transaction.md) &nbsp;&nbsp;    [支付宝与微信支付](microservice/pay.md)  &nbsp;&nbsp;   
-
-
+* [OAuth2和JWT](microservice/jwt.md) &nbsp;&nbsp;  [分布式事务](microservice/transaction.md) &nbsp;&nbsp;    [支付宝与微信支付](microservice/pay.md)  &nbsp;&nbsp;    [SPI机制](microservice/SPI.md) &nbsp;&nbsp;   [PipeLine设计模式](microservice/Pipeline.md) &nbsp;&nbsp;  
 
 
 <br>

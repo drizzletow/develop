@@ -123,3 +123,5 @@ public class RestTemplateConfig {
 
 
 ## 1. OpenFeign
+
+Spring Cloud OpenFeign：https://spring.io/projects/spring-cloud-openfeign
