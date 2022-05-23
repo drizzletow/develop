@@ -27,6 +27,15 @@ explore
 
 <br/>
 
+## 2. 进程和服务
+
+```bash
+
+netstat -ano | findstr 8102  # 查找指定端口号的进程信息（进程ID）
+
+taskkill /pid 45768 /f       # 强杀 指定id（45768）的进程
+
+```
 
 
 

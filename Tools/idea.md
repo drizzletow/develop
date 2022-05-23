@@ -4,6 +4,8 @@
 
 ja-netfilter code：https://jetbra.in/s
 
+插件市场：https://plugins.jetbrains.com/
+
 
 <br>
 
@@ -36,10 +38,9 @@ ja-netfilter code：https://jetbra.in/s
 
 ```java
 /**
- * @Classname ${NAME}
- * @Description TODO
- * @Date ${DATE} ${TIME}
- * @Author  idrizzle
+ * @description ${NAME}
+ * @since ${DATE} ${TIME}
+ * @author  idrizzle
  */
 ```
 
@@ -63,7 +64,7 @@ ja-netfilter code：https://jetbra.in/s
 **
 $params$ 
  * @author itdrizzle
- * @date $date$ $time$ 
+ * @since $date$ $time$ 
  * @return $return$
  */
 ```

@@ -641,7 +641,7 @@ Spring Cloud Gateway作为Spring Cloud生态系中的网关，目标是替代ZUU
 
 
 
-
+版本对照信息：https://start.spring.io/actuator/info
 
 
 
