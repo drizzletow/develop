@@ -239,7 +239,9 @@ pipeline.start();
 
 ### 使用ThreadLocal
 
-理论上来说，我们在任何地方，都应该使用Context来在整个Pipeline中传递数据。但Context有时候使用起来相对比较麻烦。比如我们在Valve内部抽私有方法的时候，可能要经常把Context作为方法参数传进去，用起来并不是特别方便。而Valve应该是无状态的，不适合把Context放在Valve里面作为属性。
+理论上来说，我们在任何地方，都应该使用Context来在整个Pipeline中传递数据。但Context有时候使用起来相对比较麻烦。
+
+比如我们在Valve内部抽私有方法的时候，可能要经常把Context作为方法参数传进去，用起来并不是特别方便。而Valve应该是无状态的，不适合把Context放在Valve里面作为属性。
 
 这个时候我们可以借助ThreadLocal来代替Context的作用，Valve通过使用ThreadLocal来存取数据。但使用ThreadLocal有三个需要注意的点。
 

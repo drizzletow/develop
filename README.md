@@ -26,13 +26,6 @@ GitHub：https://github.com/itdrizzle/develop
 
 
 
-<br>
-
-## Java高并发
-* [IO底层原理]()  &nbsp;&nbsp;  [Java NIO]()  &nbsp;&nbsp; [Reactor模式]()  &nbsp;&nbsp;  [Netty核心原理]()  &nbsp;&nbsp; 
-
-
-
 <br/>
 
 ## DataBase
@@ -41,7 +34,7 @@ GitHub：https://github.com/itdrizzle/develop
 
 *   [mybatis-introduction](Database/mybatis.md) &nbsp;&nbsp;    [mybatis-源码剖析](Database/mybatis源码.md) &nbsp;&nbsp;   [tk-mybatis](Database/tk-mybatis.md) &nbsp;&nbsp;   [mybatis-plus](Database/mybatis-plus.md) &nbsp;&nbsp;    
 
-* [mybatis-generaotor](Database/generator.md) &nbsp;&nbsp;   
+* [mybatis-generaotor](Database/generator.md) &nbsp;&nbsp;    [数据库分页查询](Database/page.md) &nbsp;&nbsp;    
 
 * [Redis缓存技术](Database/Redis.md) 
 
@@ -71,54 +64,7 @@ GitHub：https://github.com/itdrizzle/develop
 
 <br>
 
-
-## 分布式和微服务
-
-* [Nginx + LVS + Keepalived](microservice/nginx.md) &nbsp;&nbsp; 
-
-* [Microservice](microservice/microservice.md) &nbsp;&nbsp; [服务注册/发现](microservice/discovery.md) &nbsp;&nbsp; [服务通信](microservice/communication.md) &nbsp;&nbsp; [服务配置](microservice/config.md) &nbsp;&nbsp; [服务网关](microservice/gateway.md) &nbsp;&nbsp; [熔断与降级](microservice/broker.md) &nbsp;&nbsp; 
-
-
-
-* [ElasticSearch(ELK)](microservice/ElasticSearch.md) &nbsp;&nbsp;   [RabbitMQ](microservice/RabbitMQ.md) &nbsp;&nbsp;  [RocketMQ](microservice/RocketMQ.md) &nbsp;&nbsp; 
-
-* [OAuth2和JWT](microservice/jwt.md) &nbsp;&nbsp;  [分布式事务](microservice/transaction.md) &nbsp;&nbsp;    [支付宝与微信支付](microservice/pay.md)  &nbsp;&nbsp;    [SPI机制](microservice/SPI.md) &nbsp;&nbsp;   [PipeLine设计模式](microservice/Pipeline.md) &nbsp;&nbsp;  
-
-
-<br>
-
-
-## Devops与云原生
-
-* [Docker](Cloud/Docker.md) &nbsp;&nbsp; [Kubernetes](Cloud/kubernetes.md) &nbsp;&nbsp;
-
-
-*  [项目部署](Cloud/deployment.md) &nbsp;&nbsp;
-
-
-
-
-
-
-<br/>
-
-
-## 常用开发工具
-
-* [Linux-install](Tools/Linux-install.md) &nbsp;&nbsp;  [Linux常用命令](Tools/Linux.md) &nbsp;&nbsp;  [VIM使用技巧](Tools/vim.md) &nbsp;&nbsp;  
-
-* [Git版本控制](Tools/Git.md) &nbsp;&nbsp;  
-
-* [IDEA和Eclipse](Tools/idea.md)    &nbsp;&nbsp;   [Windows命令和工具](Tools/windows.md)    &nbsp;&nbsp;  
-
-
-<br/> <br/>
-
-# 二 基础理论篇
-
-
-
-## 设计模式理论
+## 设计模式与源码剖析
 
 * [设计模式概述及七大原则](DesignPatterns/theory.md) 
 
@@ -128,6 +74,57 @@ GitHub：https://github.com/itdrizzle/develop
 
 
 <br/>
+
+## JUC和高并发
+
+* [IO底层原理]()  &nbsp;&nbsp;  [Java NIO]()  &nbsp;&nbsp; [Reactor模式]()  &nbsp;&nbsp;  [Netty核心原理]()  &nbsp;&nbsp; 
+
+
+<br>
+
+
+## 分布式和微服务
+
+* [Nginx + LVS + Keepalived](microservice/nginx.md) &nbsp;&nbsp; 
+
+* [Microservice](microservice/microservice.md) &nbsp;&nbsp; [服务注册/发现](microservice/discovery.md) &nbsp;&nbsp; [服务通信](microservice/communication.md) &nbsp;&nbsp; [服务配置](microservice/config.md) &nbsp;&nbsp; [服务网关](microservice/gateway.md) &nbsp;&nbsp; [熔断与降级](microservice/broker.md) &nbsp;&nbsp; 
+
+
+* [Elastic Stack](microservice/elastic.md) &nbsp;&nbsp;   [RabbitMQ](microservice/RabbitMQ.md) &nbsp;&nbsp;  [RocketMQ](microservice/RocketMQ.md) &nbsp;&nbsp; 
+
+* [OAuth2和JWT](microservice/jwt.md) &nbsp;&nbsp;     [SPI机制](microservice/SPI.md) &nbsp;&nbsp;   [PipeLine设计模式](microservice/Pipeline.md) &nbsp;&nbsp;   [分布式事务](microservice/transaction.md) &nbsp;&nbsp; 
+
+<br>
+
+## 常见业务及解决方案
+
+* [DTO和mapstruct](Service/mapstruct.md)  &nbsp;&nbsp;  [支付宝与微信支付](Service/pay.md)  &nbsp;&nbsp;  [电商项目相关](Service/mall.md)  &nbsp;&nbsp;  
+
+<br>
+
+## Linux和Devops
+
+* [Linux-install](Tools/Linux-install.md) &nbsp;&nbsp;  [Linux常用命令](Tools/Linux.md) &nbsp;&nbsp;  [VIM使用技巧](Tools/vim.md) &nbsp;&nbsp;  
+
+* [Git版本控制](Tools/Git.md) &nbsp;&nbsp;  
+
+* [Docker](Cloud/Docker.md) &nbsp;&nbsp; [Kubernetes](Cloud/kubernetes.md) &nbsp;&nbsp;
+
+*  [项目部署](Cloud/deployment.md) &nbsp;&nbsp;
+
+
+<br/>
+
+
+## 常用工具和软件
+
+* [IDEA和Eclipse](Tools/idea.md)    &nbsp;&nbsp;   [Windows命令和工具](Tools/windows.md)    &nbsp;&nbsp;  
+
+* [xxxxxx](software/xxx.md)  &nbsp;&nbsp; 
+
+<br/> <br/>
+
+# 二 基础理论篇
 
 
 ## 数据结构与算法

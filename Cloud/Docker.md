@@ -118,7 +118,7 @@ docker xxx  --help     # 命令
 docker images                            #查看本地主机上的所有镜像
 
 #搜索镜像
-docker search xxx                        #搜索镜像：如 mysql,redis......
+    docker search xxx                        #搜索镜像：如 mysql,redis......
 docker search redis --filter=STARS=100   #过滤掉STARS小于100以下的
 
 
@@ -317,6 +317,7 @@ docker restart redis                    #修改完要重启redis
 <br>
 
 ```shell
+
 #测试持久化配置是否生效
 docker exec -it redis redis-cli
 >set name alice                     # ok
@@ -327,7 +328,92 @@ docker restart redis
 docker exec -it redis redis-cli
 >get name                           # "alice"   成功保存到硬盘，重启数据依旧存在
 >exit
+
 ```
+
+<br>
+
+
+
+
+
+### Elasticsearch部署
+
+```bash
+# 下载镜像
+docker search elasticsearch
+docker pull elasticsearch:7.16.3
+
+# 创建数据、数据和日志的挂载目录
+sudo mkdir -p /docker/data/elk/es/{config,data,logs}
+
+
+# 赋予权限, docker中elasticsearch的用户UID是1000.
+sudo chown -R 1000:1000 /docker/data/elk/es
+
+
+# 创建配置文件
+cd /docker/data/elk/es/config
+sudo vim elasticsearch.yml
+#-----------------------配置内容----------------------------------
+cluster.name: "my-es"
+network.host: 0.0.0.0
+http.port: 9200
+
+
+# 运行elasticsearch
+通过镜像，启动一个容器，并将9200和9300端口映射到本机（elasticsearch的默认端口是9200，我们把宿主环境9200端口映射到Docker容器中的9200端口）。此处建议给容器设置固定ip，我这里没设置。
+
+sudo docker run -it -d -p 9200:9200 -p 9300:9300 --name es --restart=always -e ES_JAVA_OPTS="-Xms1g -Xmx1g" -e "discovery.type=single-node"  -v /docker/data/elk/es/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml -v /docker/data/elk/es/data:/usr/share/elasticsearch/data -v /docker/data/elk/es/logs:/usr/share/elasticsearch/logs elasticsearch:7.16.3
+
+```
+
+验证安装是否成功：浏览器访问 http://localhost:9200 ，或者命令行：`curl http://localhost:9200` . 
+
+<br>
+
+IK中文分词器：
+
+```bash
+# 将Linux 中的 ik 目录复制到es容器中
+sudo docker cp /home/drizzle/Software/elk/ik es:/usr/share/elasticsearch/plugins/
+
+# 重启容器即可
+sudo docker restart es
+
+```
+
+<br>
+
+
+
+### kibana安装与配置
+
+```bash
+# 下载镜像
+sudo docker pull kibana:7.16.3
+
+# 获取elasticsearch容器ip: 172.17.0.6
+sudo docker inspect --format '{{ .NetworkSettings.IPAddress }}' es
+
+# 新建配置文件
+sudo mkdir /docker/data/elk/kibana
+sudo touch /docker/data/elk/kibana/kibana.yml
+sudo vim /docker/data/elk/kibana/kibana.yml
+
+#Default Kibana configuration for docker target
+server.name: kibana
+server.host: "0"
+elasticsearch.hosts: ["http://172.17.0.6:9200"]
+xpack.monitoring.ui.container.elasticsearch.enabled: true
+
+
+# run kibana
+sudo docker run -d --restart=always --log-driver json-file --log-opt max-size=100m --log-opt max-file=2 --name kibana -p 5601:5601 -v /docker/data/elk/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml kibana:7.16.3
+
+```
+
+浏览器上输入：http://localhost:5601，如无法访问进容器检查配置是否生效
 
 <br>
 

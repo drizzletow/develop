@@ -324,10 +324,10 @@ sudo pacman -U xxxx.pkg.tar.rst
 
 
 
-# 五 开发环境
+# 五 常用Linux设置
 
 
-## 1. jdk
+## 1. 解压安装jdk
 
 [jdk 8u202之前的版本下载地址](https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html)   &nbsp;  [jdk全版本下载地址](https://www.oracle.com/java/technologies/oracle-java-archive-downloads.html)
 
@@ -387,13 +387,13 @@ linux下通过图形界面设置的代理，终端和浏览器一般不使用该
 ```bash
 
 # 终端设置(Linux 终端设置 HTTP 代理、注意只对当前终端有效)：
-$ export http_proxy=http://192.168.5.79:7890
-$ export https_proxy=http://192.168.5.79:7890
+$ export http_proxy=http://192.168.5.64:7890
+$ export https_proxy=http://192.168.5.64:7890
 
 $ export http_proxy=socks5://127.0.0.1:1080
 $ export https_proxy=socks5://127.0.0.1:1080
 
-$ export ALL_PROXY=http://192.168.5.79:7890
+$ export ALL_PROXY=http://192.168.5.64:7890
 
 
 # Linux 终端中取消代理设置：
@@ -427,6 +427,165 @@ git config --global --unset https.proxy
 
 
 
-## n. desktop
+## 3. 终端配色方案
+
+### 原生Shell配色
+
+更改到 centos 的 /etc/bashrc 中即可永久生效： ` vim /etc/bashrc  `         # 填入如下内容
+```bash
+
+if [ "${-#*i}" != "$-" ];then
+    # interactively shell
+    PS1="[\[\033[01;31m\]\u\[\033[00m\]@\[\033[36;36m\]\h\[\033[00m\] \[\033[01;34m\]\w\[\033[00m\]]$ "
+    trap 'echo -ne "\e[0m"' DEBUG
+fi
+
+```
+
+可以在/etc/profile中也去加载/etc/bashrc：
+
+```bash
+
+cat >> /etc/profile << EOF
+if [ -f /etc/bashrc ]; then 
+    . /etc/bashrc
+fi
+EOF
+
+```
+刷新即永久生效： `source /etc/profile` 
+
 
 <br/>
+
+参数说明-->PS1的定义中个常用的参数的含义如下：
+```bash
+\d ：#代表日期，格式为weekday month date，例如："Mon Aug 1"
+\H ：#完整的主机名称
+\h ：#仅取主机的第一个名字
+\T ：#显示时间为24小时格式，如：HH：MM：SS
+\t ：#显示时间为12小时格式 , 如：HH：MM：SS
+\A ：#显示时间为12小时格式：HH：MM
+\u ：#当前用户的账号名称
+\v ：#BASH的版本信息
+\w ：#完整的工作目录名称
+\W ：#利用basename取得工作目录名称，所以只会列出最后一个目录
+#  ：#下达的第几个命令
+$  ：#提示字符，如果是root时，提示符为：`#` ，普通用户则为：`$`
+
+
+设置颜色: 在PS1中设置字符颜色的格式为：[\e[F;Bm]
+F为字体颜色，编号为30-37
+B为背景颜色，编号为40-47
+
+格式：[\e[F;Bm]需要改变颜色的部分[\e[0m] , F B 值分别对应的颜色
+
+30 40 黑色
+
+31 41 红色
+
+32 42 绿色
+
+33 43 黄色
+
+34 44 蓝色
+
+35 45 紫红色
+
+36 46 青蓝色
+
+37 47 白色
+
+```
+
+<br>
+
+
+### On-my-zsh
+
+什么是zsh: https://blog.csdn.net/lovedingd/article/details/124128721
+和bash一样，zsh也是终端内的一个命令行解释器，简称：shell。顾名思义就是机器外面的一层壳，用于人机交互。接收用户或其他程序的命令，把这些命令转化成内核能理解的语言。
+
+具体表现为其作用是用户输入一条命令，shell 就立即解释执行一条。不局限于系统、语言等概念、操作方式和表现方式等。比如：我们使用的cd、wget、curl和mount等命令。
+
+传统的shell（如：bash），命令和显示的文字以单色为主；而zsh不仅支持彩色字体，还支持命令填充：
+
+一般情况下，Linux是不自带zsh的，你可以使用命令查看，终端输入：
+
+`cat /etc/shells `
+
+正常情况下，应该是没有/bin/zsh的, 解决方法很简单，使用apt-get或者yum安装即可
+
+```bash
+
+apt-get install zsh
+
+yum install zsh
+
+```
+安装后，重新使用cat /etc/shells命令查看
+
+之后，设置为默认shell并重启终端：
+
+```bash
+chsh -s /bin/zsh
+
+exit;
+
+```
+
+<br>
+
+
+Oh-my-zsh十分简单，可以看看项目地址：https://github.com/ohmyzsh/ohmyzsh
+
+官方配置非常简单，但是因为项目官方脚本在GitHub的原因，国内访问可能有点困难
+
+官方安装-->Linux/Mac打开终端，输入官方提供的脚本：
+
+```bash
+
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+```
+为了保证脚本能顺利运行，你的Linux/Mac服务器需要：
+
+- 提前安装git、curl
+- 可以成功连接GitHub
+- 如果有~/.zshrc文件，最好提前备份
+
+<br>
+
+脚本安装, 考虑到官方的方法，需要连接GitHub；如果你的设备无法有效访问GitHub。可以使用下列的脚本：
+
+```
+
+zsh -c "$(curl -fsSL 'https://api.host.mintimate.cn/fileHost/public/download/1P0R')"
+
+```
+为了保证脚本能顺利运行，你的Linux/Mac服务器需要：
+- 提前安装curl、unzip
+- 如果有~/.zshrc文件，最好提前备份，否则本脚本自动更改原本的.zshrc文件为zshrcBak
+
+<br>
+手动安装
+其实，手动配置重复的内容就是我写的脚本配置：
+
+- 在oh-my-zsh的github主页，手动将zip包下载下来。
+- 将zip包解压，拷贝至~/.oh-my-zsh目录。
+- 执行cp ~/.oh-my-zsh/templates/zshrc.zsh-template ~/.zshrc
+    或手动复制~/.oh-my-zsh/templates/zshrc.zsh-template内文件内容到~/.zshrc内。
+    （如果没有~/.zshrc文件，可以手动创建）
+- 重启终端或终端输入source ~/.zshrc使配置生效
+
+<br>
+On-my-zsh的功能和使用简介：
+
+- 自带填充：主要使用到zsh的Tab功能
+
+- 粘贴自动转义：
+   使用Oh-my-zsh，默认是使用自动粘贴转义。但是这样容易出差错。
+   为此，如果需要关闭自动转义，可以打开~/.zshrc文件，添加DISABLE_MAGIC_FUNCTIONS=true字段
+   
+zsh的强大不仅仅如此，还可以安装更多强大插件，感兴趣可以自己进行探索。
+而Oh-my-zsh的使用也不仅仅如此，可以自行阅读开发者文档：https://github.com/ohmyzsh/ohmyzsh
